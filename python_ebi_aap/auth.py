@@ -5,33 +5,33 @@ Created on Thu May 24 15:46:37 2018
 
 @author: Paolo Cozzi <cozzi@ibba.cnr.it>
 
-.. module:: auth
-   :platform: Unix,
-   :synopsis: Deal with EBI AAP service
-
 """
 
 import requests
 import datetime
+import logging
 
 import python_jwt
 
 
+logger = logging.getLogger(__name__)
+
+
 class Auth():
+    """
+    Instantiate a python EBI AAP Object
+
+    Kwargs:
+        user (str): your aap username
+        password (str): your password
+        token (str): a valid EBI AAP jwt token
+
+    Generate a new auth object
+    """
+
     auth_url = "https://explore.api.aai.ebi.ac.uk/auth"
 
     def __init__(self, user=None, password=None, token=None):
-        """Instantiate a python EBI AAP Object
-
-        Kwargs:
-            user (str): your aap username
-            password (str): your password
-            token (str): a valid EBI AAP jwt token
-
-        Generate a new auth object
-
-        """
-
         self.expire = None
         self.issued = None
         self.header = None
@@ -40,13 +40,19 @@ class Auth():
 
         # get a response
         if password and user:
+            logger.debug("Authenticating user {user}".format(user=user))
             self.response = requests.get(
                 self.auth_url, auth=requests.auth.HTTPBasicAuth(
                     user, password))
 
+            # set status code
+            self.status_code = self.response.status_code
+
+            if self.status_code != 200:
+                raise ConnectionError(self.response.text)
+
             # Set token with token.setter
             self.token = self.response.text
-            self.status_code = self.response.status_code
 
         elif token:
             # Set token with token.setter
@@ -73,11 +79,11 @@ class Auth():
     @token.setter
     def token(self, token):
         self._decode(token)
-        self._token = None
+        self._token = token
 
     def get_duration(self):
         now = datetime.datetime.now()
         return (self.expire - now)
 
     def is_expired(self):
-        return self.get_duration().days > 0
+        return self.get_duration().days < 0
