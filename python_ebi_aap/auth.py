@@ -83,7 +83,19 @@ class Auth():
 
     def get_duration(self):
         now = datetime.datetime.now()
-        return (self.expire - now)
+        duration = (self.expire - now)
+        logger.debug("Your token will expire in {seconds} seconds".format(
+            seconds=duration.total_seconds()))
+        return duration
 
     def is_expired(self):
         return self.get_duration().days < 0
+
+    def __str__(self):
+        if self.claims:
+            return "token for {user} will last {seconds} seconds".format(
+                user=self.claims['name'],
+                seconds=self.get_duration().total_seconds())
+
+        else:
+            return "Not initialized token"
