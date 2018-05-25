@@ -1,5 +1,5 @@
 Welcome to Python EBI AAP's documentation!
-======================================
+==========================================
 
 .. toctree::
    :maxdepth: 2
