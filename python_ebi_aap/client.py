@@ -324,3 +324,54 @@ class Submission(Document):
 
     def __str__(self):
         return self.name
+
+    def create_sample(self, sample_data):
+        """Create a sample"""
+
+        # get the link for sample create
+        document = self.follow_link("contents", auth=self.auth)
+
+        # get the link for submission:create. I don't want a document using
+        # get method, I need instead a POST request
+        link = document._links['samples:create']['href']
+
+        # define a new header. Copy the dictionary, don't use the same object
+        headers = copy.copy(self.headers)
+
+        # add new element to headers
+        headers['Content-Type'] = 'application/json;charset=UTF-8'
+
+        # call a post method a deal with response
+        response = self.post(link, payload=sample_data, headers=headers)
+
+        if response.status_code != 201:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # create a new document
+        document = Document(auth=self.auth)
+        document.data = document.parse_response(response)
+
+        # TODO: read document in sample
+
+        # return document
+        return document
+
+
+# TODO: Sample class
+# key alias not implemented
+# key team not implemented
+# key title not implemented
+# key description not implemented
+# key attributes not implemented
+# key sampleRelationships not implemented
+# key taxonId not implemented
+# key taxon not implemented
+# key releaseDate not implemented
+# key createdDate not implemented
+# key lastModifiedDate not implemented
+# key createdBy not implemented
+# key lastModifiedBy not implemented
