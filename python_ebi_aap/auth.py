@@ -51,6 +51,8 @@ class Auth():
             if self.status_code != 200:
                 raise ConnectionError(self.response.text)
 
+            logger.debug("Got status %s" % (self.status_code))
+
             # Set token with token.setter
             self.token = self.response.text
 
@@ -68,6 +70,9 @@ class Auth():
         # process token
         self.header, self.claims = python_jwt.process_jwt(token)
 
+        # debug
+        logger.debug("Decoded tocken with %s" % (self.header['alg']))
+
         # record useful values
         self.issued = datetime.datetime.fromtimestamp(self.claims['iat'])
         self.expire = datetime.datetime.fromtimestamp(self.claims['exp'])
@@ -84,7 +89,7 @@ class Auth():
     def get_duration(self):
         now = datetime.datetime.now()
         duration = (self.expire - now)
-        logger.debug("Your token will expire in {seconds} seconds".format(
+        logger.info("Your token will expire in {seconds} seconds".format(
             seconds=duration.total_seconds()))
         return duration
 

@@ -91,6 +91,7 @@ class Document(Client):
         # test response type
         for key in data.keys():
             if hasattr(self, key):
+                logger.debug("Setting %s -> %s" % (key, data[key]))
                 setattr(self, key, data[key])
 
             else:
@@ -100,6 +101,8 @@ class Document(Client):
         return data
 
     def follow_link(self, tag, auth=None):
+        logger.debug("Following %s link" % (tag))
+
         link = link = self._links[tag]['href']
         response = super().follow_link(link)
 
@@ -115,7 +118,7 @@ class Document(Client):
 
 class Root(Document):
     # define the default url
-    api_root = "https://submission-test.ebi.ac.uk/api"
+    api_root = "https://submission-test.ebi.ac.uk/api/"
 
     def __init__(self, auth):
         # calling the base class method client
@@ -134,7 +137,7 @@ class Root(Document):
         """follow userTeams link"""
 
         # follow link
-        document = self.follow_link('userTeams')
+        document = self.follow_link('userTeams', auth=self.auth)
 
         # TODO: deal with pages and results
 
@@ -142,12 +145,15 @@ class Root(Document):
         teams = []
 
         # now iterate over teams and create new objects
-        for team_data in document._embedded['teams']:
+        for i, team_data in enumerate(document._embedded['teams']):
             teams.append(Team(self.auth, team_data))
+            logger.debug("Found %s team" % (teams[i].name))
 
         return teams
 
     def get_team_by_name(self, team_name):
+        logger.debug("Searching for %s" % (team_name))
+
         # get all teams
         teams = self.get_user_teams()
 
@@ -162,14 +168,15 @@ class Root(Document):
         """Follow the userSubmission link"""
 
         # follow link
-        document = self.follow_link('userSubmissions')
+        document = self.follow_link('userSubmissions', auth=self.auth)
 
         # a list ob objects to return
         submissions = []
 
         # now iterate over teams and create new objects
-        for submission_data in document._embedded['submissions']:
+        for i, submission_data in enumerate(document._embedded['submissions']):
             submissions.append(Submission(self.auth, submission_data))
+            logger.debug("Found %s submission" % (submissions[i].name))
 
         return submissions
 
@@ -188,9 +195,12 @@ class Team(Document):
             for key in data.keys():
                 if hasattr(self, key):
                     if key == '_links':
+                        logger.warn("Found %s -> %s" % (key, self._links))
+                        logger.warn("Updating %s -> %s" % (key, data[key]))
                         self._links.update(data[key])
 
                     else:
+                        logger.debug("Setting %s -> %s" % (key, data[key]))
                         setattr(self, key, data[key])
 
                 else:
@@ -205,14 +215,15 @@ class Team(Document):
         """Follows submission link"""
 
         # follow link
-        document = self.follow_link('submissions')
+        document = self.follow_link('submissions', auth=self.auth)
 
         # a list ob objects to return
         submissions = []
 
         # now iterate over teams and create new objects
-        for submission_data in document._embedded['submissions']:
+        for i, submission_data in enumerate(document._embedded['submissions']):
             submissions.append(Submission(self.auth, submission_data))
+            logger.debug("Found %s submission" % (submissions[i].name))
 
         return submissions
 
@@ -236,6 +247,7 @@ class Submission(Document):
         if data:
             for key in data.keys():
                 if hasattr(self, key):
+                    logger.debug("Setting %s -> %s" % (key, data[key]))
                     setattr(self, key, data[key])
 
                 else:
@@ -246,6 +258,7 @@ class Submission(Document):
         # check for name
         if 'self' in self._links:
             self.name = self._links['self']['href'].split("/")[-1]
+            logger.debug("Using %s as submission name" % (self.name))
 
     def __str__(self):
         return self.name
