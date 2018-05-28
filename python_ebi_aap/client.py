@@ -355,23 +355,50 @@ class Submission(Document):
         document = Document(auth=self.auth)
         document.data = document.parse_response(response)
 
-        # TODO: read document in sample
+        # returning sample as and object
+        return Sample(self.auth, document.data)
 
-        # return document
-        return document
+    def get_samples(self):
+        """returning all samples as a list"""
+
+        document = self.follow_link(
+            'contents', auth=self.auth
+            ).follow_link('samples', auth=self.auth)
+
+        # a list ob objects to return
+        samples = []
+
+        for i, sample_data in enumerate(document.data['_embedded']['samples']):
+            samples.append(Sample(self.auth, sample_data))
+            logger.debug("Found %s sample" % (str(samples[i])))
+
+        return samples
 
 
-# TODO: Sample class
-# key alias not implemented
-# key team not implemented
-# key title not implemented
-# key description not implemented
-# key attributes not implemented
-# key sampleRelationships not implemented
-# key taxonId not implemented
-# key taxon not implemented
-# key releaseDate not implemented
-# key createdDate not implemented
-# key lastModifiedDate not implemented
-# key createdBy not implemented
-# key lastModifiedBy not implemented
+class Sample(Document):
+    def __init__(self, auth, data=None):
+        # calling the base class method client
+        Client.__init__(self, auth)
+        Document.__init__(self)
+
+        # my class attributes
+        self.alias = None
+        self.team = None
+        self.title = None
+        self.description = None
+        self.attributes = None
+        self.sampleRelationships = None
+        self.taxonId = None
+        self.taxon = None
+        self.releaseDate = None
+        self.createdDate = None
+        self.lastModifiedDate = None
+        self.createdBy = None
+        self.lastModifiedBy = None
+
+        if data:
+            logger.debug("Reading data for sample")
+            self.read_data(data)
+
+    def __str__(self):
+        return "%s (%s)" % (self.alias, self.title)
