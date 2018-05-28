@@ -89,8 +89,15 @@ class Auth():
     def get_duration(self):
         now = datetime.datetime.now()
         duration = (self.expire - now)
-        logger.info("Your token will expire in {seconds} seconds".format(
-            seconds=duration.total_seconds()))
+
+        # debug
+        if duration.total_seconds() < 300:
+            logger.warn("Your token will expire in {seconds} seconds".format(
+                seconds=duration.total_seconds()))
+        else:
+            logger.info("Your token will expire in {seconds} seconds".format(
+                seconds=duration.total_seconds()))
+
         return duration
 
     def is_expired(self):

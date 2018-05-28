@@ -6,6 +6,7 @@ Created on Thu May 24 16:41:31 2018
 @author: Paolo Cozzi <cozzi@ibba.cnr.it>
 """
 
+import copy
 import requests
 import logging
 
@@ -45,7 +46,7 @@ class Client():
         self._auth = auth
 
     def request(self, url, headers=None):
-        """Generic request method"""
+        """Generic GET method"""
 
         if self.auth.is_expired():
             raise RuntimeError("Your token is expired")
@@ -56,8 +57,17 @@ class Client():
 
         return requests.get(url, headers=headers)
 
-    def post(self):
-        raise NotImplementedError("POST method not implemented")
+    def post(self, url, payload={}, headers=None):
+        """Generic POST method"""
+
+        if self.auth.is_expired():
+            raise RuntimeError("Your token is expired")
+
+        if not headers:
+            logger.debug("Using default headers")
+            headers = self.headers
+
+        return requests.post(url, json=payload, headers=headers)
 
     def parse_response(self, response):
         """convert response in a dict"""
@@ -65,12 +75,18 @@ class Client():
         return response.json()
 
     def follow_link(self, link):
-        """Follow link"""
+        """Follow link. Calling request and setting attributes"""
 
-        self.last_response = self.request(link, headers=self.headers)
-        self.last_status_code = self.last_response.status_code
+        response = self.request(link, headers=self.headers)
 
-        return self.last_response
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        return response
 
 
 class Document(Client):
@@ -103,17 +119,48 @@ class Document(Client):
     def follow_link(self, tag, auth=None):
         logger.debug("Following %s link" % (tag))
 
-        link = link = self._links[tag]['href']
+        link = self._links[tag]['href']
         response = super().follow_link(link)
 
-        if self.last_status_code != 200:
+        if response.status_code != 200:
             raise ConnectionError(response.text)
 
         # create a new document
         document = Document(auth=auth)
         document.data = document.parse_response(response)
 
+        # copying last responsponse in order to improve data assignment
+        logger.debug("Assigning %s to document" % (response))
+
+        document.last_response = response
+        document.last_status_code = response.status_code
+
         return document
+
+    def read_data(self, data):
+        """Read data from dictionary object"""
+
+        # dealing with this type of documents
+        for key in data.keys():
+            self.__update_key(key, data[key])
+
+        self.data = data
+
+    def __update_key(self, key, value):
+        """Helper function to update keys"""
+
+        if hasattr(self, key):
+            if getattr(self, key) and len(getattr(self, key)) > 0:
+                logger.warn("Found %s -> %s" % (key, getattr(self, key)))
+                logger.warn("Updating %s -> %s" % (key, value))
+                getattr(self, key).update(value)
+
+            else:
+                logger.debug("Setting %s -> %s" % (key, value))
+                setattr(self, key, value)
+
+        else:
+            logger.error("key %s not implemented" % (key))
 
 
 class Root(Document):
@@ -191,22 +238,10 @@ class Team(Document):
         self.name = None
         self.data = None
 
+        # dealing with this type of documents.
         if data:
-            for key in data.keys():
-                if hasattr(self, key):
-                    if key == '_links':
-                        logger.warn("Found %s -> %s" % (key, self._links))
-                        logger.warn("Updating %s -> %s" % (key, data[key]))
-                        self._links.update(data[key])
-
-                    else:
-                        logger.debug("Setting %s -> %s" % (key, data[key]))
-                        setattr(self, key, data[key])
-
-                else:
-                    logger.error("key %s not implemented" % (key))
-
-        self.data = data
+            logger.debug("Reading data for team")
+            self.read_data(data)
 
     def __str__(self):
         return self.name
@@ -227,6 +262,37 @@ class Team(Document):
 
         return submissions
 
+    def create_submission(self):
+        """Create a submission"""
+
+        # get the link for submission:create. I don't want a document using
+        # get method, I need instead a POST request
+        link = self._links['submissions:create']['href']
+
+        # define a new header. Copy the dictionary, don't use the same object
+        headers = copy.copy(self.headers)
+
+        # add new element to headers
+        headers['Content-Type'] = 'application/json;charset=UTF-8'
+
+        # call a post method a deal with response
+        response = self.post(link, payload={}, headers=headers)
+
+        if response.status_code != 201:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # create a new document
+        document = Document(auth=self.auth)
+        document.data = document.parse_response(response)
+
+        # get a submission object
+        submission_data = document._links["submission"]
+        return Submission(self.auth, submission_data)
+
 
 class Submission(Document):
     def __init__(self, auth, data=None):
@@ -244,16 +310,12 @@ class Submission(Document):
         self.submitter = None
         self.createdBy = None
 
+        # each document need to parse data as dictionary, since there could be
+        # more submission read from the same page. I cant read data from
+        # self.last_response itself, cause I can't have a last response
         if data:
-            for key in data.keys():
-                if hasattr(self, key):
-                    logger.debug("Setting %s -> %s" % (key, data[key]))
-                    setattr(self, key, data[key])
-
-                else:
-                    logger.error("key %s not implemented" % (key))
-
-        self.data = data
+            logger.debug("Reading data for submission")
+            self.read_data(data)
 
         # check for name
         if 'self' in self._links:
