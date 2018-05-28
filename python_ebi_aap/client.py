@@ -45,8 +45,8 @@ class Client():
                 token=auth.token)
         self._auth = auth
 
-    def request(self, url, headers=None):
-        """Generic GET method"""
+    def __check(self, headers):
+        """Checking headers and tocken"""
 
         if self.auth.is_expired():
             raise RuntimeError("Your token is expired")
@@ -54,20 +54,36 @@ class Client():
         if not headers:
             logger.debug("Using default headers")
             headers = self.headers
+
+        return headers
+
+    def request(self, url, headers=None):
+        """Generic GET method"""
+
+        headers = self.__check(headers)
 
         return requests.get(url, headers=headers)
 
     def post(self, url, payload={}, headers=None):
         """Generic POST method"""
 
-        if self.auth.is_expired():
-            raise RuntimeError("Your token is expired")
-
-        if not headers:
-            logger.debug("Using default headers")
-            headers = self.headers
+        headers = self.__check(headers)
 
         return requests.post(url, json=payload, headers=headers)
+
+    def patch(self, url, payload={}, headers=None):
+        """Generic PATCH method"""
+
+        headers = self.__check(headers)
+
+        return requests.patch(url, json=payload, headers=headers)
+
+    def delete(self, url, headers=None):
+        """Generic DELETE method"""
+
+        headers = self.__check(headers)
+
+        return requests.delete(url, headers=headers)
 
     def parse_response(self, response):
         """convert response in a dict"""
@@ -153,11 +169,14 @@ class Document(Client):
             if getattr(self, key) and len(getattr(self, key)) > 0:
                 logger.warn("Found %s -> %s" % (key, getattr(self, key)))
                 logger.warn("Updating %s -> %s" % (key, value))
-                getattr(self, key).update(value)
+
+                # i can't see this situation if I arrive by reading json
+                # getattr(self, key).update(value)
 
             else:
                 logger.debug("Setting %s -> %s" % (key, value))
-                setattr(self, key, value)
+
+            setattr(self, key, value)
 
         else:
             logger.error("key %s not implemented" % (key))
@@ -196,6 +215,8 @@ class Root(Document):
             teams.append(Team(self.auth, team_data))
             logger.debug("Found %s team" % (teams[i].name))
 
+        logger.info("Got %s teams" % len(teams))
+
         return teams
 
     def get_team_by_name(self, team_name):
@@ -224,6 +245,8 @@ class Root(Document):
         for i, submission_data in enumerate(document._embedded['submissions']):
             submissions.append(Submission(self.auth, submission_data))
             logger.debug("Found %s submission" % (submissions[i].name))
+
+        logger.info("Got %s submissions" % len(submissions))
 
         return submissions
 
@@ -372,6 +395,8 @@ class Submission(Document):
             samples.append(Sample(self.auth, sample_data))
             logger.debug("Found %s sample" % (str(samples[i])))
 
+        logger.info("Got %s samples" % len(samples))
+
         return samples
 
 
@@ -400,5 +425,53 @@ class Sample(Document):
             logger.debug("Reading data for sample")
             self.read_data(data)
 
+        # check for name
+        if 'self' in self._links:
+            self.name = self._links['self']['href'].split("/")[-1]
+            logger.debug("Using %s as sample name" % (self.name))
+
     def __str__(self):
         return "%s (%s)" % (self.alias, self.title)
+
+    def delete(self):
+        """Delete this instance from a submission"""
+
+        link = self._links['self:delete']['href']
+        logger.info("Removing sample %s from submission" % self.name)
+
+        response = Client.delete(self, link)
+
+        if response.status_code != 204:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # don't return anything
+
+    def reload(self):
+        """refreshing data"""
+
+        document = self.follow_link("self", auth=self.auth)
+
+        logger.debug("Refreshing data data for sample")
+        self.read_data(document.data)
+
+    def patch(self, sample_data):
+        """Patch a sample"""
+
+        link = self._links['self']['href']
+        logger.info("patching sample %s with %s" % (self.name, sample_data))
+
+        response = Client.patch(self, link, payload=sample_data)
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # reloading data
+        self.reload()
