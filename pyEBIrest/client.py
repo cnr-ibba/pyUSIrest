@@ -19,7 +19,7 @@ class Client():
     class after instantiating :class:`python_ebi_app.Auth`::
 
         import getpass
-        from python_ebi_aap import Auth, Client
+        from pyEBIrest import Auth, Client
         auth = Auth(user=<you_aap_user>, password=getpass.getpass())
         client = Client(auth)
     """

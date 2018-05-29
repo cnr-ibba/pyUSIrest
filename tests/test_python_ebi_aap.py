@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `python_ebi_aap` package."""
+"""Tests for `pyEBIrest` package."""
 
 import pytest
 
 from click.testing import CliRunner
 
-from python_ebi_aap import python_ebi_aap
-from python_ebi_aap import cli
+from pyEBIrest import pyEBIrest
+from pyEBIrest import cli
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def test_command_line_interface():
     runner = CliRunner()
     result = runner.invoke(cli.main)
     assert result.exit_code == 0
-    assert 'python_ebi_aap.cli.main' in result.output
+    assert 'pyEBIrest.cli.main' in result.output
     help_result = runner.invoke(cli.main, ['--help'])
     assert help_result.exit_code == 0
     assert '--help  Show this message and exit.' in help_result.output
