@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=python_ebi_aap
+set SPHINXPROJ=pyEBIrest
 
 if "%1" == "" goto help
 

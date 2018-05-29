@@ -7,7 +7,7 @@ import pytest
 
 from click.testing import CliRunner
 
-from pyEBIrest import pyEBIrest
+from pyEBIrest import auth, client
 from pyEBIrest import cli
 
 

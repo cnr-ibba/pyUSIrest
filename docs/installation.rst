@@ -12,7 +12,7 @@ To install Python EBI AAP, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install python_ebi_aap
+    $ pip install pyEBIrest
 
 This is the preferred method to install Python EBI AAP, as it will always install the most recent stable release.
 
@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/bunop/python_ebi_aap
+    $ git clone git://github.com/bunop/pyEBIrest
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/bunop/python_ebi_aap/tarball/master
+    $ curl  -OL https://github.com/bunop/pyEBIrest/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/bunop/python_ebi_aap
-.. _tarball: https://github.com/bunop/python_ebi_aap/tarball/master
+.. _Github repo: https://github.com/bunop/pyEBIrest
+.. _tarball: https://github.com/bunop/pyEBIrest/tarball/master

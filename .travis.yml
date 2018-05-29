@@ -25,5 +25,5 @@ deploy:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: bunop/python_ebi_aap
+    repo: bunop/pyEBIrest
     python: 3.6

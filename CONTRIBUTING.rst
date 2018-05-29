@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/bunop/python_ebi_aap/issues.
+Report bugs at https://github.com/bunop/pyEBIrest/issues.
 
 If you are reporting a bug, please include:
 
@@ -45,7 +45,7 @@ articles, and such.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/bunop/python_ebi_aap/issues.
+The best way to send feedback is to file an issue at https://github.com/bunop/pyEBIrest/issues.
 
 If you are proposing a feature:
 
@@ -57,17 +57,17 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `python_ebi_aap` for local development.
+Ready to contribute? Here's how to set up `pyEBIrest` for local development.
 
-1. Fork the `python_ebi_aap` repo on GitHub.
+1. Fork the `pyEBIrest` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/python_ebi_aap.git
+    $ git clone git@github.com:your_name_here/pyEBIrest.git
 
 3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
 
-    $ mkvirtualenv python_ebi_aap
-    $ cd python_ebi_aap/
+    $ mkvirtualenv pyEBIrest
+    $ cd pyEBIrest/
     $ python setup.py develop
 
 4. Create a branch for local development::
@@ -79,7 +79,7 @@ Ready to contribute? Here's how to set up `python_ebi_aap` for local development
 5. When you're done making changes, check that your changes pass flake8 and the
    tests, including testing other Python versions with tox::
 
-    $ flake8 python_ebi_aap tests
+    $ flake8 pyEBIrest tests
     $ python setup.py test or py.test
     $ tox
 
@@ -103,7 +103,7 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 2.7, 3.4, 3.5 and 3.6, and for PyPy. Check
-   https://travis-ci.org/bunop/python_ebi_aap/pull_requests
+   https://travis-ci.org/bunop/pyEBIrest/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
 Tips
@@ -111,7 +111,7 @@ Tips
 
 To run a subset of tests::
 
-$ py.test tests.test_python_ebi_aap
+$ py.test tests.test_pyEBIrest
 
 
 Deploying

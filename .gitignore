@@ -102,7 +102,7 @@ ENV/
 .mypy_cache/
 
 # Module documentation generated files
-docs/python_ebi_aap.rst
+docs/pyEBIrest.rst
 docs/modules.rst
 
 # jwt files

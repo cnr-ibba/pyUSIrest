@@ -3,11 +3,11 @@ Python EBI AAP
 ==============
 
 
-.. image:: https://img.shields.io/pypi/v/python_ebi_aap.svg
-        :target: https://pypi.python.org/pypi/python_ebi_aap
+.. image:: https://img.shields.io/pypi/v/pyEBIrest.svg
+        :target: https://pypi.python.org/pypi/pyEBIrest
 
-.. image:: https://img.shields.io/travis/bunop/python_ebi_aap.svg
-        :target: https://travis-ci.org/bunop/python_ebi_aap
+.. image:: https://img.shields.io/travis/bunop/pyEBIrest.svg
+        :target: https://travis-ci.org/bunop/pyEBIrest
 
 .. image:: https://readthedocs.org/projects/python-ebi-aap/badge/?version=latest
         :target: https://python-ebi-aap.readthedocs.io/en/latest/?badge=latest
