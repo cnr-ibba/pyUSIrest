@@ -32,7 +32,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    description="Python EBI AAP contain all methods to interact with EBI AAP service",
+    description="Python EBI submission REST API contain all methods to interact with EBI Submission REST API",
     entry_points={
         'console_scripts': [
             'pyEBIrest=pyEBIrest.cli:main',

@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use Python EBI AAP in a project::
+To use Python EBI submission REST API in a project::
 
     import pyEBIrest

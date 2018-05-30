@@ -1,4 +1,4 @@
-* Python EBI AAP version:
+* Python EBI submission REST API version:
 * Python version:
 * Operating System:
 

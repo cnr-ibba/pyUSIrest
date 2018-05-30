@@ -38,8 +38,8 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-Python EBI AAP could always use more documentation, whether as part of the
-official Python EBI AAP docs, in docstrings, or even on the web in blog posts,
+Python EBI submission REST API could always use more documentation, whether as part of the
+official Python EBI submission REST API docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback

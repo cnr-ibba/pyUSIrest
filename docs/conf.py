@@ -47,7 +47,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Python EBI AAP'
+project = u'Python EBI submission REST API'
 copyright = u"2018, Paolo Cozzi"
 author = u"Paolo Cozzi"
 
@@ -129,7 +129,7 @@ latex_elements = {
 # [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'pyEBIrest.tex',
-     u'Python EBI AAP Documentation',
+     u'Python EBI submission REST API Documentation',
      u'Paolo Cozzi', 'manual'),
 ]
 
@@ -140,7 +140,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'pyEBIrest',
-     u'Python EBI AAP Documentation',
+     u'Python EBI submission REST API Documentation',
      [author], 1)
 ]
 
@@ -152,7 +152,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'pyEBIrest',
-     u'Python EBI AAP Documentation',
+     u'Python EBI submission REST API Documentation',
      author,
      'pyEBIrest',
      'One line description of project.',
