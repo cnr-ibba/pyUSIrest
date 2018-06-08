@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', 'python_jwt']
+requirements = ['Click>=6.0', 'python_jwt', 'requests']
 
 setup_requirements = ['pytest-runner', ]
 

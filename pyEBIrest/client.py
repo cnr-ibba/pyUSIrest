@@ -10,6 +10,8 @@ import copy
 import requests
 import logging
 
+from .auth import Auth
+
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +43,15 @@ class Client():
 
     @auth.setter
     def auth(self, auth):
+        # assign Auth object or create a new one
+        if isinstance(auth, Auth):
+            self._auth = auth
+
+        else:
+            self._auth = Auth(token=auth)
+
         self.headers['Authorization'] = "Bearer {token}".format(
-                token=auth.token)
-        self._auth = auth
+                token=self._auth.token)
 
     def __check(self, headers):
         """Checking headers and tocken"""
