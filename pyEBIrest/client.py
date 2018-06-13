@@ -163,6 +163,24 @@ class Document(Client):
 
         return document
 
+    def follow_self_link(self, auth=None):
+        logger.debug("Following self link")
+
+        link = self._links['self']['href']
+        response = super().follow_link(link)
+
+        # create a new document
+        instance = self.__class__(auth=auth)
+        instance.data = instance.parse_response(response)
+
+        # copying last responsponse in order to improve data assignment
+        logger.debug("Assigning %s to document" % (response))
+
+        instance.last_response = response
+        instance.last_status_code = response.status_code
+
+        return instance
+
     def read_data(self, data):
         """Read data from dictionary object"""
 
@@ -340,11 +358,17 @@ class Submission(Document):
         self.submitter = None
         self.createdBy = None
 
+        # when this attribute appears? maybe when submission take place
+        self.submissionDate = None
+
         # each document need to parse data as dictionary, since there could be
         # more submission read from the same page. I cant read data from
         # self.last_response itself, cause I can't have a last response
         if data:
             self.read_data(data)
+
+    def __str__(self):
+        return self.name
 
     def read_data(self, data):
         """Custom read_data method"""
@@ -356,9 +380,6 @@ class Submission(Document):
         if 'self' in self._links:
             self.name = self._links['self']['href'].split("/")[-1]
             logger.debug("Using %s as submission name" % (self.name))
-
-    def __str__(self):
-        return self.name
 
     @classmethod
     def read_link(cls, auth, link):
@@ -456,17 +477,25 @@ class Sample(Document):
         self.createdBy = None
         self.lastModifiedBy = None
 
+        # when this attribute appears? maybe when submission take place
+        self.accession = None
+
         if data:
-            logger.debug("Reading data for sample")
             self.read_data(data)
+
+    def __str__(self):
+        return "%s (%s)" % (self.alias, self.title)
+
+    def read_data(self, data):
+        """Custom read_data method"""
+
+        logger.debug("Reading data for Sample")
+        super().read_data(data)
 
         # check for name
         if 'self' in self._links:
             self.name = self._links['self']['href'].split("/")[-1]
             logger.debug("Using %s as sample name" % (self.name))
-
-    def __str__(self):
-        return "%s (%s)" % (self.alias, self.title)
 
     def delete(self):
         """Delete this instance from a submission"""
@@ -488,10 +517,10 @@ class Sample(Document):
     def reload(self):
         """refreshing data"""
 
-        document = self.follow_link("self", auth=self.auth)
+        sample = self.follow_self_link(auth=self.auth)
+        logger.info("Refreshing data data for sample")
 
-        logger.debug("Refreshing data data for sample")
-        self.read_data(document.data)
+        self.read_data(sample.data)
 
     def patch(self, sample_data):
         """Patch a sample"""
