@@ -91,12 +91,26 @@ class Auth():
         duration = (self.expire - now)
 
         # debug
-        if duration.total_seconds() < 300:
-            logger.warn("Your token will expire in {seconds} seconds".format(
-                seconds=duration.total_seconds()))
+        if 0 < duration.total_seconds() < 300:
+            logger.warn(
+                "Token for {user} will expire in {seconds} seconds".format(
+                    user=self.claims['name'],
+                    seconds=duration.total_seconds()
+                )
+            )
+        elif duration.total_seconds() < 0:
+            logger.error(
+                "Token for {user} is expired".format(
+                    user=self.claims['name']
+                )
+            )
         else:
-            logger.info("Your token will expire in {seconds} seconds".format(
-                seconds=duration.total_seconds()))
+            logger.info(
+                "Token for {user} will expire in {seconds} seconds".format(
+                    user=self.claims['name'],
+                    seconds=duration.total_seconds()
+                )
+            )
 
         return duration
 
@@ -105,9 +119,15 @@ class Auth():
 
     def __str__(self):
         if self.claims:
-            return "token for {user} will last {seconds} seconds".format(
-                user=self.claims['name'],
-                seconds=self.get_duration().total_seconds())
+            total_time = self.get_duration().total_seconds()
+
+            if total_time < 0:
+                return "Token for {user} is expired".format(
+                    user=self.claims['name'])
+            else:
+                return "Token for {user} will last {seconds} seconds".format(
+                    user=self.claims['name'],
+                    seconds=total_time)
 
         else:
             return "Not initialized token"
