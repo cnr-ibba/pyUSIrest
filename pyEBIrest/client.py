@@ -181,6 +181,23 @@ class Document(Client):
 
         return instance
 
+    @classmethod
+    def read_link(cls, auth, link):
+        """Read a link a returns an object"""
+
+        # define a new client object
+        client = Client(auth=auth)
+
+        # get a response
+        response = client.follow_link(link)
+
+        # create a new document and read data
+        instance = cls(auth=auth)
+        instance.parse_response(response)
+
+        # return data
+        return instance
+
     def read_data(self, data):
         """Read data from dictionary object"""
 
@@ -381,23 +398,6 @@ class Submission(Document):
             self.name = self._links['self']['href'].split("/")[-1]
             logger.debug("Using %s as submission name" % (self.name))
 
-    @classmethod
-    def read_link(cls, auth, link):
-        """Read a link a returns a Submission object"""
-
-        # define a new client object
-        client = Client(auth=auth)
-
-        # get a response
-        response = client.follow_link(link)
-
-        # create a new document and read data
-        submission = cls(auth=auth)
-        submission.parse_response(response)
-
-        # return data
-        return submission
-
     def parse_response(self, response):
         """parse response and set data to self"""
 
@@ -496,6 +496,12 @@ class Sample(Document):
         if 'self' in self._links:
             self.name = self._links['self']['href'].split("/")[-1]
             logger.debug("Using %s as sample name" % (self.name))
+
+    def parse_response(self, response):
+        """parse response and set data to self"""
+
+        data = super().parse_response(response)
+        self.read_data(data)
 
     def delete(self):
         """Delete this instance from a submission"""
