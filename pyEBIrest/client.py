@@ -43,13 +43,18 @@ class Client():
 
     @auth.setter
     def auth(self, auth):
+        logger.debug("Auth type is %s" % (type(auth)))
+
         # assign Auth object or create a new one
         if isinstance(auth, Auth):
+            logger.debug("Assigning an Auth object")
             self._auth = auth
 
         else:
+            logger.debug("Creating an Auth object")
             self._auth = Auth(token=auth)
 
+        logger.debug("Updating headers with token")
         self.headers['Authorization'] = "Bearer {token}".format(
                 token=self._auth.token)
 
@@ -146,9 +151,6 @@ class Document(Client):
         link = self._links[tag]['href']
         response = super().follow_link(link)
 
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
         # create a new document
         document = Document(auth=auth)
         document.data = document.parse_response(response)
@@ -174,12 +176,9 @@ class Document(Client):
         """Helper function to update keys"""
 
         if hasattr(self, key):
-            if getattr(self, key) and len(getattr(self, key)) > 0:
-                logger.warn("Found %s -> %s" % (key, getattr(self, key)))
-                logger.warn("Updating %s -> %s" % (key, value))
-
-                # i can't see this situation if I arrive by reading json
-                # getattr(self, key).update(value)
+            if getattr(self, key) and getattr(self, key) != '':
+                logger.debug("Found %s -> %s" % (key, getattr(self, key)))
+                logger.debug("Updating %s -> %s" % (key, value))
 
             else:
                 logger.debug("Setting %s -> %s" % (key, value))
@@ -345,8 +344,13 @@ class Submission(Document):
         # more submission read from the same page. I cant read data from
         # self.last_response itself, cause I can't have a last response
         if data:
-            logger.debug("Reading data for submission")
             self.read_data(data)
+
+    def read_data(self, data):
+        """Custom read_data method"""
+
+        logger.debug("Reading data for submission")
+        super().read_data(data)
 
         # check for name
         if 'self' in self._links:
@@ -355,6 +359,29 @@ class Submission(Document):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def read_link(cls, auth, link):
+        """Read a link a returns a Submission object"""
+
+        # define a new client object
+        client = Client(auth=auth)
+
+        # get a response
+        response = client.follow_link(link)
+
+        # create a new document and read data
+        submission = cls(auth=auth)
+        submission.parse_response(response)
+
+        # return data
+        return submission
+
+    def parse_response(self, response):
+        """parse response and set data to self"""
+
+        data = super().parse_response(response)
+        self.read_data(data)
 
     def create_sample(self, sample_data):
         """Create a sample"""
