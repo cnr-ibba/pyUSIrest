@@ -442,6 +442,23 @@ class Submission(Document):
 
         return samples
 
+    def delete(self):
+        """Delete this instance from a submission"""
+
+        link = self._links['self:delete']['href']
+        logger.info("Removing submission %s" % self.name)
+
+        response = Client.delete(self, link)
+
+        if response.status_code != 204:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # don't return anything
+
 
 class Sample(Document):
     def __init__(self, auth, data=None):
@@ -471,7 +488,11 @@ class Sample(Document):
             self.read_data(data)
 
     def __str__(self):
-        return "%s (%s)" % (self.alias, self.title)
+        # get accession or alias
+        if self.accession:
+            return "%s (%s)" % (self.accession, self.title)
+        else:
+            return "%s (%s)" % (self.alias, self.title)
 
     def read_data(self, data):
         """Custom read_data method"""
