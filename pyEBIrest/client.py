@@ -131,19 +131,11 @@ class Document(Client):
         self.data = {}
 
     def parse_response(self, response):
-        data = response.json()
+        # get data
+        data = super().parse_response(response)
 
-        # test response type
-        for key in data.keys():
-            if hasattr(self, key):
-                logger.debug("Setting %s -> %s" % (key, data[key]))
-                setattr(self, key, data[key])
-
-            else:
-                logger.error("key %s not implemented" % (key))
-
-        # return data as json object
-        return data
+        # read data and setting self.data
+        self.read_data(data)
 
     def follow_link(self, tag, auth=None):
         logger.debug("Following %s link" % (tag))
@@ -153,7 +145,7 @@ class Document(Client):
 
         # create a new document
         document = Document(auth=auth)
-        document.data = document.parse_response(response)
+        document.parse_response(response)
 
         # copying last responsponse in order to improve data assignment
         logger.debug("Assigning %s to document" % (response))
@@ -164,22 +156,23 @@ class Document(Client):
         return document
 
     def follow_self_link(self, auth=None):
+        """Follow self link and update class attributes"""
+
         logger.debug("Following self link")
 
         link = self._links['self']['href']
         response = super().follow_link(link)
 
+        logger.debug("Updating self")
+
         # create a new document
-        instance = self.__class__(auth=auth)
-        instance.data = instance.parse_response(response)
+        self.parse_response(response)
 
         # copying last responsponse in order to improve data assignment
-        logger.debug("Assigning %s to document" % (response))
+        logger.debug("Assigning %s to self" % (response))
 
-        instance.last_response = response
-        instance.last_status_code = response.status_code
-
-        return instance
+        self.last_response = response
+        self.last_status_code = response.status_code
 
     @classmethod
     def read_link(cls, auth, link):
@@ -236,7 +229,9 @@ class Root(Document):
         # defining my attributes. Headers are inherited
         self.last_response = self.request(self.api_root, headers=self.headers)
         self.last_status_code = self.last_response.status_code
-        self.data = self.parse_response(self.last_response)
+
+        # parsing response and setting self.data
+        self.parse_response(self.last_response)
 
     def __str__(self):
         return "Biosample API root at %s" % (self.api_root)
@@ -351,12 +346,10 @@ class Team(Document):
         self.last_status_code = response.status_code
 
         # create a new document
-        document = Document(auth=self.auth)
-        document.data = document.parse_response(response)
+        submission = Submission(auth=self.auth)
+        submission.parse_response(response)
 
-        # get a submission object
-        submission_data = document._links["submission"]
-        return Submission(self.auth, submission_data)
+        return submission
 
 
 class Submission(Document):
@@ -397,12 +390,6 @@ class Submission(Document):
         if 'self' in self._links:
             self.name = self._links['self']['href'].split("/")[-1]
             logger.debug("Using %s as submission name" % (self.name))
-
-    def parse_response(self, response):
-        """parse response and set data to self"""
-
-        data = super().parse_response(response)
-        self.read_data(data)
 
     def create_sample(self, sample_data):
         """Create a sample"""
@@ -497,12 +484,6 @@ class Sample(Document):
             self.name = self._links['self']['href'].split("/")[-1]
             logger.debug("Using %s as sample name" % (self.name))
 
-    def parse_response(self, response):
-        """parse response and set data to self"""
-
-        data = super().parse_response(response)
-        self.read_data(data)
-
     def delete(self):
         """Delete this instance from a submission"""
 
@@ -523,10 +504,8 @@ class Sample(Document):
     def reload(self):
         """refreshing data"""
 
-        sample = self.follow_self_link(auth=self.auth)
         logger.info("Refreshing data data for sample")
-
-        self.read_data(sample.data)
+        self.follow_self_link(auth=self.auth)
 
     def patch(self, sample_data):
         """Patch a sample"""
