@@ -130,14 +130,14 @@ class Document(Client):
         self.name = None
         self.data = {}
 
-    def parse_response(self, response):
+    def parse_response(self, response, force=False):
         # get data
         data = super().parse_response(response)
 
         # read data and setting self.data
-        self.read_data(data)
+        self.read_data(data, force)
 
-    def follow_link(self, tag, auth=None):
+    def follow_link(self, tag, auth=None, force=True):
         logger.debug("Following %s link" % (tag))
 
         link = self._links[tag]['href']
@@ -145,7 +145,7 @@ class Document(Client):
 
         # create a new document
         document = Document(auth=auth)
-        document.parse_response(response)
+        document.parse_response(response, force)
 
         # copying last responsponse in order to improve data assignment
         logger.debug("Assigning %s to document" % (response))
@@ -191,16 +191,16 @@ class Document(Client):
         # return data
         return instance
 
-    def read_data(self, data):
+    def read_data(self, data, force=False):
         """Read data from dictionary object"""
 
         # dealing with this type of documents
         for key in data.keys():
-            self.__update_key(key, data[key])
+            self.__update_key(key, data[key], force)
 
         self.data = data
 
-    def __update_key(self, key, value):
+    def __update_key(self, key, value, force=False):
         """Helper function to update keys"""
 
         if hasattr(self, key):
@@ -215,6 +215,10 @@ class Document(Client):
 
         else:
             logger.error("key %s not implemented" % (key))
+
+            if force is True:
+                logger.info("Forcing %s -> %s" % (key, value))
+                setattr(self, key, value)
 
 
 class Root(Document):
@@ -380,11 +384,11 @@ class Submission(Document):
     def __str__(self):
         return self.name
 
-    def read_data(self, data):
+    def read_data(self, data, force=False):
         """Custom read_data method"""
 
         logger.debug("Reading data for submission")
-        super().read_data(data)
+        super().read_data(data, force)
 
         # check for name
         if 'self' in self._links:
@@ -417,12 +421,12 @@ class Submission(Document):
         self.last_response = response
         self.last_status_code = response.status_code
 
-        # create a new document
-        document = Document(auth=self.auth)
-        document.data = document.parse_response(response)
+        # create a new sample
+        sample = Sample(auth=self.auth)
+        sample.parse_response(response)
 
         # returning sample as and object
-        return Sample(self.auth, document.data)
+        return sample
 
     def get_samples(self):
         """returning all samples as a list"""
@@ -494,11 +498,11 @@ class Sample(Document):
         else:
             return "%s (%s)" % (self.alias, self.title)
 
-    def read_data(self, data):
+    def read_data(self, data, force=False):
         """Custom read_data method"""
 
         logger.debug("Reading data for Sample")
-        super().read_data(data)
+        super().read_data(data, force)
 
         # check for name
         if 'self' in self._links:
