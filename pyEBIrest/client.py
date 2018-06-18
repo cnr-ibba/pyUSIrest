@@ -292,6 +292,208 @@ class Root(Document):
         return submissions
 
 
+# TODO: need this class be placed in auth module?
+class User(Document):
+    def __init__(self, auth, data=None):
+        # calling the base class method client
+        Client.__init__(self, auth)
+        Document.__init__(self)
+
+        # my class attributes
+        self.name = self.auth.claims["nickname"]
+        self.data = None
+
+        # other attributes
+        self.userName = None
+        self.email = None
+        self.userReference = None
+
+        # dealing with this type of documents.
+        # TODO: can a user have data
+        if data:
+            raise NotImplementedError("Not yet implemented")
+
+    def get_my_id(self):
+        """Get user id using own credentials"""
+
+        # defining URL
+        url = "https://explore.api.aai.ebi.ac.uk/users/%s" % (self.name)
+
+        logger.debug("Getting info from %s" % (url))
+
+        # defining my attributes. Headers are inherited
+        self.last_response = self.request(url, headers=self.headers)
+        self.last_status_code = self.last_response.status_code
+
+        # parsing response and setting self.data
+        self.parse_response(self.last_response)
+
+        # returning user id
+        return self.userReference
+
+    def add_user(self, user, password, confirmPwd, email, full_name,
+                 organization="IMAGE"):
+        """Add another user into biosample AAP"""
+
+        #TODO: check that passwords are the same
+
+        # TODO: set url as a class attribute
+        url = "https://explore.api.aai.ebi.ac.uk/auth"
+
+        # define a new header. Copy the dictionary, don't use the same object
+        headers = copy.copy(self.headers)
+
+        # add new element to headers
+        headers['Content-Type'] = 'application/json;charset=UTF-8'
+
+        # TODO: use more informative parameters
+        data = {
+            "username": user,
+            "password": password,
+            "confirmPwd": confirmPwd,
+            "email": email,
+            "name": full_name,
+            "organisation": organization
+        }
+
+        # call a post method a deal with response
+        response = self.post(url, payload=data, headers=headers)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
+
+        # debug
+        return response
+
+    def add_team(self, description, centreName="IMAGE Inject"):
+        """Add a team"""
+
+        url = "https://submission-test.ebi.ac.uk/api/user/teams"
+
+        # define a new header. Copy the dictionary, don't use the same object
+        headers = copy.copy(self.headers)
+
+        # add new element to headers
+        headers['Content-Type'] = 'application/json;charset=UTF-8'
+
+        data = {
+            "description": description,
+            "centreName": centreName
+        }
+
+        # call a post method a deal with response
+        response = self.post(url, payload=data, headers=headers)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        if response.status_code != 201:
+            raise ConnectionError(response.text)
+
+        # TODO: If I create a new team, the Auth object need to be updated
+        logger.warn(
+            "You need to generate a new token in order to see the new "
+            "generated team")
+
+        # debug
+        return response
+
+    def get_teams(self):
+        """Get teams of which I'm a member"""
+
+        url = "https://submission-test.ebi.ac.uk/api/user/teams"
+
+        response = self.request(url, headers=self.headers)
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # create a new document
+        document = Document(auth=self.auth)
+        document.parse_response(response, force=True)
+
+        # a list ob objects to return
+        teams = []
+
+        # now iterate over teams and create new objects
+        for i, team_data in enumerate(document._embedded['teams']):
+            teams.append(Team(self.auth, team_data))
+            logger.debug("Found %s team" % (teams[i].name))
+
+        return teams
+
+    def get_domains(self):
+        """Get my domains"""
+
+        url = "https://explore.api.aai.ebi.ac.uk/my/domains"
+
+        response = self.request(url, headers=self.headers)
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # a list of objects to return
+        domains = []
+
+        # iterate over domains
+        for i, domain_data in enumerate(response.json()):
+            domains.append(Domain(self.auth, domain_data))
+            logger.debug("Found %s domain" % (domains[i].name))
+
+        return domains
+
+    def get_domain_by_name(self, domain_name):
+        logger.debug("Searching for %s" % (domain_name))
+
+        # get all domains
+        domains = self.get_domains()
+
+        for domain in domains:
+            if domain.domainName == domain_name:
+                return domain
+
+        # if I arrive here, no team is found
+        raise NameError("domain: {domain} not found".format(
+            domain=domain_name))
+
+
+class Domain(Document):
+    def __init__(self, auth, data=None):
+        # calling the base class method client
+        Client.__init__(self, auth)
+        Document.__init__(self)
+
+        # my class attributes
+        self.data = None
+
+        # other attributes
+        self.domainName = None
+        self.domainDesc = None
+        self.domainReference = None
+        self.links = None
+
+        # dealing with this type of documents.
+        if data:
+            logger.debug("Reading data for team")
+            self.read_data(data)
+
+            # this class lacks of a name attribute, so
+            self.name = self.domainName
+
+
 class Team(Document):
     def __init__(self, auth, data=None):
         # calling the base class method client
