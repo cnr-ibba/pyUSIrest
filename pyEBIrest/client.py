@@ -674,6 +674,10 @@ class Submission(Document):
     def __check_relationship(self, sample_data):
         """Check relationship and add additional fields"""
 
+        # check relationship if exists
+        if 'sampleRelationships' not in sample_data:
+            return sample_data
+
         # create a copy of sample_data
         sample_data = copy.copy(sample_data)
 
@@ -739,6 +743,11 @@ class Submission(Document):
 
     def get_samples(self):
         """returning all samples as a list"""
+
+        # deal with different subission instances
+        if 'contents' not in self._links:
+            logger.warn("reloading submission")
+            self.follow_self_link()
 
         document = self.follow_link(
             'contents', auth=self.auth
