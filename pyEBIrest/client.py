@@ -525,6 +525,37 @@ class Domain(Document):
             # this class lacks of a name attribute, so
             self.name = self.domainName
 
+    def create_profile(self, attributes={"centre name": "IMAGE Inject team"}):
+        """Create profile for this domain"""
+
+        # see this link for more information
+        # (https://explore.api.aai.ebi.ac.uk/docs/profile/index.html#resource-create_domain_profile"""
+        url = "https://explore.api.aai.ebi.ac.uk/profiles"
+
+        # define a new header. Copy the dictionary, don't use the same object
+        headers = copy.copy(self.headers)
+
+        # add new element to headers
+        headers['Content-Type'] = 'application/json;charset=UTF-8'
+
+        # define data
+        data = {
+            "domain": {
+                "domainReference": self.domainReference
+            },
+            "attributes": attributes
+        }
+
+        # call a post method a deal with response
+        response = self.post(url, payload=data, headers=headers)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        if response.status_code != 201:
+            raise ConnectionError(response.text)
+
 
 class Team(Document):
     def __init__(self, auth, data=None):
@@ -629,8 +660,32 @@ class Submission(Document):
             self.name = self._links['self']['href'].split("/")[-1]
             logger.debug("Using %s as submission name" % (self.name))
 
+    def __check_relationship(self, sample_data):
+        """Check relationship and add additional fields"""
+
+        # create a copy of sample_data
+        sample_data = copy.copy(sample_data)
+
+        # get team name
+        team_name = self.team
+
+        for relationship in sample_data['sampleRelationships']:
+            if 'team' not in relationship:
+                logger.debug("Adding %s to relationship" % (team_name))
+                # setting the referenced object
+                relationship['team'] = team_name
+
+        # this is the copied sample_data, not the original one!!!
+        return sample_data
+
     def create_sample(self, sample_data):
         """Create a sample"""
+
+        # check sample_data for required attributes
+        sample_data = self.__check_relationship(sample_data)
+
+        # debug
+        logger.debug(sample_data)
 
         # get the link for sample create
         document = self.follow_link("contents", auth=self.auth)

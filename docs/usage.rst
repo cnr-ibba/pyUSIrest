@@ -52,6 +52,14 @@ provide the credentials already created::
   remember to ri-generate to token in order to see the new generated team using pyEBIrest
   objects
 
+Add proile to domain
+++++++++++++++++++++
+
+To create a profile for a team::
+
+  domain = user.get_domain_by_name(<team name>)
+  domain.create_profile()
+
 Adding user to team
 -------------------
 
@@ -72,3 +80,34 @@ Next, you need to find out the domain reference of a team using a team name, for
 To add user to a team call finally::
 
   user.add_user_to_team(user_id=user_id, domain_id=domain_id)
+
+Create a submission
+-------------------
+
+Create a new ``Auth`` instance, then instantiate a new ``Root`` object and follow
+links using class methods::
+
+  from pyEBIrest.auth import Auth
+  form pyEBIrest.client import Root
+  auth = Auth(user=<usi_username>, password=<usi_password>)
+  root = Root(auth=auth)
+  team = root.get_team_by_name(<your team name>)
+  submission = team.create_submission()
+
+If you got a ``ConnectionError`` exception during last command, you need to add
+a profile to your domain.
+
+Add samples to a submission
++++++++++++++++++++++++++++
+
+In order to add sample to a submission::
+
+  animal_data = {'alias': 'animal_1',
+   'title': 'ANIMAL:::ID:::WF60/B0811',
+   'releaseDate': '2018-06-19',
+   'taxonId': 9940,
+   'attributes': {'material': [{'value': 'organism',
+      'terms': [{'url': 'http://purl.obolibrary.org/obo/OBI_0100026'}]}],
+    'project': [{'value': 'IMAGE'}]},
+   'sampleRelationships': []}
+   sample = submission.create_sample(animal_data)
