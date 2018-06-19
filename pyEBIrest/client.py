@@ -98,6 +98,13 @@ class Client():
 
         return requests.delete(url, headers=headers)
 
+    def put(self, url, payload={}, headers=None):
+        """Generic PUT method"""
+
+        headers = self.__check(headers)
+
+        return requests.put(url, json=payload, headers=headers)
+
     def parse_response(self, response):
         """convert response in a dict"""
 
@@ -309,7 +316,7 @@ class User(Document):
         self.userReference = None
 
         # dealing with this type of documents.
-        # TODO: can a user have data
+        # TODO: can a user have data?
         if data:
             raise NotImplementedError("Not yet implemented")
 
@@ -331,11 +338,14 @@ class User(Document):
         # returning user id
         return self.userReference
 
-    def add_user(self, user, password, confirmPwd, email, full_name,
-                 organization="IMAGE"):
-        """Add another user into biosample AAP"""
+    # TODO: move to a class method: I can create a user without a token
+    def create_user(self, user, password, confirmPwd, email, full_name,
+                    organization="IMAGE"):
+        """Create another user into biosample AAP"""
 
-        #TODO: check that passwords are the same
+        # check that passwords are the same
+        if password != confirmPwd:
+            raise RuntimeError("passwords don't match!!!")
 
         # TODO: set url as a class attribute
         url = "https://explore.api.aai.ebi.ac.uk/auth"
@@ -367,10 +377,10 @@ class User(Document):
             raise ConnectionError(response.text)
 
         # debug
-        return response
+        return response.text
 
-    def add_team(self, description, centreName="IMAGE Inject"):
-        """Add a team"""
+    def create_team(self, description, centreName="IMAGE Inject"):
+        """Create a team"""
 
         url = "https://submission-test.ebi.ac.uk/api/user/teams"
 
@@ -469,6 +479,29 @@ class User(Document):
         raise NameError("domain: {domain} not found".format(
             domain=domain_name))
 
+    # TODO: starts from a user instance and from a domain instance
+    def add_user_to_team(self, user_id, domain_id):
+        """Add a user to a team"""
+
+        url = (
+            "https://explore.api.aai.ebi.ac.uk/domains/{domain_id}/"
+            "{user_id}/user".format(
+                domain_id=domain_id,
+                user_id=user_id)
+        )
+
+        response = self.put(url, headers=self.headers)
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        domain_data = response.json()
+        return Domain(self.auth, domain_data)
+
 
 class Domain(Document):
     def __init__(self, auth, data=None):
@@ -484,6 +517,7 @@ class Domain(Document):
         self.domainDesc = None
         self.domainReference = None
         self.links = None
+        self.users = None
 
         # dealing with this type of documents.
         if data:
