@@ -115,12 +115,12 @@ class Client():
 
         response = self.request(link, headers=self.headers)
 
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
         # assign attributes
         self.last_response = response
         self.last_status_code = response.status_code
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
 
         return response
 
@@ -338,10 +338,10 @@ class User(Document):
         # returning user id
         return self.userReference
 
-    # TODO: move to a class method: I can create a user without a token
-    def create_user(self, user, password, confirmPwd, email, full_name,
+    @classmethod
+    def create_user(cls, user, password, confirmPwd, email, full_name,
                     organization="IMAGE"):
-        """Create another user into biosample AAP"""
+        """Create another user into biosample AAP and return its ID"""
 
         # check that passwords are the same
         if password != confirmPwd:
@@ -350,8 +350,8 @@ class User(Document):
         # TODO: set url as a class attribute
         url = "https://explore.api.aai.ebi.ac.uk/auth"
 
-        # define a new header. Copy the dictionary, don't use the same object
-        headers = copy.copy(self.headers)
+        # define a new header
+        headers = {}
 
         # add new element to headers
         headers['Content-Type'] = 'application/json;charset=UTF-8'
@@ -367,16 +367,12 @@ class User(Document):
         }
 
         # call a post method a deal with response
-        response = self.post(url, payload=data, headers=headers)
-
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
+        response = requests.post(url, json=data, headers=headers)
 
         if response.status_code != 200:
             raise ConnectionError(response.text)
 
-        # debug
+        # returning user id
         return response.text
 
     def create_team(self, description, centreName="IMAGE Inject"):
@@ -410,8 +406,10 @@ class User(Document):
             "You need to generate a new token in order to see the new "
             "generated team")
 
-        # debug
-        return response
+        # create a new team object
+        team = Team(self.auth, response.json())
+
+        return team
 
     def get_teams(self):
         """Get teams of which I'm a member"""
@@ -420,12 +418,12 @@ class User(Document):
 
         response = self.request(url, headers=self.headers)
 
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
         # assign attributes
         self.last_response = response
         self.last_status_code = response.status_code
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
 
         # create a new document
         document = Document(auth=self.auth)
@@ -448,12 +446,12 @@ class User(Document):
 
         response = self.request(url, headers=self.headers)
 
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
         # assign attributes
         self.last_response = response
         self.last_status_code = response.status_code
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
 
         # a list of objects to return
         domains = []
@@ -492,12 +490,12 @@ class User(Document):
 
         response = self.put(url, headers=self.headers)
 
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
         # assign attributes
         self.last_response = response
         self.last_status_code = response.status_code
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
 
         domain_data = response.json()
         return Domain(self.auth, domain_data)
@@ -578,12 +576,12 @@ class Team(Document):
         # call a post method a deal with response
         response = self.post(link, payload={}, headers=headers)
 
-        if response.status_code != 201:
-            raise ConnectionError(response.text)
-
         # assign attributes
         self.last_response = response
         self.last_status_code = response.status_code
+
+        if response.status_code != 201:
+            raise ConnectionError(response.text)
 
         # create a new document
         submission = Submission(auth=self.auth)
@@ -650,12 +648,12 @@ class Submission(Document):
         # call a post method a deal with response
         response = self.post(link, payload=sample_data, headers=headers)
 
-        if response.status_code != 201:
-            raise ConnectionError(response.text)
-
         # assign attributes
         self.last_response = response
         self.last_status_code = response.status_code
+
+        if response.status_code != 201:
+            raise ConnectionError(response.text)
 
         # create a new sample
         sample = Sample(auth=self.auth)
@@ -690,12 +688,12 @@ class Submission(Document):
 
         response = Client.delete(self, link)
 
-        if response.status_code != 204:
-            raise ConnectionError(response.text)
-
         # assign attributes
         self.last_response = response
         self.last_status_code = response.status_code
+
+        if response.status_code != 204:
+            raise ConnectionError(response.text)
 
         # don't return anything
 
@@ -776,12 +774,13 @@ class Sample(Document):
 
         response = Client.patch(self, link, payload=sample_data)
 
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
         # assign attributes
         self.last_response = response
         self.last_status_code = response.status_code
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
+
 
         # reloading data
         self.reload()
