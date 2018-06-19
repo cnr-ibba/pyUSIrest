@@ -162,12 +162,20 @@ class Document(Client):
 
         return document
 
-    def follow_self_link(self, auth=None):
+    def follow_self_link(self):
         """Follow self link and update class attributes"""
 
         logger.debug("Following self link")
 
+        # get a link to follow
         link = self._links['self']['href']
+
+        # remove {?projection} from self link. This is unreachible
+        if '{?projection}' in link:
+            logger.warn("removing {?projection} for link")
+            link = link.replace("{?projection}", "")
+
+        # now follow link
         response = super().follow_link(link)
 
         logger.debug("Updating self")
@@ -618,6 +626,9 @@ class Team(Document):
         submission = Submission(auth=self.auth)
         submission.parse_response(response)
 
+        # reload self link to fix issues
+        submission.follow_self_link()
+
         return submission
 
 
@@ -667,7 +678,16 @@ class Submission(Document):
         sample_data = copy.copy(sample_data)
 
         # get team name
-        team_name = self.team
+        if isinstance(self.team, str):
+            team_name = self.team
+
+        elif isinstance(self.team, dict):
+            team_name = self.team['name']
+
+        else:
+            raise NotImplementedError(
+                "Unknown type: %s" % type(self.team)
+            )
 
         for relationship in sample_data['sampleRelationships']:
             if 'team' not in relationship:
@@ -860,7 +880,7 @@ class Sample(Document):
         """refreshing data"""
 
         logger.info("Refreshing data data for sample")
-        self.follow_self_link(auth=self.auth)
+        self.follow_self_link()
 
     def patch(self, sample_data):
         """Patch a sample"""
