@@ -103,11 +103,30 @@ Add samples to a submission
 In order to add sample to a submission::
 
   animal_data = {'alias': 'animal_1',
-   'title': 'ANIMAL:::ID:::WF60/B0811',
-   'releaseDate': '2018-06-19',
-   'taxonId': 9940,
-   'attributes': {'material': [{'value': 'organism',
+    'title': 'ANIMAL:::ID:::WF60/B0811',
+    'releaseDate': '2018-06-19',
+    'taxonId': 9940,
+    'attributes': {'material': [{'value': 'organism',
       'terms': [{'url': 'http://purl.obolibrary.org/obo/OBI_0100026'}]}],
     'project': [{'value': 'IMAGE'}]},
-   'sampleRelationships': []}
-   sample = submission.create_sample(animal_data)
+    'sampleRelationships': []}
+  sample = submission.create_sample(animal_data)
+  sample_data = {'alias': 'sample_1',
+    'title': 'MA_052_KR_S_Snh_S03_Mariensee_WF001265_OMS_13.01.04',
+    'releaseDate': '2018-06-19',
+    'taxonId': 9940,
+    'description': 'Qualitätsrate (Mot) 87,5 %',
+    'attributes': {'material': [{'value': 'specimen from organism',
+       'terms': [{'url': 'http://purl.obolibrary.org/obo/OBI_0001479'}]}],
+     'project': [{'value': 'IMAGE'}]},
+    'sampleRelationships': [{'alias': 'animal_1',
+      'relationshipNature': 'derived from'}]}
+  sample = submission.create_sample(sample_data)
+
+Finalize a submission
++++++++++++++++++++++
+
+After managing sample and validation statuses, if everything is ok you can finalize
+your submission with::
+
+  submission.finalize()

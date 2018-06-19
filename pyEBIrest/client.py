@@ -752,6 +752,47 @@ class Submission(Document):
 
         # don't return anything
 
+    def finalize(self):
+        """Finalize a submission to insert data into biosample"""
+
+        # follow self link to reload my data
+        self.follow_self_link()
+
+        document = self.follow_link('submissionStatus', self.auth)
+
+        # get the link to change
+        link = document._links['submissionStatus']['href']
+
+        # define a new header. Copy the dictionary, don't use the same object
+        headers = copy.copy(self.headers)
+
+        # add new element to headers
+        headers['Content-Type'] = 'application/json;charset=UTF-8'
+
+        response = self.patch(
+            link,
+            payload={'status': 'Submitted'},
+            headers=headers)
+
+        # assign attributes
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        if response.status_code != 200:
+            raise ConnectionError(response.text)
+
+        # create a new document
+        document = Document(auth=self.auth)
+        document.parse_response(response, force=True)
+
+        # copying last responsponse in order to improve data assignment
+        logger.debug("Assigning %s to document" % (response))
+
+        document.last_response = response
+        document.last_status_code = response.status_code
+
+        return document
+
 
 class Sample(Document):
     def __init__(self, auth, data=None):
