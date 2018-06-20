@@ -288,7 +288,7 @@ class Root(Document):
         # if I arrive here, no team is found
         raise NameError("team: {team} not found".format(team=team_name))
 
-    def get_user_submissions(self):
+    def get_user_submissions(self, status=None, team=None):
         """Follow the userSubmission link"""
 
         # follow link
@@ -299,8 +299,18 @@ class Root(Document):
 
         # now iterate over teams and create new objects
         for i, submission_data in enumerate(document._embedded['submissions']):
-            submissions.append(Submission(self.auth, submission_data))
-            logger.debug("Found %s submission" % (submissions[i].name))
+            submission = Submission(self.auth, submission_data)
+
+            if status and submission.submissionStatus != status:
+                logger.debug("Filtering %s submission" % (submission.name))
+                continue
+
+            if team and submission.team != team:
+                logger.debug("Filtering %s submission" % (submission.name))
+                continue
+
+            submissions.append(submission)
+            logger.debug("Found %s submission" % (submission.name))
 
         logger.info("Got %s submissions" % len(submissions))
 
@@ -583,6 +593,7 @@ class Team(Document):
     def __str__(self):
         return self.name
 
+    # TODO: filter submission using Status
     def get_submissions(self):
         """Follows submission link"""
 
@@ -674,12 +685,12 @@ class Submission(Document):
     def __check_relationship(self, sample_data):
         """Check relationship and add additional fields"""
 
+        # create a copy of sample_data
+        sample_data = copy.copy(sample_data)
+
         # check relationship if exists
         if 'sampleRelationships' not in sample_data:
             return sample_data
-
-        # create a copy of sample_data
-        sample_data = copy.copy(sample_data)
 
         # get team name
         if isinstance(self.team, str):
@@ -741,13 +752,14 @@ class Submission(Document):
         # returning sample as and object
         return sample
 
+    # TODO: filter samples by status
     def get_samples(self):
         """returning all samples as a list"""
 
         # deal with different subission instances
         if 'contents' not in self._links:
             logger.warn("reloading submission")
-            self.follow_self_link()
+            self.reload()
 
         document = self.follow_link(
             'contents', auth=self.auth
@@ -763,6 +775,29 @@ class Submission(Document):
         logger.info("Got %s samples" % len(samples))
 
         return samples
+
+    def get_validation_results(self):
+        """Return validation results for submission"""
+
+        # deal with different subission instances
+        if 'validationResults' not in self._links:
+            logger.warn("reloading submission")
+            self.reload()
+
+        document = self.follow_link('validationResults', auth=self.auth)
+
+        # a list ob objects to return
+        validation_results = []
+
+        for i, validation_data in enumerate(
+                document.data['_embedded']['validationResults']):
+            validation_results.append(
+                ValidationResult(self.auth, validation_data))
+            logger.debug("Found %s sample" % (str(validation_results[i])))
+
+        logger.info("Got %s validation results" % len(validation_results))
+
+        return validation_results
 
     def delete(self):
         """Delete this instance from a submission"""
@@ -780,6 +815,12 @@ class Submission(Document):
             raise ConnectionError(response.text)
 
         # don't return anything
+
+    def reload(self):
+        """refreshing data"""
+
+        logger.info("Refreshing data data for submission")
+        self.follow_self_link()
 
     def finalize(self):
         """Finalize a submission to insert data into biosample"""
@@ -906,6 +947,23 @@ class Sample(Document):
         if response.status_code != 200:
             raise ConnectionError(response.text)
 
-
         # reloading data
         self.reload()
+
+
+class ValidationResult(Document):
+    def __init__(self, auth, data=None):
+        # calling the base class method client
+        Client.__init__(self, auth)
+        Document.__init__(self)
+
+        # my class attributes
+        self.errorMessages = None
+        self.overallValidationOutcomeByAuthor = None
+        self.validationStatus = None
+
+        if data:
+            self.read_data(data)
+
+    def __str__(self):
+        return self.validationStatus

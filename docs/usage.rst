@@ -75,7 +75,7 @@ obtained by creating a user, or by calling ``get_my_id`` for a User instance::
 Next, you need to find out the domain reference of a team using a team name, for example::
 
   domain = user.get_domain_by_name(team.name)
-  domain_id = domain_id = domain.domainReference
+  domain_id = domain.domainReference
 
 To add user to a team call finally::
 
