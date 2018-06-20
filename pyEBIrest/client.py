@@ -9,6 +9,7 @@ Created on Thu May 24 16:41:31 2018
 import copy
 import requests
 import logging
+import collections
 
 from .auth import Auth
 
@@ -143,8 +144,6 @@ class Document(Client):
     def paginate(self, data):
         """Follow pages and join data"""
 
-        print(data['_links'].keys())
-
         # create a new dictionary
         new_data = copy.copy(data)
 
@@ -164,8 +163,8 @@ class Document(Client):
         data = super().parse_response(response)
 
         # do data has pages?
-        if 'page' in data:
-            logger.debug("Found %s")
+        if 'page' in data and data['page']['totalPages'] > 1:
+            logger.debug("Found %s pages" % (data['page']['totalPages']))
             data = self.paginate(data)
 
         # read data and setting self.data
@@ -258,11 +257,13 @@ class Document(Client):
             setattr(self, key, value)
 
         else:
-            logger.error("key %s not implemented" % (key))
-
             if force is True:
-                logger.info("Forcing %s -> %s" % (key, value))
+                logger.debug("Forcing %s -> %s" % (key, value))
                 setattr(self, key, value)
+
+            else:
+                logger.error("key %s not implemented" % (key))
+
 
 
 class Root(Document):
@@ -289,8 +290,6 @@ class Root(Document):
 
         # follow link
         document = self.follow_link('userTeams', auth=self.auth)
-
-        # TODO: deal with pages and results
 
         # a list ob objects to return
         teams = []
@@ -448,7 +447,7 @@ class User(Document):
         if response.status_code != 201:
             raise ConnectionError(response.text)
 
-        # TODO: If I create a new team, the Auth object need to be updated
+        # If I create a new team, the Auth object need to be updated
         logger.warn(
             "You need to generate a new token in order to see the new "
             "generated team")
@@ -524,7 +523,6 @@ class User(Document):
         raise NameError("domain: {domain} not found".format(
             domain=domain_name))
 
-    # TODO: starts from a user instance and from a domain instance
     def add_user_to_team(self, user_id, domain_id):
         """Add a user to a team"""
 
@@ -622,8 +620,7 @@ class Team(Document):
     def __str__(self):
         return self.name
 
-    # TODO: filter submission using Status
-    def get_submissions(self):
+    def get_submissions(self, status=None):
         """Follows submission link"""
 
         # follow link
@@ -634,8 +631,14 @@ class Team(Document):
 
         # now iterate over teams and create new objects
         for i, submission_data in enumerate(document._embedded['submissions']):
-            submissions.append(Submission(self.auth, submission_data))
-            logger.debug("Found %s submission" % (submissions[i].name))
+            submission = Submission(self.auth, submission_data)
+
+            if status and submission.submissionStatus != status:
+                logger.debug("Filtering %s submission" % (submission.name))
+                continue
+
+            submissions.append(submission)
+            logger.debug("Found %s submission" % (submission.name))
 
         return submissions
 
@@ -781,8 +784,7 @@ class Submission(Document):
         # returning sample as and object
         return sample
 
-    # TODO: filter samples by status
-    def get_samples(self):
+    def get_samples(self, validationResult=None, has_errors=None):
         """returning all samples as a list"""
 
         # deal with different subission instances
@@ -798,8 +800,20 @@ class Submission(Document):
         samples = []
 
         for i, sample_data in enumerate(document.data['_embedded']['samples']):
-            samples.append(Sample(self.auth, sample_data))
-            logger.debug("Found %s sample" % (str(samples[i])))
+            sample = Sample(self.auth, sample_data)
+
+            if (validationResult and
+                    sample.get_validation_result().validationStatus
+                    != validationResult):
+                logger.debug("Filtering %s sample" % (sample))
+                continue
+
+            if has_errors and has_errors != sample.has_errors():
+                logger.debug("Filtering %s sample" % (sample))
+                continue
+
+            samples.append(sample)
+            logger.debug("Found %s sample" % (sample))
 
         logger.info("Got %s samples" % len(samples))
 
@@ -827,6 +841,28 @@ class Submission(Document):
         logger.info("Got %s validation results" % len(validation_results))
 
         return validation_results
+
+    def get_status(self):
+        """Count validation statues for submission"""
+
+        # get validation results
+        validations = self.get_validation_results()
+
+        # get statuses
+        statuses = [validation.validationStatus for validation in validations]
+
+        return collections.Counter(statuses)
+
+    def has_errors(self):
+        """Count errors for submission"""
+
+        # get validation results
+        validations = self.get_validation_results()
+
+        # get errors
+        errors = [validation.has_errors() for validation in validations]
+
+        return collections.Counter(errors)
 
     def delete(self):
         """Delete this instance from a submission"""
@@ -979,6 +1015,26 @@ class Sample(Document):
         # reloading data
         self.reload()
 
+    def get_validation_result(self):
+        """Return validation result for this sample"""
+
+        document = self.follow_link(
+            'validationResult',
+            auth=self.auth,
+            force=True)
+
+        return ValidationResult(self.auth, document.data)
+
+    def has_errors(self):
+        """Return True if validation results throw an error"""
+
+        validation = self.get_validation_result().has_errors()
+
+        if validation:
+            logger.error("Got error(s) for %s" % (self))
+
+        return validation
+
 
 class ValidationResult(Document):
     def __init__(self, auth, data=None):
@@ -996,3 +1052,16 @@ class ValidationResult(Document):
 
     def __str__(self):
         return self.validationStatus
+
+    def has_errors(self):
+        """Return true if validation has errors"""
+
+        has_errors = False
+
+        for key, value in self.overallValidationOutcomeByAuthor.items():
+            if value == 'Error':
+                message = ", ".join(self.errorMessages[key])
+                logger.error(message)
+                has_errors = True
+
+        return has_errors

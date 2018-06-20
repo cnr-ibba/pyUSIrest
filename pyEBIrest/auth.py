@@ -105,7 +105,7 @@ class Auth():
                 )
             )
         else:
-            logger.info(
+            logger.debug(
                 "Token for {user} will expire in {seconds} seconds".format(
                     user=self.claims['name'],
                     seconds=duration.total_seconds()
