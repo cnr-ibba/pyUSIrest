@@ -26,7 +26,10 @@ class Client():
         client = Client(auth)
     """
 
-    headers = {'Accept': 'application/hal+json'}
+    headers = {
+        'Accept': 'application/hal+json',
+        'User-Agent': 'pyEBIrest v0.1.0'
+    }
 
     def __init__(self, auth):
         # my attributes
@@ -137,9 +140,33 @@ class Document(Client):
         self.name = None
         self.data = {}
 
+    def paginate(self, data):
+        """Follow pages and join data"""
+
+        print(data['_links'].keys())
+
+        # create a new dictionary
+        new_data = copy.copy(data)
+
+        while 'next' in data['_links']:
+            link = data['_links']['next']['href']
+            logger.debug("Paginating %s" % (link))
+            response = super().follow_link(link)
+            data = super().parse_response(response)
+
+            for key, value in data['_embedded'].items():
+                new_data['_embedded'][key] += value
+
+        return new_data
+
     def parse_response(self, response, force=False):
-        # get data
+        # get data as dictionary
         data = super().parse_response(response)
+
+        # do data has pages?
+        if 'page' in data:
+            logger.debug("Found %s")
+            data = self.paginate(data)
 
         # read data and setting self.data
         self.read_data(data, force)
@@ -220,10 +247,12 @@ class Document(Client):
 
         if hasattr(self, key):
             if getattr(self, key) and getattr(self, key) != '':
+                # when I reload data, I do a substitution
                 logger.debug("Found %s -> %s" % (key, getattr(self, key)))
                 logger.debug("Updating %s -> %s" % (key, value))
 
             else:
+                # don't have this attribute set
                 logger.debug("Setting %s -> %s" % (key, value))
 
             setattr(self, key, value)
