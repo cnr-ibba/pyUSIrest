@@ -265,7 +265,6 @@ class Document(Client):
                 logger.error("key %s not implemented" % (key))
 
 
-
 class Root(Document):
     # define the default url
     api_root = "https://submission-test.ebi.ac.uk/api/"
@@ -560,7 +559,7 @@ class Domain(Document):
         self.domainDesc = None
         self.domainReference = None
         self.links = None
-        self.users = None
+        self._users = None
 
         # dealing with this type of documents.
         if data:
@@ -569,6 +568,29 @@ class Domain(Document):
 
             # this class lacks of a name attribute, so
             self.name = self.domainName
+
+    def __str__(self):
+        if not self.domainReference:
+            return "domain not yet initialized"
+
+        reference = self.domainReference.split("-")[1]
+        return " ".join([reference, self.name, self.domainDesc])
+
+    @property
+    def users(self):
+        if not self._users:
+            for link in self.links:
+                if 'user' in link['href']:
+                    response = self.request(link['href'])
+                    break
+
+            self._users = response.json()
+
+        return self._users
+
+    @users.setter
+    def users(self, value):
+        self._users = value
 
     def create_profile(self, attributes={"centre name": "IMAGE Inject team"}):
         """Create profile for this domain"""
@@ -683,7 +705,7 @@ class Submission(Document):
 
         # my class attributes
         self.name = None
-        self.team = None
+        self._team = None
         self.createdDate = None
         self.lastModifiedDate = None
         self.lastModifiedBy = None
@@ -701,7 +723,34 @@ class Submission(Document):
             self.read_data(data)
 
     def __str__(self):
-        return self.name
+        if not self.name:
+            return "Submission not yet initialized"
+
+        name = self.name.split("-")[0]
+        return " ".join([name, self.team, self.submissionStatus])
+
+    @property
+    def team(self):
+        # get team name
+        if isinstance(self._team, str):
+            team_name = self._team
+
+        elif isinstance(self._team, dict):
+            team_name = self._team['name']
+
+        elif self._team is None:
+            team_name = ""
+
+        else:
+            raise NotImplementedError(
+                "Unknown type: %s" % type(self._team)
+            )
+
+        return team_name
+
+    @team.setter
+    def team(self, value):
+        self._team = value
 
     def read_data(self, data, force=False):
         """Custom read_data method"""
@@ -724,26 +773,39 @@ class Submission(Document):
         if 'sampleRelationships' not in sample_data:
             return sample_data
 
-        # get team name
-        if isinstance(self.team, str):
-            team_name = self.team
-
-        elif isinstance(self.team, dict):
-            team_name = self.team['name']
-
-        else:
-            raise NotImplementedError(
-                "Unknown type: %s" % type(self.team)
-            )
-
         for relationship in sample_data['sampleRelationships']:
             if 'team' not in relationship:
-                logger.debug("Adding %s to relationship" % (team_name))
+                logger.debug("Adding %s to relationship" % (self.team))
                 # setting the referenced object
-                relationship['team'] = team_name
+                relationship['team'] = self.team
 
         # this is the copied sample_data, not the original one!!!
         return sample_data
+
+    def check_ready(self):
+        """Test if a submission can be submitted or not"""
+
+        # I cant follow such links for completed and submitted submission
+        # document = self.follow_link(
+        #    "submissionStatus", self.auth
+        #    ).follow_link("availableStatuses", self.auth)
+
+        # Try to determine link manually
+        link = (
+            "https://submission-test.ebi.ac.uk/api/submissions/"
+            "{submission_name}/availableSubmissionStatuses".format(
+                submission_name=self.name)
+        )
+
+        # read a link in a new docume nt
+        document = Document.read_link(self.auth, link)
+
+        if hasattr(document, "_embedded"):
+            if 'statusDescriptions' in document._embedded:
+                return True
+
+        # default response
+        return False
 
     def create_sample(self, sample_data):
         """Create a sample"""
@@ -853,8 +915,14 @@ class Submission(Document):
 
         return collections.Counter(statuses)
 
+    # TODO: there are errors that could be ignored
     def has_errors(self):
         """Count errors for submission"""
+
+        # check errors only if validation is completed
+        if 'Pending' in self.get_status():
+            raise RuntimeError(
+                "You can check errors after validation is completed")
 
         # get validation results
         validations = self.get_validation_results()
@@ -889,6 +957,13 @@ class Submission(Document):
 
     def finalize(self):
         """Finalize a submission to insert data into biosample"""
+
+        if not self.check_ready():
+            raise Exception("Submission not ready for finalization")
+
+        # raise exception if submission has errors
+        if True in self.has_errors():
+            raise Exception("Submission has errors, fix them")
 
         # follow self link to reload my data
         self.follow_self_link()
@@ -1025,6 +1100,7 @@ class Sample(Document):
 
         return ValidationResult(self.auth, document.data)
 
+    # TODO: there are errors that could be ignored
     def has_errors(self):
         """Return True if validation results throw an error"""
 
@@ -1051,8 +1127,14 @@ class ValidationResult(Document):
             self.read_data(data)
 
     def __str__(self):
-        return self.validationStatus
+        message = self.validationStatus
 
+        if self.overallValidationOutcomeByAuthor:
+            message += " %s" % (str(self.overallValidationOutcomeByAuthor))
+
+        return message
+
+    # TODO: there are errors that could be ignored
     def has_errors(self):
         """Return true if validation has errors"""
 
