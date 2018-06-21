@@ -321,8 +321,13 @@ class Root(Document):
         # follow link
         document = self.follow_link('userSubmissions', auth=self.auth)
 
-        # a list ob objects to return
+        # a list of objects to return
         submissions = []
+
+        # check if I have submission
+        if 'submissions' not in document._embedded:
+            logger.warn("You haven't any submission yet!")
+            return submissions
 
         # now iterate over teams and create new objects
         for i, submission_data in enumerate(document._embedded['submissions']):
@@ -574,7 +579,7 @@ class Domain(Document):
             return "domain not yet initialized"
 
         reference = self.domainReference.split("-")[1]
-        return " ".join([reference, self.name, self.domainDesc])
+        return "%s %s %s" % (reference, self.name, self.domainDesc)
 
     @property
     def users(self):
@@ -662,6 +667,10 @@ class Team(Document):
             submissions.append(submission)
             logger.debug("Found %s submission" % (submission.name))
 
+        # check if I have submission
+        if len(submissions) == 0:
+            logger.warn("You haven't any submission yet!")
+
         return submissions
 
     def create_submission(self):
@@ -727,7 +736,7 @@ class Submission(Document):
             return "Submission not yet initialized"
 
         name = self.name.split("-")[0]
-        return " ".join([name, self.team, self.submissionStatus])
+        return "%s %s %s" % (name, self.team, self.submissionStatus)
 
     @property
     def team(self):

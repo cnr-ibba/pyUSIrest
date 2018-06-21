@@ -49,7 +49,10 @@ class Auth():
             self.status_code = self.response.status_code
 
             if self.status_code != 200:
-                raise ConnectionError(self.response.text)
+                logger.error("Got status %s" % (self.status_code))
+                raise ConnectionError(
+                    "Got status %s: '%s'" % (
+                        self.status_code, self.response.text))
 
             logger.debug("Got status %s" % (self.status_code))
 
