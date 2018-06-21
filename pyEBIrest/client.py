@@ -846,7 +846,8 @@ class Submission(Document):
         # returning sample as and object
         return sample
 
-    def get_samples(self, validationResult=None, has_errors=None):
+    def get_samples(self, validationResult=None, has_errors=None,
+                    ignorelist=[]):
         """returning all samples as a list"""
 
         # deal with different subission instances
@@ -870,7 +871,7 @@ class Submission(Document):
                 logger.debug("Filtering %s sample" % (sample))
                 continue
 
-            if has_errors and has_errors != sample.has_errors():
+            if has_errors and has_errors != sample.has_errors(ignorelist):
                 logger.debug("Filtering %s sample" % (sample))
                 continue
 
@@ -915,8 +916,8 @@ class Submission(Document):
 
         return collections.Counter(statuses)
 
-    # TODO: there are errors that could be ignored
-    def has_errors(self):
+    # there are errors that could be ignored
+    def has_errors(self, ignorelist=[]):
         """Count errors for submission"""
 
         # check errors only if validation is completed
@@ -928,7 +929,8 @@ class Submission(Document):
         validations = self.get_validation_results()
 
         # get errors
-        errors = [validation.has_errors() for validation in validations]
+        errors = [
+            validation.has_errors(ignorelist) for validation in validations]
 
         return collections.Counter(errors)
 
@@ -955,14 +957,14 @@ class Submission(Document):
         logger.info("Refreshing data data for submission")
         self.follow_self_link()
 
-    def finalize(self):
+    def finalize(self, ignorelist=[]):
         """Finalize a submission to insert data into biosample"""
 
         if not self.check_ready():
             raise Exception("Submission not ready for finalization")
 
         # raise exception if submission has errors
-        if True in self.has_errors():
+        if True in self.has_errors(ignorelist):
             raise Exception("Submission has errors, fix them")
 
         # follow self link to reload my data
@@ -1100,11 +1102,11 @@ class Sample(Document):
 
         return ValidationResult(self.auth, document.data)
 
-    # TODO: there are errors that could be ignored
-    def has_errors(self):
+    # there are errors that could be ignored
+    def has_errors(self, ignorelist=[]):
         """Return True if validation results throw an error"""
 
-        validation = self.get_validation_result().has_errors()
+        validation = self.get_validation_result().has_errors(ignorelist)
 
         if validation:
             logger.error("Got error(s) for %s" % (self))
@@ -1134,14 +1136,14 @@ class ValidationResult(Document):
 
         return message
 
-    # TODO: there are errors that could be ignored
-    def has_errors(self):
+    # there are errors that could be ignored
+    def has_errors(self, ignorelist=[]):
         """Return true if validation has errors"""
 
         has_errors = False
 
         for key, value in self.overallValidationOutcomeByAuthor.items():
-            if value == 'Error':
+            if value == 'Error' and key not in ignorelist:
                 message = ", ".join(self.errorMessages[key])
                 logger.error(message)
                 has_errors = True
