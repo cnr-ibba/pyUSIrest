@@ -583,7 +583,7 @@ class Domain(Document):
 
     @property
     def users(self):
-        if not self._users:
+        if not self._users and isinstance(self.links, list):
             for link in self.links:
                 if 'user' in link['href']:
                     response = self.request(link['href'])
