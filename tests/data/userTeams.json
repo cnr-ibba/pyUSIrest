@@ -1,0 +1,29 @@
+{
+  "_embedded" : {
+    "teams" : [ {
+      "name" : "subs.dev-team-1",
+      "_links" : {
+        "submissions" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.dev-team-1"
+        },
+        "submissions:create" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/teams/subs.dev-team-1/submissions"
+        },
+        "items" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/teams/subs.dev-team-1/items"
+        }
+      }
+    } ]
+  },
+  "_links" : {
+    "self" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/user/teams?page=0&size=20"
+    }
+  },
+  "page" : {
+    "size" : 20,
+    "totalElements" : 1,
+    "totalPages" : 1,
+    "number" : 0
+  }
+}

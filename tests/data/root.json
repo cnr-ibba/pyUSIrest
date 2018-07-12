@@ -1,0 +1,52 @@
+{
+  "_links" : {
+    "processingStatusDescriptions" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/statusDescriptions/processingStatuses"
+    },
+    "releaseStatusDescriptions" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/statusDescriptions/releaseStatuses"
+    },
+    "submissionStatusDescriptions" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/statusDescriptions/submissionStatuses"
+    },
+    "userTeams" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/user/teams"
+    },
+    "team" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/teams/{teamName:.+}"
+    },
+    "userProjects" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/user/projects"
+    },
+    "userSubmissions" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/user/submissions"
+    },
+    "userSubmissionStatusSummary" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/user/submissionStatusSummary"
+    },
+    "studyDataTypes" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/studyDataTypes"
+    },
+    "aap-api-root" : {
+      "href" : "https://explore.api.aai.ebi.ac.uk/"
+    },
+    "tus-upload" : {
+      "href" : "https://submission-dev.ebi.ac.uk/files/"
+    },
+    "uiSupportItems:search" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/uiSupportItems/search"
+    },
+    "uiSupportItems" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/uiSupportItems"
+    },
+    "templates:search" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/templates/search"
+    },
+    "templates" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/templates"
+    },
+    "profile" : {
+      "href" : "https://submission-dev.ebi.ac.uk/api/profile"
+    }
+  }
+}
