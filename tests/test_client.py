@@ -89,3 +89,31 @@ class RootTest(TestCase):
             "team: .* not found",
             self.root.get_team_by_name,
             "subs.dev-team-2")
+
+    def test_get_user_submissions(self):
+        with open(os.path.join(data_path, "userSubmissions.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+        submissions = self.root.get_user_submissions()
+
+        self.assertIsInstance(submissions, list)
+        self.assertEqual(len(submissions), 2)
+
+        # testing filtering
+        draft = self.root.get_user_submissions(status="Draft")
+
+        self.assertIsInstance(draft, list)
+        self.assertEqual(len(draft), 1)
+
+        team1 = self.root.get_user_submissions(team="subs.dev-team-1")
+        self.assertIsInstance(team1, list)
+        self.assertEqual(len(team1), 1)
+
+        completed1 = self.root.get_user_submissions(
+            team="subs.dev-team-1", status="Completed")
+        self.assertIsInstance(completed1, list)
+        self.assertEqual(len(completed1), 0)
