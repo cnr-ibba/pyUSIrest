@@ -13,6 +13,8 @@ Python EBI submission REST API
         :target: https://pyEBIrest.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
+.. image:: https://coveralls.io/repos/github/bunop/pyEBIrest/badge.svg?branch=master
+        :target: https://coveralls.io/github/bunop/pyEBIrest?branch=master
 
 
 
