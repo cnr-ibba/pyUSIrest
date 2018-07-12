@@ -13,7 +13,7 @@ from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from pyEBIrest.auth import Auth
-from pyEBIrest.client import Root, Team
+from pyEBIrest.client import Root, Team, User
 
 from .test_auth import generate_token
 
@@ -117,3 +117,82 @@ class RootTest(TestCase):
             team="subs.dev-team-1", status="Completed")
         self.assertIsInstance(completed1, list)
         self.assertEqual(len(completed1), 0)
+
+
+class UserTest(TestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get = cls.mock_get_patcher.start()
+
+        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post = cls.mock_post_patcher.start()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.mock_get_patcher.stop()
+        cls.mock_post_patcher.stop()
+
+    def setUp(self):
+        self.auth = Auth(token=generate_token())
+        self.user = User(self.auth)
+
+        self.data = {
+            "userName": "foo",
+            "email": "foo.bar@email.com",
+            "userReference": "usr-f1801430-51e1-4718-8fca-778887087bad",
+            "_links": {
+                "self": {
+                    "href" : "https://explore.api.aai.ebi.ac.uk/users/usr-f1801430-51e1-4718-8fca-778887087bad"
+                }
+            }
+        }
+
+    def test_get_my_id(self):
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = self.data
+        self.mock_get.return_value.status_code = 200
+
+        test = self.user.get_my_id()
+        reference = "usr-f1801430-51e1-4718-8fca-778887087bad"
+
+        self.assertEqual(reference, test)
+
+    def test_user_has_nodata(self):
+        self.assertRaisesRegex(
+            NotImplementedError,
+            "Not yet implemented",
+            User,
+            self.auth,
+            self.data)
+
+    def test_create_user(self):
+        reference = "usr-2a28ca65-2c2f-41e7-9aa5-e829830c6c71"
+        self.mock_post.return_value = Mock()
+        self.mock_post.return_value.text = reference
+        self.mock_post.return_value.status_code = 200
+
+        test = self.user.create_user(
+            user="newuser",
+            password="changeme",
+            confirmPwd="changeme",
+            email="newuser@email.com",
+            full_name="New User",
+            organization="Test"
+        )
+
+        self.assertEqual(reference, test)
+
+    def test_create_team(self):
+        with open(os.path.join(data_path, "newTeam.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_post.return_value = Mock()
+        self.mock_post.return_value.json.return_value = data
+        self.mock_post.return_value.status_code = 201
+
+        team = self.user.create_team(
+            description="test description",
+            centreName="test Center")
+
+        self.assertIsInstance(team, Team)

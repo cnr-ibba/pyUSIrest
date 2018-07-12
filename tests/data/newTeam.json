@@ -1,0 +1,23 @@
+{
+  "name" : "subs.test-team-5",
+  "_links" : {
+    "self" : {
+      "href" : "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-5"
+    },
+    "submissions" : [ {
+      "href" : "https://submission-test.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.test-team-5"
+    }, {
+      "href" : "https://submission-test.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.test-team-5"
+    } ],
+    "submissions:create" : [ {
+      "href" : "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-5/submissions"
+    }, {
+      "href" : "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-5/submissions"
+    } ],
+    "items" : [ {
+      "href" : "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-5/items"
+    }, {
+      "href" : "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-5/items"
+    } ]
+  }
+}
