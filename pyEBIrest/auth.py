@@ -56,6 +56,8 @@ class Auth():
 
             logger.debug("Got status %s" % (self.status_code))
 
+            print(self.response.text)
+
             # Set token with token.setter
             self.token = self.response.text
 
@@ -121,16 +123,12 @@ class Auth():
         return self.get_duration().days < 0
 
     def __str__(self):
-        if self.claims:
-            total_time = self.get_duration().total_seconds()
+        total_time = self.get_duration().total_seconds()
 
-            if total_time < 0:
-                return "Token for {user} is expired".format(
-                    user=self.claims['name'])
-            else:
-                return "Token for {user} will last {seconds} seconds".format(
-                    user=self.claims['name'],
-                    seconds=total_time)
-
+        if total_time < 0:
+            return "Token for {user} is expired".format(
+                user=self.claims['name'])
         else:
-            return "Not initialized token"
+            return "Token for {user} will last {seconds} seconds".format(
+                user=self.claims['name'],
+                seconds=total_time)
