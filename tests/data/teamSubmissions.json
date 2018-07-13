@@ -1,0 +1,56 @@
+{
+  "_embedded" : {
+    "submissions" : [ {
+      "team" : "subs.test-team-1",
+      "createdDate" : "2018-06-20T15:43:31.190+0000",
+      "lastModifiedDate" : "2018-06-20T15:51:00.525+0000",
+      "lastModifiedBy" : "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+      "createdBy" : "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+      "submissionStatus" : "Completed",
+      "submitter" : "email@test.com",
+      "_links" : {
+        "self" : {
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/792cb0d6-52f5-410e-b083-792dabad30d4"
+        },
+        "submission" : {
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/792cb0d6-52f5-410e-b083-792dabad30d4{?projection}",
+          "templated" : true
+        },
+        "submissionStatus" : {
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/792cb0d6-52f5-410e-b083-792dabad30d4/submissionStatus"
+        }
+      }
+    }, {
+      "team" : "subs.test-team-1",
+      "createdDate" : "2018-07-13T13:41:10.010+0000",
+      "lastModifiedDate" : "2018-07-13T13:41:10.010+0000",
+      "lastModifiedBy" : "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+      "createdBy" : "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+      "submissionStatus" : "Draft",
+      "submitter" : "email@test.com",
+      "_links" : {
+        "self" : {
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e"
+        },
+        "submission" : {
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e{?projection}",
+          "templated" : true
+        },
+        "submissionStatus" : {
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/submissionStatus"
+        }
+      }
+    } ]
+  },
+  "_links" : {
+    "self" : {
+      "href" : "https://submission-test.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.test-team-1&page=0&size=20"
+    }
+  },
+  "page" : {
+    "size" : 20,
+    "totalElements" : 2,
+    "totalPages" : 1,
+    "number" : 0
+  }
+}

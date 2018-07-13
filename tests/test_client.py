@@ -181,7 +181,8 @@ class UserTest(TestCase):
             "userReference": "usr-f1801430-51e1-4718-8fca-778887087bad",
             "_links": {
                 "self": {
-                    "href" : "https://explore.api.aai.ebi.ac.uk/users/usr-f1801430-51e1-4718-8fca-778887087bad"
+                    "href": "https://explore.api.aai.ebi.ac.uk/users/usr-"
+                             "f1801430-51e1-4718-8fca-778887087bad"
                 }
             }
         }
@@ -301,3 +302,98 @@ class UserTest(TestCase):
             "domain: .* not found",
             self.user.get_domain_by_name,
             "subs.dev-team-2")
+
+
+class DomainTest(TestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post = cls.mock_post_patcher.start()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.mock_post_patcher.stop()
+
+    def setUp(self):
+        self.auth = Auth(token=generate_token())
+        self.domain = Domain(self.auth)
+
+    def test_create_profile(self):
+        with open(os.path.join(data_path, "domainProfile.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_post.return_value = Mock()
+        self.mock_post.return_value.json.return_value = data
+        self.mock_post.return_value.status_code = 201
+
+        self.domain.domainReference = ("dom-b38d6175-61e8-4d40-98da-"
+                                       "df9188d91c82")
+
+        self.domain.create_profile(
+            attributes={
+                "cost_center": "ABC123",
+                "address": "South Building, EMBL-EBI, Wellcome Genome Campus,"
+                           "Hinxton, Cambridgeshire, CB10 1SD"
+            })
+
+
+class TeamTest(TestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get = cls.mock_get_patcher.start()
+
+        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post = cls.mock_post_patcher.start()
+
+        cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
+        cls.mock_put = cls.mock_put_patcher.start()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.mock_get_patcher.stop()
+        cls.mock_post_patcher.stop()
+        cls.mock_put_patcher.stop()
+
+    def setUp(self):
+        self.auth = Auth(token=generate_token())
+
+        with open(os.path.join(data_path, "team.json")) as handle:
+            data = json.load(handle)
+
+        self.team = Team(self.auth, data=data)
+
+    def test_create_submission(self):
+        with open(os.path.join(data_path, "newSubmission.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_post.return_value = Mock()
+        self.mock_post.return_value.json.return_value = data
+        self.mock_post.return_value.status_code = 201
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+        submission = self.team.create_submission()
+        self.assertIsInstance(submission, Submission)
+
+    def test_get_submission(self):
+        with open(os.path.join(data_path, "teamSubmissions.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+        submissions = self.team.get_submissions()
+
+        self.assertIsInstance(submissions, list)
+        self.assertEqual(len(submissions), 2)
+
+        # testing filtering
+        draft = self.team.get_submissions(status="Draft")
+
+        self.assertIsInstance(draft, list)
+        self.assertEqual(len(draft), 1)
+        self.assertIsInstance(draft[0], Submission)

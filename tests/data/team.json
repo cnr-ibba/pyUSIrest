@@ -1,0 +1,14 @@
+{
+  "name": "subs.test-team-1",
+  "_links": {
+    "submissions": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.test-team-1"
+    },
+    "submissions:create": {
+      "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-1/submissions"
+    },
+    "items": {
+      "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-1/items"
+    }
+  }
+}

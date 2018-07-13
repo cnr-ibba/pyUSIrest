@@ -489,6 +489,19 @@ class User(Document):
 
         return teams
 
+    def get_team_by_name(self, team_name):
+        logger.debug("Searching for %s" % (team_name))
+
+        # get all teams
+        teams = self.get_teams()
+
+        for team in teams:
+            if team.name == team_name:
+                return team
+
+        # if I arrive here, no team is found
+        raise NameError("team: {team} not found".format(team=team_name))
+
     def get_domains(self):
         """Get my domains"""
 
