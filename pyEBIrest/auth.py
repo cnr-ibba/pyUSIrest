@@ -56,8 +56,6 @@ class Auth():
 
             logger.debug("Got status %s" % (self.status_code))
 
-            print(self.response.text)
-
             # Set token with token.setter
             self.token = self.response.text
 

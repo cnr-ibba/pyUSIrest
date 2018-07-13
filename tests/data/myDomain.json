@@ -1,0 +1,56 @@
+[
+  {
+    "domainName": "subs.test-team-1",
+    "domainDesc": "domain for team 1",
+    "domainReference": "dom-41fd3271-d14b-47ff-8de1-e3f0a6d0a693",
+    "links": [
+      {
+        "rel": "self",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains/dom-41fd3271-d14b-47ff-8de1-e3f0a6d0a693"
+      },
+      {
+        "rel": "deactivate",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains/dom-41fd3271-d14b-47ff-8de1-e3f0a6d0a693"
+      },
+      {
+        "rel": "get users from domain",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains/dom-41fd3271-d14b-47ff-8de1-e3f0a6d0a693/users"
+      },
+      {
+        "rel": "admin",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains/dom-7b50b111-8a67-4676-a42c-74e10af7b0c9"
+      },
+      {
+        "rel": "get all domains",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains"
+      }
+    ]
+  },
+  {
+    "domainName": "subs.test-team-3",
+    "domainDesc": "domain for team 3",
+    "domainReference": "dom-02487034-40e8-42b0-a3f7-d84d0ef73848",
+    "links": [
+      {
+        "rel": "self",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains/dom-02487034-40e8-42b0-a3f7-d84d0ef73848"
+      },
+      {
+        "rel": "deactivate",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains/dom-02487034-40e8-42b0-a3f7-d84d0ef73848"
+      },
+      {
+        "rel": "get users from domain",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains/dom-02487034-40e8-42b0-a3f7-d84d0ef73848/users"
+      },
+      {
+        "rel": "admin",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains/dom-933c0cfb-e11b-4282-8fcd-3fbbc4ad00d1"
+      },
+      {
+        "rel": "get all domains",
+        "href": "https://explore.api.aai.ebi.ac.uk/domains"
+      }
+    ]
+  }
+]

@@ -8,12 +8,13 @@ Created on Thu Jul 12 14:23:09 2018
 
 import os
 import json
+import datetime
 
 from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from pyEBIrest.auth import Auth
-from pyEBIrest.client import Root, Team, User
+from pyEBIrest.client import Root, Team, User, Domain, Submission, Client
 
 from .test_auth import generate_token
 
@@ -23,6 +24,36 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # define data path
 data_path = os.path.join(dir_path, "data")
+
+
+class ClientTest(TestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get = cls.mock_get_patcher.start()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.mock_get_patcher.stop()
+
+    def test_with_tocken_str(self):
+        token = generate_token()
+        client = Client(token)
+        self.assertFalse(client.auth.is_expired())
+
+    def test_expired_tocken(self):
+        now = int(datetime.datetime.now().timestamp())
+
+        token = generate_token(now=now-10000)
+        client = Client(token)
+
+        # do a generic request and get error
+        self.assertRaisesRegex(
+            RuntimeError,
+            "Your token is expired",
+            client.follow_link,
+            "https://submission-dev.ebi.ac.uk/api/"
+        )
 
 
 class RootTest(TestCase):
@@ -103,6 +134,9 @@ class RootTest(TestCase):
         self.assertIsInstance(submissions, list)
         self.assertEqual(len(submissions), 2)
 
+        for submission in submissions:
+            self.assertIsInstance(submission, Submission)
+
         # testing filtering
         draft = self.root.get_user_submissions(status="Draft")
 
@@ -128,10 +162,14 @@ class UserTest(TestCase):
         cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
+        cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
+        cls.mock_put = cls.mock_put_patcher.start()
+
     @classmethod
     def teardown_class(cls):
         cls.mock_get_patcher.stop()
         cls.mock_post_patcher.stop()
+        cls.mock_put_patcher.stop()
 
     def setUp(self):
         self.auth = Auth(token=generate_token())
@@ -196,3 +234,70 @@ class UserTest(TestCase):
             centreName="test Center")
 
         self.assertIsInstance(team, Team)
+
+    def test_get_teams(self):
+        with open(os.path.join(data_path, "userTeams.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+        # get user teams
+        teams = self.user.get_teams()
+
+        self.assertIsInstance(teams, list)
+        self.assertEqual(len(teams), 1)
+
+        team = teams[0]
+        self.assertIsInstance(team, Team)
+
+    def test_add_user2team(self):
+        with open(os.path.join(data_path, "user2team.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_put.return_value = Mock()
+        self.mock_put.return_value.json.return_value = data
+        self.mock_put.return_value.status_code = 200
+
+        domain = self.user.add_user_to_team(
+            user_id='dom-36ccaae5-1ce1-41f9-b65c-d349994e9c80',
+            domain_id='usr-d8749acf-6a22-4438-accc-cc8d1877ba36')
+
+        self.assertIsInstance(domain, Domain)
+
+    def read_myDomain(self):
+        with open(os.path.join(data_path, "myDomain.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+    def test_get_domains(self):
+        # initialize
+        self.read_myDomain()
+
+        # get user teams
+        domains = self.user.get_domains()
+
+        self.assertIsInstance(domains, list)
+        self.assertEqual(len(domains), 2)
+
+        for domain in domains:
+            self.assertIsInstance(domain, Domain)
+
+    def test_get_domain_by_name(self):
+        # initialize
+        self.read_myDomain()
+
+        # get a specific team
+        domain = self.user.get_domain_by_name("subs.test-team-1")
+        self.assertIsInstance(domain, Domain)
+
+        # get a team I dont't belong to
+        self.assertRaisesRegex(
+            NameError,
+            "domain: .* not found",
+            self.user.get_domain_by_name,
+            "subs.dev-team-2")

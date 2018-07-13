@@ -601,7 +601,7 @@ class Domain(Document):
         """Create profile for this domain"""
 
         # see this link for more information
-        # (https://explore.api.aai.ebi.ac.uk/docs/profile/index.html#resource-create_domain_profile"""
+        # https://explore.api.aai.ebi.ac.uk/docs/profile/index.html#resource-create_domain_profile
         url = "https://explore.api.aai.ebi.ac.uk/profiles"
 
         # define a new header. Copy the dictionary, don't use the same object

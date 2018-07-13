@@ -1,0 +1,47 @@
+{
+  "domainReference" : "dom-36ccaae5-1ce1-41f9-b65c-d349994e9c80",
+  "domainName" : "wonderland",
+  "domainDesc" : "Drink me",
+  "isActive" : "N",
+  "users" : [ {
+    "userReference" : "usr-d8749acf-6a22-4438-accc-cc8d1877ba36",
+    "userName" : "karo",
+    "email" : "karo@example.com",
+    "mobile" : null,
+    "domains" : null,
+    "_links" : {
+      "self" : {
+        "href" : "https://explore.api.aai.ebi.ac.uk/users/usr-d8749acf-6a22-4438-accc-cc8d1877ba36"
+      }
+    }
+  }, {
+    "userReference" : "usr-9832620d-ec53-43a1-873d-efdc50d34ad1",
+    "userName" : "ajay",
+    "email" : "ajay@example.com",
+    "mobile" : null,
+    "domains" : null,
+    "_links" : {
+      "self" : {
+        "href" : "https://explore.api.aai.ebi.ac.uk/users/usr-9832620d-ec53-43a1-873d-efdc50d34ad1"
+      }
+    }
+  } ],
+  "managers" : null,
+  "_links" : {
+    "self" : {
+      "href" : "https://explore.api.aai.ebi.ac.uk/domains/dom-36ccaae5-1ce1-41f9-b65c-d349994e9c80"
+    },
+    "deactivate" : {
+      "href" : "https://explore.api.aai.ebi.ac.uk/domains/dom-36ccaae5-1ce1-41f9-b65c-d349994e9c80"
+    },
+    "get users from domain" : {
+      "href" : "https://explore.api.aai.ebi.ac.uk/domains/dom-36ccaae5-1ce1-41f9-b65c-d349994e9c80/users"
+    },
+    "admin" : {
+      "href" : "https://explore.api.aai.ebi.ac.uk/domains/dom-7c3aa7d3-e9bc-43e5-818a-8971390a3102"
+    },
+    "get all domains" : {
+      "href" : "https://explore.api.aai.ebi.ac.uk/domains"
+    }
+  }
+}
