@@ -397,3 +397,67 @@ class TeamTest(TestCase):
         self.assertIsInstance(draft, list)
         self.assertEqual(len(draft), 1)
         self.assertIsInstance(draft[0], Submission)
+
+
+class SubmissionTest(TestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get = cls.mock_get_patcher.start()
+
+        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post = cls.mock_post_patcher.start()
+
+        cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
+        cls.mock_put = cls.mock_put_patcher.start()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.mock_get_patcher.stop()
+        cls.mock_post_patcher.stop()
+        cls.mock_put_patcher.stop()
+
+    def setUp(self):
+        self.auth = Auth(token=generate_token())
+
+        with open(os.path.join(data_path, "userSubmission.json")) as handle:
+            data = json.load(handle)
+
+        self.submission = Submission(self.auth, data=data)
+
+        # defining samples
+        self.sample1 = {
+            'alias': 'animal_1',
+            'title': 'animal_title',
+            'releaseDate': '2018-07-13',
+            'taxonId': 9940,
+            'attributes': {
+                'material': [
+                    {'value': 'organism',
+                     'terms': [
+                        {'url': 'http://purl.obolibrary.org/obo/OBI_0100026'}
+                     ]}
+                ],
+                'project': [{'value': 'test'}]
+            },
+            'sampleRelationships': []}
+
+        self.sample2 = {
+            'alias': 'sample_1',
+            'title': 'sample_title',
+            'releaseDate': '2018-07-13',
+            'taxonId': 9940,
+            'description': 'a description',
+            'attributes': {
+                'material': [
+                    {'value': 'specimen from organism',
+                     'terms': [
+                        {'url': 'http://purl.obolibrary.org/obo/OBI_0001479'}
+                     ]}
+                ],
+                'project': [{'value': 'test'}]
+            },
+            'sampleRelationships': [{
+                'alias': 'animal_1',
+                'relationshipNature': 'derived from'}]
+            }
