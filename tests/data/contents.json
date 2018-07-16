@@ -1,0 +1,41 @@
+{
+  "_links": {
+    "assayData": {
+      "href": "https://submission-test.ebi.ac.uk/api/assayData/search/by-submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e"
+    },
+    "assays": {
+      "href": "https://submission-test.ebi.ac.uk/api/assays/search/by-submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e"
+    },
+    "samples": {
+      "href": "https://submission-test.ebi.ac.uk/api/samples/search/by-submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e"
+    },
+    "studies": {
+      "href": "https://submission-test.ebi.ac.uk/api/studies/search/by-submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e"
+    },
+    "files": {
+      "href": "https://submission-test.ebi.ac.uk/api/files/search/by-submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e"
+    },
+    "samplesSheets": {
+      "href": "https://submission-test.ebi.ac.uk/api/sheets/search/by-submission-and-target-type?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e"
+    },
+    "assayData:create": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/contents/assayData"
+    },
+    "assays:create": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/contents/assays"
+    },
+    "projects:create": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/contents/projects"
+    },
+    "samples:create": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/contents/samples"
+    },
+    "studies:create": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/contents/studies"
+    },
+    "sheetUpload": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/spreadsheet?templateName={templateName}",
+      "templated": true
+    }
+  }
+}

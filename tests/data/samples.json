@@ -1,0 +1,288 @@
+{
+  "_embedded": {
+    "samples": [
+      {
+        "alias": "animal_1",
+        "team": {
+          "name": "subs.test-team-1",
+          "description": "image Inject tool",
+          "profile": {
+            "centre name": "IMAGE Inject team"
+          },
+          "_links": {
+            "submissions": {
+              "href": "https://submission-test.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.test-team-1"
+            },
+            "submissions:create": {
+              "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-1/submissions"
+            },
+            "items": {
+              "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-1/items"
+            }
+          }
+        },
+        "title": "animal_title",
+        "attributes": {
+          "material": [
+            {
+              "value": "organism",
+              "terms": [
+                {
+                  "url": "http://purl.obolibrary.org/obo/OBI_0100026"
+                }
+              ]
+            }
+          ],
+          "project": [
+            {
+              "value": "test",
+              "terms": []
+            }
+          ]
+        },
+        "sampleRelationships": [],
+        "taxonId": 9940,
+        "releaseDate": "2018-07-13",
+        "createdDate": "2018-07-16T07:54:32.221+0000",
+        "lastModifiedDate": "2018-07-16T07:54:32.260+0000",
+        "createdBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+        "lastModifiedBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+        "_embedded": {
+          "processingStatus": {
+            "alias": "animal_1",
+            "lastModifiedDate": "2018-07-16T07:54:32.251+0000",
+            "lastModifiedBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+            "status": "Draft",
+            "submittableType": "Sample",
+            "_links": {
+              "self": {
+                "href": "https://submission-test.ebi.ac.uk/api/processingStatuses/f1e321f8-fa92-4777-a4a6-1ab502021e76{?projection}",
+                "templated": true
+              }
+            }
+          },
+          "validationResult": {
+            "overallValidationOutcomeByAuthor": {
+              "Core": "Pass",
+              "Taxonomy": "Pass",
+              "Ena": "Pass",
+              "Biosamples": "Pass",
+              "JsonSchema": "Pass"
+            },
+            "validationStatus": "Complete",
+            "errorMessages": {
+              "Core": [],
+              "Taxonomy": [],
+              "Ena": [],
+              "Biosamples": [],
+              "JsonSchema": []
+            },
+            "_links": {
+              "self": {
+                "href": "https://submission-test.ebi.ac.uk/api/validationResults/cb05cd27-d5e3-49ca-a2ea-5733140695ce{?projection}",
+                "templated": true
+              }
+            }
+          },
+          "submission": {
+            "team": "subs.test-team-1",
+            "createdDate": "2018-07-13T13:41:10.010+0000",
+            "lastModifiedDate": "2018-07-13T13:41:10.010+0000",
+            "lastModifiedBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+            "createdBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+            "submissionStatus": "Draft",
+            "submitter": "cozzi@ibba.cnr.it",
+            "_links": {
+              "self": {
+                "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e{?projection}",
+                "templated": true
+              },
+              "submissionStatus": {
+                "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/submissionStatus"
+              }
+            }
+          }
+        },
+        "_links": {
+          "self": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/90c8f449-b3c2-4238-a22b-fd03bc02a5d2"
+          },
+          "sample": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/90c8f449-b3c2-4238-a22b-fd03bc02a5d2"
+          },
+          "history": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/search/history?teamName=subs.test-team-1&alias=animal_1"
+          },
+          "current-version": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/search/current-version?teamName=subs.test-team-1&alias=animal_1"
+          },
+          "self:update": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/90c8f449-b3c2-4238-a22b-fd03bc02a5d2"
+          },
+          "self:delete": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/90c8f449-b3c2-4238-a22b-fd03bc02a5d2"
+          },
+          "processingStatus": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/90c8f449-b3c2-4238-a22b-fd03bc02a5d2/processingStatus"
+          },
+          "submission": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/90c8f449-b3c2-4238-a22b-fd03bc02a5d2/submission"
+          },
+          "validationResult": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/90c8f449-b3c2-4238-a22b-fd03bc02a5d2/validationResult"
+          }
+        }
+      },
+      {
+        "alias": "sample_1",
+        "team": {
+          "name": "subs.test-team-1",
+          "description": "image Inject tool",
+          "profile": {
+            "centre name": "IMAGE Inject team"
+          },
+          "_links": {
+            "submissions": {
+              "href": "https://submission-test.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.test-team-1"
+            },
+            "submissions:create": {
+              "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-1/submissions"
+            },
+            "items": {
+              "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-1/items"
+            }
+          }
+        },
+        "title": "sample_title",
+        "description": "a description",
+        "attributes": {
+          "material": [
+            {
+              "value": "specimen from organism",
+              "terms": [
+                {
+                  "url": "http://purl.obolibrary.org/obo/OBI_0001479"
+                }
+              ]
+            }
+          ],
+          "project": [
+            {
+              "value": "test",
+              "terms": []
+            }
+          ]
+        },
+        "sampleRelationships": [
+          {
+            "alias": "animal_1",
+            "team": "subs.test-team-1",
+            "relationshipNature": "derived from"
+          }
+        ],
+        "taxonId": 9940,
+        "releaseDate": "2018-07-13",
+        "createdDate": "2018-07-16T08:01:30.289+0000",
+        "lastModifiedDate": "2018-07-16T08:01:30.335+0000",
+        "createdBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+        "lastModifiedBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+        "_embedded": {
+          "processingStatus": {
+            "alias": "sample_1",
+            "lastModifiedDate": "2018-07-16T08:01:30.325+0000",
+            "lastModifiedBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+            "status": "Draft",
+            "submittableType": "Sample",
+            "_links": {
+              "self": {
+                "href": "https://submission-test.ebi.ac.uk/api/processingStatuses/481a3a1f-1c25-456c-8211-2043e7e7b6e6{?projection}",
+                "templated": true
+              }
+            }
+          },
+          "validationResult": {
+            "overallValidationOutcomeByAuthor": {
+              "Core": "Pass",
+              "Taxonomy": "Pass",
+              "Ena": "Pass",
+              "Biosamples": "Pass",
+              "JsonSchema": "Pass"
+            },
+            "validationStatus": "Complete",
+            "errorMessages": {
+              "Core": [],
+              "Taxonomy": [],
+              "Ena": [],
+              "Biosamples": [],
+              "JsonSchema": []
+            },
+            "_links": {
+              "self": {
+                "href": "https://submission-test.ebi.ac.uk/api/validationResults/010fa438-94cc-4463-8f6b-09776c92d10a{?projection}",
+                "templated": true
+              }
+            }
+          },
+          "submission": {
+            "team": "subs.test-team-1",
+            "createdDate": "2018-07-13T13:41:10.010+0000",
+            "lastModifiedDate": "2018-07-13T13:41:10.010+0000",
+            "lastModifiedBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+            "createdBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+            "submissionStatus": "Draft",
+            "submitter": "cozzi@ibba.cnr.it",
+            "_links": {
+              "self": {
+                "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e{?projection}",
+                "templated": true
+              },
+              "submissionStatus": {
+                "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/submissionStatus"
+              }
+            }
+          }
+        },
+        "_links": {
+          "self": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/58cb010a-3a89-42b7-8ccd-67b6f8b6dd4c"
+          },
+          "sample": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/58cb010a-3a89-42b7-8ccd-67b6f8b6dd4c"
+          },
+          "history": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/search/history?teamName=subs.test-team-1&alias=sample_1"
+          },
+          "current-version": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/search/current-version?teamName=subs.test-team-1&alias=sample_1"
+          },
+          "self:update": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/58cb010a-3a89-42b7-8ccd-67b6f8b6dd4c"
+          },
+          "self:delete": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/58cb010a-3a89-42b7-8ccd-67b6f8b6dd4c"
+          },
+          "processingStatus": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/58cb010a-3a89-42b7-8ccd-67b6f8b6dd4c/processingStatus"
+          },
+          "submission": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/58cb010a-3a89-42b7-8ccd-67b6f8b6dd4c/submission"
+          },
+          "validationResult": {
+            "href": "https://submission-test.ebi.ac.uk/api/samples/58cb010a-3a89-42b7-8ccd-67b6f8b6dd4c/validationResult"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/samples/search/by-submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e&page=0&size=20"
+    }
+  },
+  "page": {
+    "size": 20,
+    "totalElements": 2,
+    "totalPages": 1,
+    "number": 0
+  }
+}

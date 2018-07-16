@@ -1,0 +1,26 @@
+{
+  "overallValidationOutcomeByAuthor": {
+    "Core": "Pass",
+    "Taxonomy": "Pass",
+    "Ena": "Pass",
+    "Biosamples": "Pass",
+    "JsonSchema": "Pass"
+  },
+  "validationStatus": "Complete",
+  "errorMessages": {
+    "Core": [],
+    "Taxonomy": [],
+    "Ena": [],
+    "Biosamples": [],
+    "JsonSchema": []
+  },
+  "_links": {
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/validationResults/010fa438-94cc-4463-8f6b-09776c92d10a"
+    },
+    "validationResult": {
+      "href": "https://submission-test.ebi.ac.uk/api/validationResults/010fa438-94cc-4463-8f6b-09776c92d10a{?projection}",
+      "templated": true
+    }
+  }
+}

@@ -14,7 +14,8 @@ from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from pyEBIrest.auth import Auth
-from pyEBIrest.client import Root, Team, User, Domain, Submission, Client
+from pyEBIrest.client import (
+    Root, Team, User, Domain, Submission, Client, Sample)
 
 from .test_auth import generate_token
 
@@ -420,10 +421,13 @@ class SubmissionTest(TestCase):
     def setUp(self):
         self.auth = Auth(token=generate_token())
 
-        with open(os.path.join(data_path, "userSubmission.json")) as handle:
+        with open(os.path.join(data_path, "newSubmission.json")) as handle:
             data = json.load(handle)
 
         self.submission = Submission(self.auth, data=data)
+
+        with open(os.path.join(data_path, "contents.json")) as handle:
+            self.content = json.load(handle)
 
         # defining samples
         self.sample1 = {
@@ -461,3 +465,80 @@ class SubmissionTest(TestCase):
                 'alias': 'animal_1',
                 'relationshipNature': 'derived from'}]
             }
+
+    def create_sample(self, sample):
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = self.content
+        self.mock_get.return_value.status_code = 200
+
+        with open(os.path.join(data_path, "%s.json" % (sample))) as handle:
+            data = json.load(handle)
+
+        self.mock_post.return_value = Mock()
+        self.mock_post.return_value.json.return_value = data
+        self.mock_post.return_value.status_code = 201
+
+        return self.submission.create_sample(getattr(self, sample))
+
+    def test_create_sample(self):
+        sample1 = self.create_sample("sample1")
+        self.assertIsInstance(sample1, Sample)
+
+        sample2 = self.create_sample("sample2")
+        self.assertIsInstance(sample2, Sample)
+
+    def mocked_get_samples(*args, **kwargs):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+
+            def json(self):
+                return self.json_data
+
+        get_samples_link = (
+            "https://submission-test.ebi.ac.uk/api/samples/search/by-"
+            "submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e")
+
+        with open(os.path.join(data_path, "samples.json")) as handle:
+            samples = json.load(handle)
+
+        with open(os.path.join(data_path, "validation1.json")) as handle:
+            validation1 = json.load(handle)
+
+        with open(os.path.join(data_path, "validation2.json")) as handle:
+            validation2 = json.load(handle)
+
+        if args[0] == (
+                'https://submission-dev.ebi.ac.uk/api/submissions/c8c86558-'
+                '8d3a-4ac5-8638-7aa354291d61/contents'):
+            return MockResponse({
+                '_links': {
+                    'samples': {
+                        'href': get_samples_link
+                    }
+                }}, 200)
+
+        elif args[0] == get_samples_link:
+            return MockResponse(samples, 200)
+
+        elif args[0] == (
+                'https://submission-test.ebi.ac.uk/api/samples/90c8f449-'
+                'b3c2-4238-a22b-fd03bc02a5d2/validationResult'):
+            return MockResponse(validation1, 200)
+
+        elif args[0] == (
+                'https://submission-test.ebi.ac.uk/api/samples/58cb010a-'
+                '3a89-42b7-8ccd-67b6f8b6dd4c/validationResult'):
+            return MockResponse(validation2, 200)
+
+        return MockResponse(None, 404)
+
+    # We patch 'requests.get' with our own method. The mock object is passed
+    # in to our test case method.
+    @patch('requests.get', side_effect=mocked_get_samples)
+    def test_get_samples(self, mock_get):
+        samples = self.submission.get_samples(validationResult='Complete')
+
+        self.assertIsInstance(samples, list)
+        self.assertEqual(len(samples), 2)
