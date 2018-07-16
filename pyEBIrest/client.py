@@ -366,9 +366,9 @@ class User(Document):
         self.userReference = None
 
         # dealing with this type of documents.
-        # TODO: can a user have data?
         if data:
-            raise NotImplementedError("Not yet implemented")
+            logger.debug("Reading data for user")
+            self.read_data(data)
 
     def get_my_id(self):
         """Get user id using own credentials"""
@@ -387,6 +387,22 @@ class User(Document):
 
         # returning user id
         return self.userReference
+
+    def get_user_by_id(self, user_id):
+        # defining URL
+        url = "https://explore.api.aai.ebi.ac.uk/users/%s" % (user_id)
+
+        logger.debug("Getting info from %s" % (url))
+
+        # defining my attributes. Headers are inherited
+        self.last_response = self.request(url, headers=self.headers)
+        self.last_status_code = self.last_response.status_code
+
+        # create a new user obj
+        user = User(self.auth, self.last_response.json())
+
+        # returning user
+        return user
 
     @classmethod
     def create_user(cls, user, password, confirmPwd, email, full_name,

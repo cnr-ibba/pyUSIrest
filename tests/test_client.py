@@ -84,6 +84,7 @@ class RootTest(TestCase):
         test = self.root.__str__()
         reference = "Biosample API root at %s" % (Root.api_root)
 
+        self.assertIsInstance(test, str)
         self.assertEqual(reference, test)
 
     def read_userTeams(self):
@@ -188,6 +189,16 @@ class UserTest(TestCase):
             }
         }
 
+    def test_get_user_by_id(self):
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = self.data
+        self.mock_get.return_value.status_code = 200
+
+        user = self.user.get_user_by_id(
+            "usr-f1801430-51e1-4718-8fca-778887087bad")
+
+        self.assertIsInstance(user, User)
+
     def test_get_my_id(self):
         self.mock_get.return_value = Mock()
         self.mock_get.return_value.json.return_value = self.data
@@ -197,14 +208,6 @@ class UserTest(TestCase):
         reference = "usr-f1801430-51e1-4718-8fca-778887087bad"
 
         self.assertEqual(reference, test)
-
-    def test_user_has_nodata(self):
-        self.assertRaisesRegex(
-            NotImplementedError,
-            "Not yet implemented",
-            User,
-            self.auth,
-            self.data)
 
     def test_create_user(self):
         reference = "usr-2a28ca65-2c2f-41e7-9aa5-e829830c6c71"
@@ -338,6 +341,10 @@ class DomainTest(TestCase):
         self.auth = Auth(token=generate_token())
         self.domain = Domain(self.auth)
 
+    def test_str(self):
+        test = self.domain.__str__()
+        self.assertIsInstance(test, str)
+
     def test_create_profile(self):
         with open(os.path.join(data_path, "domainProfile.json")) as handle:
             data = json.load(handle)
@@ -382,6 +389,10 @@ class TeamTest(TestCase):
             data = json.load(handle)
 
         self.team = Team(self.auth, data=data)
+
+    def test_str(self):
+        test = self.team.__str__()
+        self.assertIsInstance(test, str)
 
     def test_create_submission(self):
         with open(os.path.join(data_path, "newSubmission.json")) as handle:
@@ -434,12 +445,16 @@ class SubmissionTest(TestCase):
         cls.mock_patch_patcher = patch('pyEBIrest.client.requests.patch')
         cls.mock_patch = cls.mock_patch_patcher.start()
 
+        cls.mock_delete_patcher = patch('pyEBIrest.client.requests.delete')
+        cls.mock_delete = cls.mock_delete_patcher.start()
+
     @classmethod
     def teardown_class(cls):
         cls.mock_get_patcher.stop()
         cls.mock_post_patcher.stop()
         cls.mock_put_patcher.stop()
         cls.mock_patch_patcher.stop()
+        cls.mock_delete_patcher.stop()
 
     def setUp(self):
         self.auth = Auth(token=generate_token())
@@ -488,6 +503,10 @@ class SubmissionTest(TestCase):
                 'alias': 'animal_1',
                 'relationshipNature': 'derived from'}]
             }
+
+    def test_str(self):
+        test = self.submission.__str__()
+        self.assertIsInstance(test, str)
 
     def create_sample(self, sample):
         self.mock_get.return_value = Mock()
@@ -656,6 +675,13 @@ class SubmissionTest(TestCase):
         document = self.submission.finalize()
         self.assertIsInstance(document, Document)
 
+    def test_delete(self):
+        self.mock_delete.return_value = Mock()
+        self.mock_delete.return_value.last_response = ''
+        self.mock_delete.return_value.status_code = 204
+
+        self.submission.delete()
+
 
 class SampleTest(TestCase):
     @classmethod
@@ -682,6 +708,10 @@ class SampleTest(TestCase):
             self.data = json.load(handle)
 
         self.sample = Sample(self.auth, data=self.data)
+
+    def test_str(self):
+        test = self.sample.__str__()
+        self.assertIsInstance(test, str)
 
     def test_patch(self):
         self.mock_patch.return_value = Mock()
