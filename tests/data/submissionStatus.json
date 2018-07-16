@@ -1,0 +1,42 @@
+{
+  "status": "Draft",
+  "createdDate": "2018-07-13T13:41:09.993+0000",
+  "lastModifiedDate": "2018-07-13T13:41:09.993+0000",
+  "createdBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+  "lastModifiedBy": "usr-9bdf069e-715a-4741-92ca-620483f23ace",
+  "team": {
+    "name": "subs.test-team-1",
+    "description": "image Inject tool",
+    "profile": {
+      "centre name": "IMAGE Inject team"
+    },
+    "_links": {
+      "submissions": {
+        "href": "https://submission-test.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.test-team-1"
+      },
+      "submissions:create": {
+        "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-1/submissions"
+      },
+      "items": {
+        "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-1/items"
+      }
+    }
+  },
+  "_links": {
+    "submissionStatus": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionStatuses/7ca0c438-2ffe-4905-8b11-40b0fb39cef3"
+    },
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionStatuses/7ca0c438-2ffe-4905-8b11-40b0fb39cef3"
+    },
+    "statusDescription": {
+      "href": "https://submission-test.ebi.ac.uk/api/statusDescriptions/submissionStatuses/Draft"
+    },
+    "self:update": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionStatuses/7ca0c438-2ffe-4905-8b11-40b0fb39cef3"
+    },
+    "availableStatuses": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/availableSubmissionStatuses"
+    }
+  }
+}

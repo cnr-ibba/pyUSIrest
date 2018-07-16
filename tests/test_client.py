@@ -15,7 +15,7 @@ from unittest import TestCase
 
 from pyEBIrest.auth import Auth
 from pyEBIrest.client import (
-    Root, Team, User, Domain, Submission, Client, Sample)
+    Root, Team, User, Domain, Submission, Client, Sample, Document)
 
 from .test_auth import generate_token
 
@@ -431,11 +431,15 @@ class SubmissionTest(TestCase):
         cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
         cls.mock_put = cls.mock_put_patcher.start()
 
+        cls.mock_patch_patcher = patch('pyEBIrest.client.requests.patch')
+        cls.mock_patch = cls.mock_patch_patcher.start()
+
     @classmethod
     def teardown_class(cls):
         cls.mock_get_patcher.stop()
         cls.mock_post_patcher.stop()
         cls.mock_put_patcher.stop()
+        cls.mock_patch_patcher.stop()
 
     def setUp(self):
         self.auth = Auth(token=generate_token())
@@ -528,6 +532,7 @@ class SubmissionTest(TestCase):
         with open(os.path.join(data_path, "validation2.json")) as handle:
             validation2 = json.load(handle)
 
+        # following content
         if args[0] == (
                 'https://submission-dev.ebi.ac.uk/api/submissions/c8c86558-'
                 '8d3a-4ac5-8638-7aa354291d61/contents'):
@@ -538,14 +543,17 @@ class SubmissionTest(TestCase):
                     }
                 }}, 200)
 
+        # followin content -> samples
         elif args[0] == get_samples_link:
             return MockResponse(samples, 200)
 
+        # sample1 validtation result
         elif args[0] == (
                 'https://submission-test.ebi.ac.uk/api/samples/90c8f449-'
                 'b3c2-4238-a22b-fd03bc02a5d2/validationResult'):
             return MockResponse(validation1, 200)
 
+        # sample1 validtation result
         elif args[0] == (
                 'https://submission-test.ebi.ac.uk/api/samples/58cb010a-'
                 '3a89-42b7-8ccd-67b6f8b6dd4c/validationResult'):
@@ -573,7 +581,7 @@ class SubmissionTest(TestCase):
         statuses = self.submission.get_status()
         self.assertEqual(statuses['Complete'], 2)
 
-    def test_get_ready(self):
+    def test_check_ready(self):
         with open(os.path.join(
                 data_path, "availableSubmissionStatuses.json")) as handle:
             data = json.load(handle)
@@ -584,6 +592,69 @@ class SubmissionTest(TestCase):
 
         check = self.submission.check_ready()
         self.assertTrue(check)
+
+    def mocked_finalize(*args, **kwargs):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+                self.text = "Not implemented: %s" % (args[0])
+
+            def json(self):
+                return self.json_data
+
+        check_ready_link = (
+            "https://submission-test.ebi.ac.uk/api/submissions/c8c86558-"
+            "8d3a-4ac5-8638-7aa354291d61{?projection}/availableSubmissio"
+            "nStatuses")
+
+        with open(os.path.join(
+                data_path, "availableSubmissionStatuses.json")) as handle:
+            check_ready_data = json.load(handle)
+
+        validation_link = (
+            "https://submission-dev.ebi.ac.uk/api/validationResults/search/"
+            "by-submission?submissionId=c8c86558-8d3a-4ac5-8638-7aa354291d61")
+
+        with open(os.path.join(data_path, "validationResults.json")) as handle:
+            validation_data = json.load(handle)
+
+        self_link = (
+            "https://submission-dev.ebi.ac.uk/api/submissions/"
+            "c8c86558-8d3a-4ac5-8638-7aa354291d61")
+
+        with open(os.path.join(data_path, "newSubmission.json")) as handle:
+            self_data = json.load(handle)
+
+        status_link = (
+            "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-"
+            "47e2-bace-59f9f5b2346e/submissionStatus")
+
+        with open(os.path.join(data_path, "submissionStatus.json")) as handle:
+            status_data = json.load(handle)
+
+        if args[0] == check_ready_link:
+            return MockResponse(check_ready_data, 200)
+
+        elif args[0] == validation_link:
+            return MockResponse(validation_data, 200)
+
+        elif args[0] == self_link:
+            return MockResponse(self_data, 200)
+
+        elif args[0] == status_link:
+            return MockResponse(status_data, 200)
+
+        return MockResponse(None, 404)
+
+    @patch('requests.get', side_effect=mocked_finalize)
+    def test_finalize(self, mock_get):
+        self.mock_patch.return_value = Mock()
+        self.mock_patch.return_value.json.return_value = {}
+        self.mock_patch.return_value.status_code = 200
+
+        document = self.submission.finalize()
+        self.assertIsInstance(document, Document)
 
 
 class SampleTest(TestCase):

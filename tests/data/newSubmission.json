@@ -34,7 +34,7 @@
       "templated" : true
     },
     "submissionStatus" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/submissionStatuses/74463e55-acb7-48c6-8c2c-4102229fbd15"
+      "href" : "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/submissionStatus"
     },
     "team" : {
       "href" : "https://submission-dev.ebi.ac.uk/api/teams/subs.dev-team-1"
