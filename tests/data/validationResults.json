@@ -1,0 +1,69 @@
+{
+  "_embedded": {
+    "validationResults": [
+      {
+        "overallValidationOutcomeByAuthor": {
+          "Core": "Pass",
+          "Taxonomy": "Pass",
+          "Ena": "Pass",
+          "Biosamples": "Pass",
+          "JsonSchema": "Pass"
+        },
+        "validationStatus": "Complete",
+        "errorMessages": {
+          "Core": [],
+          "Taxonomy": [],
+          "Ena": [],
+          "Biosamples": [],
+          "JsonSchema": []
+        },
+        "_links": {
+          "self": {
+            "href": "https://submission-test.ebi.ac.uk/api/validationResults/010fa438-94cc-4463-8f6b-09776c92d10a"
+          },
+          "validationResult": {
+            "href": "https://submission-test.ebi.ac.uk/api/validationResults/010fa438-94cc-4463-8f6b-09776c92d10a{?projection}",
+            "templated": true
+          }
+        }
+      },
+      {
+        "overallValidationOutcomeByAuthor": {
+          "Core": "Pass",
+          "Taxonomy": "Pass",
+          "Ena": "Pass",
+          "Biosamples": "Pass",
+          "JsonSchema": "Pass"
+        },
+        "validationStatus": "Complete",
+        "errorMessages": {
+          "Core": [],
+          "Taxonomy": [],
+          "Ena": [],
+          "Biosamples": [],
+          "JsonSchema": []
+        },
+        "_links": {
+          "self": {
+            "href": "https://submission-test.ebi.ac.uk/api/validationResults/cb05cd27-d5e3-49ca-a2ea-5733140695ce"
+          },
+          "validationResult": {
+            "href": "https://submission-test.ebi.ac.uk/api/validationResults/cb05cd27-d5e3-49ca-a2ea-5733140695ce{?projection}",
+            "templated": true
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/validationResults/search/by-submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e&page=0&size=20"
+    }
+  },
+  "page": {
+    "size": 20,
+    "totalElements": 2,
+    "totalPages": 1,
+    "number": 0
+  }
+}

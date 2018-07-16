@@ -542,3 +542,77 @@ class SubmissionTest(TestCase):
 
         self.assertIsInstance(samples, list)
         self.assertEqual(len(samples), 2)
+
+    def test_get_status(self):
+        with open(os.path.join(data_path, "validationResults.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+        statuses = self.submission.get_status()
+        self.assertEqual(statuses['Complete'], 2)
+
+    def test_get_ready(self):
+        with open(os.path.join(
+                data_path, "availableSubmissionStatuses.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+        check = self.submission.check_ready()
+        self.assertTrue(check)
+
+
+class SampleTest(TestCase):
+    @classmethod
+    def setup_class(cls):
+        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get = cls.mock_get_patcher.start()
+
+        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post = cls.mock_post_patcher.start()
+
+        cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
+        cls.mock_put = cls.mock_put_patcher.start()
+
+        cls.mock_patch_patcher = patch('pyEBIrest.client.requests.patch')
+        cls.mock_patch = cls.mock_patch_patcher.start()
+
+        cls.mock_delete_patcher = patch('pyEBIrest.client.requests.delete')
+        cls.mock_delete = cls.mock_delete_patcher.start()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.mock_get_patcher.stop()
+        cls.mock_post_patcher.stop()
+        cls.mock_put_patcher.stop()
+
+    def setUp(self):
+        self.auth = Auth(token=generate_token())
+
+        with open(os.path.join(data_path, "sample2.json")) as handle:
+            self.data = json.load(handle)
+
+        self.sample = Sample(self.auth, data=self.data)
+
+    def test_patch(self):
+        self.mock_patch.return_value = Mock()
+        self.mock_patch.return_value.json.return_value = self.data
+        self.mock_patch.return_value.status_code = 200
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = self.data
+        self.mock_get.return_value.status_code = 200
+
+        self.sample.patch(sample_data={'title': 'new title'})
+
+    def test_delete(self):
+        self.mock_delete.return_value = Mock()
+        self.mock_delete.return_value.last_response = ''
+        self.mock_delete.return_value.status_code = 204
+
+        self.sample.delete()

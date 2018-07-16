@@ -1,0 +1,28 @@
+{
+  "_embedded": {
+    "statusDescriptions": [
+      {
+        "statusName": "Submitted",
+        "description": "User has submitted documents for storage by archives",
+        "systemTransitions": [
+          "Processing"
+        ],
+        "acceptingUpdates": false,
+        "_links": {
+          "self": {
+            "href": "https://submission-test.ebi.ac.uk/api/statusDescriptions/submissionStatuses/Submitted"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/availableSubmissionStatuses"
+    },
+    "submission": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e{?projection}",
+      "templated": true
+    }
+  }
+}
