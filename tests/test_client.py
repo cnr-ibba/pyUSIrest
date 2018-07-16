@@ -237,13 +237,17 @@ class UserTest(TestCase):
 
         self.assertIsInstance(team, Team)
 
-    def test_get_teams(self):
+    def read_teams(self):
         with open(os.path.join(data_path, "userTeams.json")) as handle:
             data = json.load(handle)
 
         self.mock_get.return_value = Mock()
         self.mock_get.return_value.json.return_value = data
         self.mock_get.return_value.status_code = 200
+
+    def test_get_teams(self):
+        # initialize
+        self.read_teams()
 
         # get user teams
         teams = self.user.get_teams()
@@ -253,6 +257,21 @@ class UserTest(TestCase):
 
         team = teams[0]
         self.assertIsInstance(team, Team)
+
+    def test_get_team_by_name(self):
+        # initialize
+        self.read_teams()
+
+        # get a specific team
+        team = self.user.get_team_by_name("subs.dev-team-1")
+        self.assertIsInstance(team, Team)
+
+        # get a team I dont't belong to
+        self.assertRaisesRegex(
+            NameError,
+            "team: .* not found",
+            self.user.get_team_by_name,
+            "subs.dev-team-2")
 
     def test_add_user2team(self):
         with open(os.path.join(data_path, "user2team.json")) as handle:
@@ -573,12 +592,6 @@ class SampleTest(TestCase):
         cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
-        cls.mock_post = cls.mock_post_patcher.start()
-
-        cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
-        cls.mock_put = cls.mock_put_patcher.start()
-
         cls.mock_patch_patcher = patch('pyEBIrest.client.requests.patch')
         cls.mock_patch = cls.mock_patch_patcher.start()
 
@@ -588,8 +601,8 @@ class SampleTest(TestCase):
     @classmethod
     def teardown_class(cls):
         cls.mock_get_patcher.stop()
-        cls.mock_post_patcher.stop()
-        cls.mock_put_patcher.stop()
+        cls.mock_patch_patcher.stop()
+        cls.mock_delete_patcher.stop()
 
     def setUp(self):
         self.auth = Auth(token=generate_token())
