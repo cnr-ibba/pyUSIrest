@@ -21,14 +21,17 @@ setup(
     author="Paolo Cozzi",
     author_email='cozzi@ibba.cnr.it',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Topic :: Software Development :: Libraries',
     ],
     description=("Python EBI submission REST API contain all methods to "
                  "interact with EBI Submission REST API"),
@@ -47,7 +50,7 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/bunop/pyUSIrest',
-    version='0.1.0',
+    url='https://github.com/cnr-ibba/pyUSIrest',
+    version="0.2.0-dev",
     zip_safe=False,
 )

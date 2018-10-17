@@ -198,7 +198,7 @@ class Document(Client):
 
         # remove {?projection} from self link. This is unreachible
         if '{?projection}' in link:
-            logger.warn("removing {?projection} for link")
+            logger.warning("removing {?projection} for link")
             link = link.replace("{?projection}", "")
 
         # now follow link
@@ -326,7 +326,7 @@ class Root(Document):
 
         # check if I have submission
         if 'submissions' not in document._embedded:
-            logger.warn("You haven't any submission yet!")
+            logger.warning("You haven't any submission yet!")
             return submissions
 
         # now iterate over teams and create new objects
@@ -468,7 +468,7 @@ class User(Document):
             raise ConnectionError(response.text)
 
         # If I create a new team, the Auth object need to be updated
-        logger.warn(
+        logger.warning(
             "You need to generate a new token in order to see the new "
             "generated team")
 
@@ -698,7 +698,7 @@ class Team(Document):
 
         # check if I have submission
         if len(submissions) == 0:
-            logger.warn("You haven't any submission yet!")
+            logger.warning("You haven't any submission yet!")
 
         return submissions
 
@@ -890,7 +890,7 @@ class Submission(Document):
 
         # deal with different subission instances
         if 'contents' not in self._links:
-            logger.warn("reloading submission")
+            logger.warning("reloading submission")
             self.reload()
 
         document = self.follow_link(
@@ -925,7 +925,7 @@ class Submission(Document):
 
         # deal with different subission instances
         if 'validationResults' not in self._links:
-            logger.warn("reloading submission")
+            logger.warning("reloading submission")
             self.reload()
 
         document = self.follow_link('validationResults', auth=self.auth)
