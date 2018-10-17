@@ -3,18 +3,18 @@ Python EBI submission REST API
 ==============================
 
 
-.. image:: https://img.shields.io/pypi/v/pyEBIrest.svg
-        :target: https://pypi.python.org/pypi/pyEBIrest
+.. image:: https://img.shields.io/pypi/v/pyUSIrest.svg
+        :target: https://pypi.python.org/pypi/pyUSIrest
 
-.. image:: https://img.shields.io/travis/bunop/pyEBIrest.svg
-        :target: https://travis-ci.org/bunop/pyEBIrest
+.. image:: https://img.shields.io/travis/bunop/pyUSIrest.svg
+        :target: https://travis-ci.org/bunop/pyUSIrest
 
-.. image:: https://readthedocs.org/projects/pyEBIrest/badge/?version=latest
-        :target: https://pyEBIrest.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/pyUSIrest/badge/?version=latest
+        :target: https://pyUSIrest.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://coveralls.io/repos/github/bunop/pyEBIrest/badge.svg?branch=master
-        :target: https://coveralls.io/github/bunop/pyEBIrest?branch=master
+.. image:: https://coveralls.io/repos/github/bunop/pyUSIrest/badge.svg?branch=master
+        :target: https://coveralls.io/github/bunop/pyUSIrest?branch=master
 
 
 
@@ -22,7 +22,7 @@ Python EBI submission REST API contain all methods to interact with EBI Submissi
 
 
 * Free software: GNU General Public License v3
-* Documentation: https://pyEBIrest.readthedocs.io.
+* Documentation: https://pyUSIrest.readthedocs.io.
 
 
 Features

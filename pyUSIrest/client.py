@@ -22,14 +22,14 @@ class Client():
     class after instantiating :class:`python_ebi_app.Auth`::
 
         import getpass
-        from pyEBIrest import Auth, Client
+        from pyUSIrest import Auth, Client
         auth = Auth(user=<you_aap_user>, password=getpass.getpass())
         client = Client(auth)
     """
 
     headers = {
         'Accept': 'application/hal+json',
-        'User-Agent': 'pyEBIrest v0.1.0'
+        'User-Agent': 'pyUSIrest v0.1.0'
     }
 
     def __init__(self, auth):

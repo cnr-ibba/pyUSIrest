@@ -13,7 +13,7 @@ from unittest.mock import patch, Mock
 from unittest import TestCase
 
 
-from pyEBIrest.auth import Auth
+from pyUSIrest.auth import Auth
 
 
 def generate_token(now=None):
@@ -41,7 +41,7 @@ def generate_token(now=None):
 class TestAuth(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyEBIrest.auth.requests.get')
+        cls.mock_get_patcher = patch('pyUSIrest.auth.requests.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
     @classmethod

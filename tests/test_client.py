@@ -13,8 +13,8 @@ import datetime
 from unittest.mock import patch, Mock
 from unittest import TestCase
 
-from pyEBIrest.auth import Auth
-from pyEBIrest.client import (
+from pyUSIrest.auth import Auth
+from pyUSIrest.client import (
     Root, Team, User, Domain, Submission, Client, Sample, Document)
 
 from .test_auth import generate_token
@@ -30,7 +30,7 @@ data_path = os.path.join(dir_path, "data")
 class ClientTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
     @classmethod
@@ -60,7 +60,7 @@ class ClientTest(TestCase):
 class RootTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
     @classmethod
@@ -158,13 +158,13 @@ class RootTest(TestCase):
 class UserTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
-        cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
+        cls.mock_put_patcher = patch('pyUSIrest.client.requests.put')
         cls.mock_put = cls.mock_put_patcher.start()
 
     @classmethod
@@ -330,7 +330,7 @@ class UserTest(TestCase):
 class DomainTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
     @classmethod
@@ -367,13 +367,13 @@ class DomainTest(TestCase):
 class TeamTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
-        cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
+        cls.mock_put_patcher = patch('pyUSIrest.client.requests.put')
         cls.mock_put = cls.mock_put_patcher.start()
 
     @classmethod
@@ -433,19 +433,19 @@ class TeamTest(TestCase):
 class SubmissionTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_post_patcher = patch('pyEBIrest.client.requests.post')
+        cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
-        cls.mock_put_patcher = patch('pyEBIrest.client.requests.put')
+        cls.mock_put_patcher = patch('pyUSIrest.client.requests.put')
         cls.mock_put = cls.mock_put_patcher.start()
 
-        cls.mock_patch_patcher = patch('pyEBIrest.client.requests.patch')
+        cls.mock_patch_patcher = patch('pyUSIrest.client.requests.patch')
         cls.mock_patch = cls.mock_patch_patcher.start()
 
-        cls.mock_delete_patcher = patch('pyEBIrest.client.requests.delete')
+        cls.mock_delete_patcher = patch('pyUSIrest.client.requests.delete')
         cls.mock_delete = cls.mock_delete_patcher.start()
 
     @classmethod
@@ -686,13 +686,13 @@ class SubmissionTest(TestCase):
 class SampleTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyEBIrest.client.requests.get')
+        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_patch_patcher = patch('pyEBIrest.client.requests.patch')
+        cls.mock_patch_patcher = patch('pyUSIrest.client.requests.patch')
         cls.mock_patch = cls.mock_patch_patcher.start()
 
-        cls.mock_delete_patcher = patch('pyEBIrest.client.requests.delete')
+        cls.mock_delete_patcher = patch('pyUSIrest.client.requests.delete')
         cls.mock_delete = cls.mock_delete_patcher.start()
 
     @classmethod

@@ -4,7 +4,7 @@ Usage
 
 To use Python EBI submission REST API in a project::
 
-  import pyEBIrest
+  import pyUSIrest
 
 Creating an Auth object
 -----------------------
@@ -12,7 +12,7 @@ Creating an Auth object
 You can create a new ``Auth`` object using ``Auth`` class, providing you USI
 username and password::
 
-  from pyEBIrest.auth import Auth
+  from pyUSIrest.auth import Auth
   auth = Auth(user=<usi_username>, password=<usi_password>)
 
 Alternatively you can create an ``Auth`` object starting from a token::
@@ -22,9 +22,9 @@ Alternatively you can create an ``Auth`` object starting from a token::
 Creating an USI user
 --------------------
 
-In order to create a new USI user, with ``pyEBIrest`` you can user ``User`` class::
+In order to create a new USI user, with ``pyUSIrest`` you can user ``User`` class::
 
-  from pyEBIrest.client import User
+  from pyUSIrest.client import User
 
   user_id = User.create_user(
       user=<new_usi_username>,
@@ -41,15 +41,15 @@ Creating a team
 To create a team, you will need to authenticate to USI biosample system. You could
 provide the credentials already created::
 
-  from pyEBIrest.auth import Auth
-  from pyEBIrest.client import User
+  from pyUSIrest.auth import Auth
+  from pyUSIrest.client import User
   auth = Auth(user=<usi_username>, password=<usi_password>)
   user = User(auth)
   team = user.create_team(description="Your description")
 
 .. warning::
 
-  remember to ri-generate to token in order to see the new generated team using pyEBIrest
+  remember to ri-generate to token in order to see the new generated team using pyUSIrest
   objects
 
 Add proile to domain
@@ -66,8 +66,8 @@ Adding user to team
 To add a user to a team, you need to provide a ``user_id`` object, like the one
 obtained by creating a user, or by calling ``get_my_id`` for a User instance::
 
-  from pyEBIrest.auth import Auth
-  from pyEBIrest.client import User
+  from pyUSIrest.auth import Auth
+  from pyUSIrest.client import User
   auth = Auth(user=<usi_username>, password=<usi_password>)
   user = User(auth)
   user_id = user.get_my_id()
@@ -87,8 +87,8 @@ Create a submission
 Create a new ``Auth`` instance, then instantiate a new ``Root`` object and follow
 links using class methods::
 
-  from pyEBIrest.auth import Auth
-  form pyEBIrest.client import Root
+  from pyUSIrest.auth import Auth
+  form pyUSIrest.client import Root
   auth = Auth(user=<usi_username>, password=<usi_password>)
   root = Root(auth=auth)
   team = root.get_team_by_name(<your team name>)

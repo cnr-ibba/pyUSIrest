@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-"""Console script for pyEBIrest."""
+"""Console script for pyUSIrest."""
 import sys
 import click
 
 
 @click.command()
 def main(args=None):
-    """Console script for pyEBIrest."""
+    """Console script for pyUSIrest."""
     click.echo("Replace this message by putting your code into "
-               "pyEBIrest.cli.main")
+               "pyUSIrest.cli.main")
     click.echo("See click documentation at http://click.pocoo.org/")
     return 0
 
