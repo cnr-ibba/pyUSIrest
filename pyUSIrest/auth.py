@@ -95,7 +95,7 @@ class Auth():
 
         # debug
         if 0 < duration.total_seconds() < 300:
-            logger.warn(
+            logger.warning(
                 "Token for {user} will expire in {seconds} seconds".format(
                     user=self.claims['name'],
                     seconds=duration.total_seconds()

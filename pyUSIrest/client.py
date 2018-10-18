@@ -11,6 +11,8 @@ import requests
 import logging
 import collections
 
+from url_normalize import url_normalize
+
 from .auth import Auth
 
 
@@ -347,6 +349,32 @@ class Root(Document):
         logger.info("Got %s submissions" % len(submissions))
 
         return submissions
+
+    def get_submission_by_name(self, submission_name):
+        """Got a specific submission object by providing its name"""
+
+        # define submission url
+        url = "/".join([self.api_root, 'submissions', submission_name])
+
+        # fixing url (normalizing)
+        url = url_normalize(url)
+
+        # doing a request
+        self.last_response = self.request(url, headers=self.headers)
+        self.last_status_code = self.last_response.status_code
+
+        if self.last_status_code == 200:
+            # read submission data
+            submission_data = self.last_response.json()
+            return Submission(self.auth, submission_data)
+
+        elif self.last_status_code == 404:
+            # if I arrive here, no submission is found
+            raise NameError(
+                "submission: {name} not found".format(name=submission_name))
+
+        else:
+            raise ConnectionError(self.last_response.text)
 
 
 # TODO: need this class be placed in auth module?

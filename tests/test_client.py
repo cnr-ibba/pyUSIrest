@@ -154,6 +154,39 @@ class RootTest(TestCase):
         self.assertIsInstance(completed1, list)
         self.assertEqual(len(completed1), 0)
 
+    def test_get_submission_by_name(self):
+        with open(os.path.join(data_path, "newSubmission.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+        submission = self.root.get_submission_by_name(
+            submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
+
+        self.assertIsInstance(submission, Submission)
+
+    def test_get_submission_not_found(self):
+        """Test get a submission with a wrong name"""
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = ''
+        self.mock_get.return_value.status_code = 404
+
+        self.assertRaisesRegex(
+            NameError,
+            "submission: .* not found",
+            self.root.get_submission_by_name,
+            submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.status_code = 500
+
+        self.assertRaises(
+            ConnectionError,
+            self.root.get_submission_by_name,
+            submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
 
 class UserTest(TestCase):
     @classmethod
