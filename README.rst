@@ -1,5 +1,5 @@
 ==============================
-Python EBI submission REST API
+Python USI submission REST API
 ==============================
 
 
@@ -18,8 +18,8 @@ Python EBI submission REST API
 
 
 
-Python EBI submission REST API contain all methods to interact with EBI Submission REST API
-
+Python USI submission REST API contain all methods to interact with EMBL-EBI
+Unified Submissions interface
 
 * Free software: GNU General Public License v3
 * Documentation: https://pyUSIrest.readthedocs.io.

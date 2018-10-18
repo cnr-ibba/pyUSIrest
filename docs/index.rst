@@ -1,4 +1,4 @@
-Welcome to Python EBI submission REST API's documentation!
+Welcome to Python USI submission REST API's documentation!
 ==========================================================
 
 .. toctree::

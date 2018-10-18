@@ -2,7 +2,7 @@
 Usage
 =====
 
-To use Python EBI submission REST API in a project::
+To use Python USI submission REST API in a project::
 
   import pyUSIrest
 

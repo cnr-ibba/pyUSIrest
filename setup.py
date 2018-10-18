@@ -33,8 +33,8 @@ setup(
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Software Development :: Libraries',
     ],
-    description=("Python EBI submission REST API contain all methods to "
-                 "interact with EBI Submission REST API"),
+    description=("Python USI submission REST API contain all methods to "
+                 "interact with EMBL-EBI Unified Submissions interface"),
     entry_points={
         'console_scripts': [
             'pyUSIrest=pyUSIrest.cli:main',
