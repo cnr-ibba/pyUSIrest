@@ -6,11 +6,7 @@ __author__ = """Paolo Cozzi"""
 __email__ = 'cozzi@ibba.cnr.it'
 __version__ = '0.2.0-dev'
 
-from .auth import Auth
-from .client import (
-    Client, Team, Submission, Document, Root, User, Domain, Sample,
-    ValidationResult)
+from . import auth
+from . import client
 
-__all__ = [
-    "Auth", "Client", "Team", "Submission", "Document", "Root", "User",
-    "Domain", "Sample", "ValidationResult"]
+__all__ = ["auth", "client"]
