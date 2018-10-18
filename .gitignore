@@ -101,8 +101,5 @@ ENV/
 # mypy
 .mypy_cache/
 
-# Module documentation generated files
-docs/pyUSIrest.rst
-
 # jwt files
 *.jwt
