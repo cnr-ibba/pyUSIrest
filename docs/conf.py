@@ -100,15 +100,6 @@ def setup(app):
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
 
 
-# calling api-doc
-def run_apidoc(_):
-    os.system('sphinx-apidoc -o docs/ pyUSIrest')
-
-
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
-
-
 # -- Options for HTML output -------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for

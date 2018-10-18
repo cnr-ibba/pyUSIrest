@@ -103,7 +103,6 @@ ENV/
 
 # Module documentation generated files
 docs/pyUSIrest.rst
-docs/modules.rst
 
 # jwt files
 *.jwt
