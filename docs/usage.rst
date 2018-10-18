@@ -52,8 +52,8 @@ provide the credentials already created::
   remember to ri-generate to token in order to see the new generated team using pyUSIrest
   objects
 
-Add proile to domain
-++++++++++++++++++++
+Add profile to domain
++++++++++++++++++++++
 
 To create a profile for a team::
 
@@ -88,7 +88,7 @@ Create a new ``Auth`` instance, then instantiate a new ``Root`` object and follo
 links using class methods::
 
   from pyUSIrest.auth import Auth
-  form pyUSIrest.client import Root
+  from pyUSIrest.client import Root
   auth = Auth(user=<usi_username>, password=<usi_password>)
   root = Root(auth=auth)
   team = root.get_team_by_name(<your team name>)
@@ -130,3 +130,15 @@ After managing sample and validation statuses, if everything is ok you can final
 your submission with::
 
   submission.finalize()
+
+Fetch a submission my name
+--------------------------
+
+In order to get a submission by name::
+
+  from pyUSIrest.auth import Auth
+  from pyUSIrest.client import Root
+  auth = Auth(user=<usi_username>, password=<usi_password>)
+  root = Root(auth=auth)
+  submission = root.get_submission_by_name(
+      'c3a7e663-3a37-48d3-a041-8c18088e3185')

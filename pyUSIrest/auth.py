@@ -18,20 +18,24 @@ logger = logging.getLogger(__name__)
 
 
 class Auth():
-    """
-    Instantiate a python EBI AAP Object
-
-    Kwargs:
-        user (str): your aap username
-        password (str): your password
-        token (str): a valid EBI AAP jwt token
-
-    Generate a new auth object
-    """
 
     auth_url = "https://explore.api.aai.ebi.ac.uk/auth"
 
     def __init__(self, user=None, password=None, token=None):
+        """
+        Instantiate a python EBI AAP Object. You can generate a new object
+        providing both user and password, or by passing a valid token
+        string
+
+        Args:
+            user (str): your aap username
+            password (str): your password
+            token (str): a valid EBI AAP jwt token
+
+        Returns:
+            Auth instance
+        """
+
         self.expire = None
         self.issued = None
         self.header = None
@@ -82,6 +86,8 @@ class Auth():
 
     @property
     def token(self):
+        """Get/Set token as a string"""
+
         return self._token
 
     @token.setter
@@ -90,6 +96,12 @@ class Auth():
         self._token = token
 
     def get_duration(self):
+        """Get token remaining time before expiration
+
+        Returns:
+            datetime.timedelta: remaining time as
+            :py:class:`datetime.timedelta` object
+        """
         now = datetime.datetime.now()
         duration = (self.expire - now)
 
@@ -118,6 +130,8 @@ class Auth():
         return duration
 
     def is_expired(self):
+        """Return True if token is exipired, False otherwise"""
+
         return self.get_duration().days < 0
 
     def __str__(self):

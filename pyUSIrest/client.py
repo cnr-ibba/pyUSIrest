@@ -35,6 +35,13 @@ class Client():
     }
 
     def __init__(self, auth):
+        """Instantiate the class
+
+        Args:
+            auth (Auth): a valid :py:class:`pyUSIrest.auth.Auth` object
+
+        """
+
         # my attributes
         self._auth = None
         self.last_response = None

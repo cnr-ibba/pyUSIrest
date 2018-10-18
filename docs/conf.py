@@ -20,6 +20,9 @@
 #
 import os
 import sys
+
+from sphinx.apidoc import main
+
 sys.path.insert(0, os.path.abspath('..'))
 
 import pyUSIrest
@@ -32,7 +35,9 @@ import pyUSIrest
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = [
+    'sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.intersphinx',
+    'sphinx.ext.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -77,6 +82,31 @@ pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
+
+
+# document __init__ class method
+# https://stackoverflow.com/questions/5599254/how-to-use-sphinxs-autodoc-to-document-a-classs-init-self-method
+def skip(app, what, name, obj, skip, options):
+    if name == "__init__":
+        return False
+    return skip
+
+
+def setup(app):
+    app.connect("autodoc-skip-member", skip)
+
+
+# Link to other projects’ documentation
+intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
+
+
+# calling api-doc
+def run_apidoc(_):
+    os.system('sphinx-apidoc -o docs/ pyUSIrest')
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
 
 
 # -- Options for HTML output -------------------------------------------
