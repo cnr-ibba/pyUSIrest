@@ -85,7 +85,8 @@ from a :py:class:`User <pyUSIrest.client.User>` instance::
   user = User(auth)
   user_id = user.get_my_id()
 
-Next, you need to find out the domain reference of a team using a team name, for example::
+Next, you need to find out the domain reference of a team using a team name and
+:py:meth:`get_domain_by_name <pyUSIrest.client.User.get_domain_by_name>` method::
 
   domain = user.get_domain_by_name(team.name)
   domain_id = domain.domainReference
@@ -99,10 +100,10 @@ To add user to a team call :py:meth:`add_user_to_team <pyUSIrest.client.User.add
 Create a submission
 -------------------
 
-From a valid :py:class:`pyUSIrest.client.Root` object, get the
-:py:class:`pyUSIrest.client.Team` object providing the ``team_name`` in which the
-submission will be created. Then create a new :py:class:`pyUSIrest.client.Submission`
-using the ``create_submission`` method::
+From a valid :py:class:`Root <pyUSIrest.client.Root>` object, get the
+:py:class:`Team <pyUSIrest.client.Team>` object providing the ``team_name`` in which the
+submission will be created. Then create a new :py:class:`Submission <pyUSIrest.client.Submission>`
+using the :py:meth:`create_submission <pyUSIrest.client.Team.create_submission>` method::
 
   team = root.get_team_by_name(<your team name>)
   submission = team.create_submission()
@@ -113,51 +114,67 @@ a profile to your domain as described in :ref:`add profile to domain <add_profil
 Add samples to a submission
 +++++++++++++++++++++++++++
 
-In order to add sample to a submission, define :py:class:`dict` for sample data, then add
-them using ``create_sample``::
+In order to add sample to a submission, define a :py:class:`dict` for sample data,
+then add them using :py:meth:`create_sample <pyUSIrest.client.Submission.create_sample>`.
+In the following example, a test animal and a sample from that animal are created::
 
-  animal_data = {'alias': 'animal_1',
-    'title': 'ANIMAL:::ID:::WF60/B0811',
+  # define data as dictionaries. Ensure that mandatory keys
+  # are provided or biosample will throw an error
+  animal_data = {
+    'alias': 'animal_1',
+    'title': 'A Sample Organism',
     'releaseDate': '2018-06-19',
     'taxonId': 9940,
     'attributes': {'material': [{'value': 'organism',
       'terms': [{'url': 'http://purl.obolibrary.org/obo/OBI_0100026'}]}],
-    'project': [{'value': 'IMAGE'}]},
+    'project': [{'value': 'A Sample Project'}]},
     'sampleRelationships': []}
+
+  # add this animal to submission
   sample = submission.create_sample(animal_data)
+
+  # Now generate a sample derived from the previous one.
+  # This link is provided by sampleRelationships key
   sample_data = {'alias': 'sample_1',
-    'title': 'MA_052_KR_S_Snh_S03_Mariensee_WF001265_OMS_13.01.04',
+    'title': 'A Sample Speciemen',
     'releaseDate': '2018-06-19',
     'taxonId': 9940,
-    'description': 'Qualitätsrate (Mot) 87,5 %',
+    'description': 'A Useful Description',
     'attributes': {'material': [{'value': 'specimen from organism',
        'terms': [{'url': 'http://purl.obolibrary.org/obo/OBI_0001479'}]}],
-     'project': [{'value': 'IMAGE'}]},
+     'project': [{'value': 'A Sample Project'}]},
     'sampleRelationships': [{'alias': 'animal_1',
       'relationshipNature': 'derived from'}]}
+
+  # add this sample to the submission
   sample = submission.create_sample(sample_data)
 
-Querying for biosample validation
-+++++++++++++++++++++++++++++++++
+Check and finalize a Submission
+-------------------------------
+
+Querying for biosample validation status
+++++++++++++++++++++++++++++++++++++++++
 
 After submitting all data, before finalize a submission, you need to ensure that
-all the validation steps performed by USI are done with success. You can query
-status with::
+all the validation steps performed by USI_ are done with success. You can query
+status with :py:meth:`get_status <pyUSIrest.client.Submission.get_status>`::
 
   status = submission.get_status()
   print(status)  # Counter({'Complete': 2})
 
 status will be a :py:class:`collections.Counter` object. In order to finalize a
-submission to biosample, ``get_status()`` need to return only 'Complete' as status,
-with a number equal to the number of sample attached to submission
+submission to biosample, :py:meth:`get_status <pyUSIrest.client.Submission.get_status>`
+need to return only ``Complete`` as status (not ``Pending``), with a number equal
+to the number of samples attached to submission
 
 Checking errors
 +++++++++++++++
 
-Another method to check submisssion before finalizing it is to check for errors::
+Another method to check submission status before finalizing it is to check for errors
+with :py:meth:`has_errors <pyUSIrest.client.Submission.has_errors>` method::
 
   errors = submission.has_errors()
-  print(errors)  # Counter({False: 17, True: 1})
+  print(errors)  # Counter({False: 1, True: 1})
 
 If there is any ``True`` in this :py:class:`collections.Counter` object,
 submission has errors and can't be finalized. You will need to search
@@ -169,34 +186,40 @@ Finalize a submission
 +++++++++++++++++++++
 
 After managing sample and validation statuses, if everything is ok you can finalize
-your submission with::
+your submission with :py:meth:`finalize <pyUSIrest.client.Submission.finalize>`::
 
   submission.finalize()
+
+After finalization, you can't add more data to this submission. You may want to
+reload your data in order to retrieve the *biosample ids*, as described by
+:ref:`get samples from a submission <get_samples_from_a_submission>`.
 
 Fetch a submission by name
 --------------------------
 
-In order to get a submission by name::
+In order to get a submission by name, call :py:meth:`get_submission_by_name <pyUSIrest.client.Root.get_submission_by_name>`
+from a valid :py:class:`Root <pyUSIrest.client.Root>` object::
 
-  from pyUSIrest.auth import Auth
-  from pyUSIrest.client import Root
-  auth = Auth(user=<usi_username>, password=<usi_password>)
   root = Root(auth=auth)
   submission = root.get_submission_by_name(
       'c3a7e663-3a37-48d3-a041-8c18088e3185')
 
+.. _get_samples_from_a_submission:
+
 Get samples from a submission
 -----------------------------
 
-In order to get all samples for a submission, you can call the method ``get_samples``
-on a submission object::
+In order to get all samples for a submission, you can call the method
+:py:meth:`get_samples <pyUSIrest.client.Submission.get_samples>`
+on a :py:class:`Submission <pyUSIrest.client.Submission>` object::
 
   samples = submission.get_samples()
 
 You can also filter out samples by validationResult or if the have errors or not.
-For a list of validationResult, check the output of ``submission.get_status()``::
+For a list of validationResult, check the output of :py:meth:`get_status <pyUSIrest.client.Submission.get_status>`::
 
   # fetching pending samples
   samples_pending = submission.get_samples(validationResult='Pending')
+
   # get samples with errors
   samples_error = submission.get_samples(has_errors=True)
