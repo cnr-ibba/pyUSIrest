@@ -52,7 +52,7 @@ class ClientTest(TestCase):
         self.assertRaisesRegex(
             RuntimeError,
             "Your token is expired",
-            client.follow_link,
+            client.follow_url,
             "https://submission-dev.ebi.ac.uk/api/"
         )
 

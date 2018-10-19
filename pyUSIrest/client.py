@@ -178,17 +178,17 @@ class Client():
 
         return response.json()
 
-    def follow_link(self, link):
+    def follow_url(self, url):
         """Calling request and setting class attributes
 
         Args:
-            link (str): url to request
+            url (str): url to request
 
         Returns:
             requests.Response: a response object
         """
 
-        response = self.request(link, headers=self.headers)
+        response = self.request(url, headers=self.headers)
 
         # assign attributes
         self.last_response = response
@@ -224,9 +224,9 @@ class Document(Client):
         new_data = copy.copy(data)
 
         while 'next' in data['_links']:
-            link = data['_links']['next']['href']
-            logger.debug("Paginating %s" % (link))
-            response = super().follow_link(link)
+            url = data['_links']['next']['href']
+            logger.debug("Paginating %s" % (url))
+            response = super().follow_url(url)
             data = super().parse_response(response)
 
             for key, value in data['_embedded'].items():
@@ -246,15 +246,15 @@ class Document(Client):
         # read data and setting self.data
         self.read_data(data, force)
 
-    def follow_link(self, tag, auth=None, force=True):
-        """Pick a link from data attribute, perform a request and returns
+    def follow_url(self, tag, auth=None, force=True):
+        """Pick a url from data attribute, perform a request and returns
         a document object. For instance::
 
-            document.follow_link('userSubmissions')
+            document.follow_url('userSubmissions')
 
         will return a document instance by requesting with
-        :py:meth:`Client.follow_link` using
-        ``document.data['_links']['userSubmissions']['href']`` as link
+        :py:meth:`Client.follow_url` using
+        ``document.data['_links']['userSubmissions']['href']`` as url
 
         Args:
             tag (str): a key from USI response dictionary
@@ -265,10 +265,10 @@ class Document(Client):
             Document: a document object
         """
 
-        logger.debug("Following %s link" % (tag))
+        logger.debug("Following %s url" % (tag))
 
-        link = self._links[tag]['href']
-        response = super().follow_link(link)
+        url = self._links[tag]['href']
+        response = super().follow_url(url)
 
         # create a new document
         document = Document(auth=auth)
@@ -282,27 +282,27 @@ class Document(Client):
 
         return document
 
-    def follow_self_link(self):
-        """Follow *self* link and update class attributes. For instance::
+    def follow_self_url(self):
+        """Follow *self* url and update class attributes. For instance::
 
-            document.follow_self_link()
+            document.follow_self_url()
 
         will reload document instance by requesting with
-        :py:meth:`Client.follow_link` using
-        ``document.data['_links']['self']['href']`` as link"""
+        :py:meth:`Client.follow_url` using
+        ``document.data['_links']['self']['href']`` as url"""
 
-        logger.debug("Following self link")
+        logger.debug("Following self url")
 
-        # get a link to follow
-        link = self._links['self']['href']
+        # get a url to follow
+        url = self._links['self']['href']
 
-        # remove {?projection} from self link. This is unreachible
-        if '{?projection}' in link:
-            logger.debug("removing {?projection} from link")
-            link = link.replace("{?projection}", "")
+        # remove {?projection} from self url. This is unreachible
+        if '{?projection}' in url:
+            logger.debug("removing {?projection} from url")
+            url = url.replace("{?projection}", "")
 
-        # now follow link
-        response = super().follow_link(link)
+        # now follow url
+        response = super().follow_url(url)
 
         logger.debug("Updating self")
 
@@ -316,12 +316,12 @@ class Document(Client):
         self.last_status_code = response.status_code
 
     @classmethod
-    def read_link(cls, auth, link):
+    def read_url(cls, auth, url):
         """Read a url and returns a :py:class:`Document` object
 
         Args:
             auth (Auth): an Auth object to pass to result
-            link (str): url to request
+            url (str): url to request
 
         Returns:
             Document: a document object
@@ -331,7 +331,7 @@ class Document(Client):
         client = Client(auth=auth)
 
         # get a response
-        response = client.follow_link(link)
+        response = client.follow_url(url)
 
         # create a new document and read data
         instance = cls(auth=auth)
@@ -393,10 +393,10 @@ class Root(Document):
         return "Biosample API root at %s" % (self.api_root)
 
     def get_user_teams(self):
-        """follow userTeams link"""
+        """follow userTeams url"""
 
-        # follow link
-        document = self.follow_link('userTeams', auth=self.auth)
+        # follow url
+        document = self.follow_url('userTeams', auth=self.auth)
 
         # a list ob objects to return
         teams = []
@@ -424,10 +424,10 @@ class Root(Document):
         raise NameError("team: {team} not found".format(team=team_name))
 
     def get_user_submissions(self, status=None, team=None):
-        """Follow the userSubmission link"""
+        """Follow the userSubmission url"""
 
-        # follow link
-        document = self.follow_link('userSubmissions', auth=self.auth)
+        # follow url
+        document = self.follow_url('userSubmissions', auth=self.auth)
 
         # a list of objects to return
         submissions = []
@@ -747,9 +747,9 @@ class Domain(Document):
     @property
     def users(self):
         if not self._users and isinstance(self.links, list):
-            for link in self.links:
-                if 'user' in link['href']:
-                    response = self.request(link['href'])
+            for url in self.links:
+                if 'user' in url['href']:
+                    response = self.request(url['href'])
                     break
 
             self._users = response.json()
@@ -763,7 +763,7 @@ class Domain(Document):
     def create_profile(self, attributes={"centre name": "IMAGE Inject team"}):
         """Create profile for this domain"""
 
-        # see this link for more information
+        # see this url for more information
         # https://explore.api.aai.ebi.ac.uk/docs/profile/index.html#resource-create_domain_profile
         url = "https://explore.api.aai.ebi.ac.uk/profiles"
 
@@ -811,10 +811,10 @@ class Team(Document):
         return self.name
 
     def get_submissions(self, status=None):
-        """Follows submission link"""
+        """Follows submission url"""
 
-        # follow link
-        document = self.follow_link('submissions', auth=self.auth)
+        # follow url
+        document = self.follow_url('submissions', auth=self.auth)
 
         # a list ob objects to return
         submissions = []
@@ -839,9 +839,9 @@ class Team(Document):
     def create_submission(self):
         """Create a submission"""
 
-        # get the link for submission:create. I don't want a document using
+        # get the url for submission:create. I don't want a document using
         # get method, I need instead a POST request
-        link = self._links['submissions:create']['href']
+        url = self._links['submissions:create']['href']
 
         # define a new header. Copy the dictionary, don't use the same object
         headers = copy.copy(self.headers)
@@ -850,7 +850,7 @@ class Team(Document):
         headers['Content-Type'] = 'application/json;charset=UTF-8'
 
         # call a post method a deal with response
-        response = self.post(link, payload={}, headers=headers)
+        response = self.post(url, payload={}, headers=headers)
 
         # assign attributes
         self.last_response = response
@@ -863,8 +863,8 @@ class Team(Document):
         submission = Submission(auth=self.auth)
         submission.parse_response(response)
 
-        # reload self link to fix issues
-        submission.follow_self_link()
+        # reload self url to fix issues
+        submission.follow_self_url()
 
         return submission
 
@@ -957,20 +957,20 @@ class Submission(Document):
     def check_ready(self):
         """Test if a submission can be submitted or not"""
 
-        # I cant follow such links for completed and submitted submission
-        # document = self.follow_link(
+        # I cant follow such urls for completed and submitted submission
+        # document = self.follow_url(
         #    "submissionStatus", self.auth
-        #    ).follow_link("availableStatuses", self.auth)
+        #    ).follow_url("availableStatuses", self.auth)
 
-        # Try to determine link manually
-        link = (
+        # Try to determine url manually
+        url = (
             "https://submission-test.ebi.ac.uk/api/submissions/"
             "{submission_name}/availableSubmissionStatuses".format(
                 submission_name=self.name)
         )
 
-        # read a link in a new docume nt
-        document = Document.read_link(self.auth, link)
+        # read a url in a new docume nt
+        document = Document.read_url(self.auth, url)
 
         if hasattr(document, "_embedded"):
             if 'statusDescriptions' in document._embedded:
@@ -988,12 +988,12 @@ class Submission(Document):
         # debug
         logger.debug(sample_data)
 
-        # get the link for sample create
-        document = self.follow_link("contents", auth=self.auth)
+        # get the url for sample create
+        document = self.follow_url("contents", auth=self.auth)
 
-        # get the link for submission:create. I don't want a document using
+        # get the url for submission:create. I don't want a document using
         # get method, I need instead a POST request
-        link = document._links['samples:create']['href']
+        url = document._links['samples:create']['href']
 
         # define a new header. Copy the dictionary, don't use the same object
         headers = copy.copy(self.headers)
@@ -1002,7 +1002,7 @@ class Submission(Document):
         headers['Content-Type'] = 'application/json;charset=UTF-8'
 
         # call a post method a deal with response
-        response = self.post(link, payload=sample_data, headers=headers)
+        response = self.post(url, payload=sample_data, headers=headers)
 
         # assign attributes
         self.last_response = response
@@ -1027,9 +1027,9 @@ class Submission(Document):
             logger.warning("reloading submission")
             self.reload()
 
-        document = self.follow_link(
+        document = self.follow_url(
             'contents', auth=self.auth
-            ).follow_link('samples', auth=self.auth)
+            ).follow_url('samples', auth=self.auth)
 
         # a list ob objects to return
         samples = []
@@ -1062,7 +1062,7 @@ class Submission(Document):
             logger.warning("reloading submission")
             self.reload()
 
-        document = self.follow_link('validationResults', auth=self.auth)
+        document = self.follow_url('validationResults', auth=self.auth)
 
         # a list ob objects to return
         validation_results = []
@@ -1109,10 +1109,10 @@ class Submission(Document):
     def delete(self):
         """Delete this instance from a submission"""
 
-        link = self._links['self:delete']['href']
+        url = self._links['self:delete']['href']
         logger.info("Removing submission %s" % self.name)
 
-        response = Client.delete(self, link)
+        response = Client.delete(self, url)
 
         # assign attributes
         self.last_response = response
@@ -1127,7 +1127,7 @@ class Submission(Document):
         """refreshing data"""
 
         logger.info("Refreshing data data for submission")
-        self.follow_self_link()
+        self.follow_self_url()
 
     def finalize(self, ignorelist=[]):
         """Finalize a submission to insert data into biosample"""
@@ -1139,13 +1139,13 @@ class Submission(Document):
         if True in self.has_errors(ignorelist):
             raise Exception("Submission has errors, fix them")
 
-        # follow self link to reload my data
-        self.follow_self_link()
+        # follow self url to reload my data
+        self.follow_self_url()
 
-        document = self.follow_link('submissionStatus', self.auth)
+        document = self.follow_url('submissionStatus', self.auth)
 
-        # get the link to change
-        link = document._links['submissionStatus']['href']
+        # get the url to change
+        url = document._links['submissionStatus']['href']
 
         # define a new header. Copy the dictionary, don't use the same object
         headers = copy.copy(self.headers)
@@ -1154,7 +1154,7 @@ class Submission(Document):
         headers['Content-Type'] = 'application/json;charset=UTF-8'
 
         response = self.patch(
-            link,
+            url,
             payload={'status': 'Submitted'},
             headers=headers)
 
@@ -1226,10 +1226,10 @@ class Sample(Document):
     def delete(self):
         """Delete this instance from a submission"""
 
-        link = self._links['self:delete']['href']
+        url = self._links['self:delete']['href']
         logger.info("Removing sample %s from submission" % self.name)
 
-        response = Client.delete(self, link)
+        response = Client.delete(self, url)
 
         if response.status_code != 204:
             raise ConnectionError(response.text)
@@ -1244,15 +1244,15 @@ class Sample(Document):
         """refreshing data"""
 
         logger.info("Refreshing data data for sample")
-        self.follow_self_link()
+        self.follow_self_url()
 
     def patch(self, sample_data):
         """Patch a sample"""
 
-        link = self._links['self']['href']
+        url = self._links['self']['href']
         logger.info("patching sample %s with %s" % (self.name, sample_data))
 
-        response = Client.patch(self, link, payload=sample_data)
+        response = Client.patch(self, url, payload=sample_data)
 
         # assign attributes
         self.last_response = response
@@ -1267,7 +1267,7 @@ class Sample(Document):
     def get_validation_result(self):
         """Return validation result for this sample"""
 
-        document = self.follow_link(
+        document = self.follow_url(
             'validationResult',
             auth=self.auth,
             force=True)
