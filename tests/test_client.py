@@ -188,6 +188,7 @@ class RootTest(TestCase):
             self.root.get_submission_by_name,
             submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
 
+
 class UserTest(TestCase):
     @classmethod
     def setup_class(cls):
@@ -254,7 +255,7 @@ class UserTest(TestCase):
             confirmPwd="changeme",
             email="newuser@email.com",
             full_name="New User",
-            organization="Test"
+            organisation="Test"
         )
 
         self.assertEqual(reference, test)

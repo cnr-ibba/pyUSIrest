@@ -441,7 +441,7 @@ class User(Document):
 
     @classmethod
     def create_user(cls, user, password, confirmPwd, email, full_name,
-                    organization="IMAGE"):
+                    organisation):
         """Create another user into biosample AAP and return its ID"""
 
         # check that passwords are the same
@@ -464,7 +464,7 @@ class User(Document):
             "confirmPwd": confirmPwd,
             "email": email,
             "name": full_name,
-            "organisation": organization
+            "organisation": organisation
         }
 
         # call a post method a deal with response

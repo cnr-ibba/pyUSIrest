@@ -5,12 +5,14 @@ History
 0.2.0-dev
 ---------
 
-### Features
+Features
+^^^^^^^^
 
 * Fetch submission by name
 * changed library name to `pyUSIrest`
 
-### TODO
+TODO
+^^^^
 
 * Finalize submission is now done with PUT and not PATCH
 * publish to pypi
@@ -18,6 +20,7 @@ History
 0.1.0 (2018-10-17)
 ------------------
 
-### Features
+Features
+^^^^^^^^
 
 * submit into biosample with python methods

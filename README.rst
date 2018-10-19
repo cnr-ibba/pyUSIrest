@@ -9,8 +9,8 @@ Python USI submission REST API
 .. image:: https://img.shields.io/travis/cnr-ibba/pyUSIrest.svg
         :target: https://travis-ci.org/cnr-ibba/pyUSIrest
 
-.. image:: https://readthedocs.org/projects/pyUSIrest/badge/?version=latest
-        :target: https://pyUSIrest.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/pyusirest/badge/?version=latest
+        :target: https://pyusirest.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 .. image:: https://coveralls.io/repos/github/cnr-ibba/pyUSIrest/badge.svg?branch=master
@@ -22,7 +22,7 @@ Python USI submission REST API contain all methods to interact with EMBL-EBI
 Unified Submissions Interface
 
 * Free software: GNU General Public License v3
-* Documentation: https://pyUSIrest.readthedocs.io.
+* Documentation: https://pyusirest.readthedocs.io.
 
 
 Features
