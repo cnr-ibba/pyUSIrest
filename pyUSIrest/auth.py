@@ -31,9 +31,6 @@ class Auth():
             user (str): your aap username
             password (str): your password
             token (str): a valid EBI AAP jwt token
-
-        Returns:
-            Auth instance
         """
 
         self.expire = None
@@ -100,7 +97,7 @@ class Auth():
 
         Returns:
             datetime.timedelta: remaining time as
-            :py:class:`datetime.timedelta` object
+            :py:class:`timedelta <datetime.timedelta>` object
         """
         now = datetime.datetime.now()
         duration = (self.expire - now)
@@ -130,7 +127,11 @@ class Auth():
         return duration
 
     def is_expired(self):
-        """Return True if token is exipired, False otherwise"""
+        """Return True if token is exipired, False otherwise
+
+        Returns:
+            bool: True if token is exipired
+        """
 
         return self.get_duration().days < 0
 

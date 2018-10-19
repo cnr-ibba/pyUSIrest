@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""Console script for pyUSIrest."""
+"""Console script for pyUSIrest. Not yet developed"""
+
 import sys
 import click
 

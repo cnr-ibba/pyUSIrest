@@ -20,13 +20,15 @@ logger = logging.getLogger(__name__)
 
 
 class Client():
-    """A class to deal with Biosample Submission server. You need to call this
-    class after instantiating :class:`python_ebi_app.Auth`::
+    """A class to deal with Biosample Submission server. It perform request
+    modelling user token in request headers. You need to call this
+    class after instantiating an :class:`Auth <pyUSIrest.auth.Auth>` object::
 
         import getpass
         from pyUSIrest import Auth, Client
         auth = Auth(user=<you_aap_user>, password=getpass.getpass())
         client = Client(auth)
+        response = client.request("https://submission-test.ebi.ac.uk/api/")
     """
 
     headers = {
@@ -38,7 +40,7 @@ class Client():
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`pyUSIrest.auth.Auth` object
+            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
 
         """
 
@@ -52,6 +54,8 @@ class Client():
 
     @property
     def auth(self):
+        """Get/Set :py:class:`Auth <pyUSIrest.auth.Auth>` object"""
+
         return self._auth
 
     @auth.setter
@@ -84,47 +88,105 @@ class Client():
         return headers
 
     def request(self, url, headers=None):
-        """Generic GET method"""
+        """Generic GET method
+
+        Args:
+            url (str): url to request
+            headers (dict): custom header for request
+
+        Returns:
+            requests.Response: a response object
+        """
 
         headers = self.__check(headers)
 
         return requests.get(url, headers=headers)
 
     def post(self, url, payload={}, headers=None):
-        """Generic POST method"""
+        """Generic POST method
+
+        Args:
+            url (str): url to request
+            payload (dict): data to send
+            headers (dict): custom header for request
+
+        Returns:
+            requests.Response: a response object
+        """
 
         headers = self.__check(headers)
 
         return requests.post(url, json=payload, headers=headers)
 
     def patch(self, url, payload={}, headers=None):
-        """Generic PATCH method"""
+        """Generic PATCH method
+
+        Args:
+            url (str): url to request
+            payload (dict): data to send
+            headers (dict): custom header for request
+
+        Returns:
+            requests.Response: a response object
+        """
 
         headers = self.__check(headers)
 
         return requests.patch(url, json=payload, headers=headers)
 
     def delete(self, url, headers=None):
-        """Generic DELETE method"""
+        """Generic DELETE method
+
+        Args:
+            url (str): url to request
+            headers (dict): custom header for request
+
+        Returns:
+            requests.Response: a response object
+        """
 
         headers = self.__check(headers)
 
         return requests.delete(url, headers=headers)
 
     def put(self, url, payload={}, headers=None):
-        """Generic PUT method"""
+        """Generic PUT method
+
+        Args:
+            url (str): url to request
+            payload (dict): data to send
+            headers (dict): custom header for request
+
+        Returns:
+            requests.Response: a response object
+        """
 
         headers = self.__check(headers)
 
         return requests.put(url, json=payload, headers=headers)
 
     def parse_response(self, response):
-        """convert response in a dict"""
+        """Convert a response in a dict
+
+        Args:
+            response (requests.Response): a response object
+
+        Returns:
+            dict: the output of
+            :py:meth:`response.json() <requests.Response.json>`
+        """
 
         return response.json()
 
     def follow_link(self, link):
-        """Follow link. Calling request and setting attributes"""
+        """Calling request and setting class attributes
+
+        Args:
+            link (str): url to request
+
+        Returns:
+            requests.Response: a response object
+        """
 
         response = self.request(link, headers=self.headers)
 
@@ -139,6 +201,11 @@ class Client():
 
 
 class Document(Client):
+    """Base class for pyUSIrest classes. It models common methods and
+    attributes by calling :py:class:`Client <pyUSIrest.client.Client>`
+    an reading json response from biosample API
+    """
+
     def __init__(self, auth=None):
         if auth:
             Client.__init__(self, auth)
@@ -180,6 +247,24 @@ class Document(Client):
         self.read_data(data, force)
 
     def follow_link(self, tag, auth=None, force=True):
+        """Pick a link from data attribute, perform a request and returns
+        a document object. For instance::
+
+            document.follow_link('userSubmissions')
+
+        will return a document instance by requesting with
+        :py:meth:`Client.follow_link` using
+        ``document.data['_links']['userSubmissions']['href']`` as link
+
+        Args:
+            tag (str): a key from USI response dictionary
+            auth (Auth): an Auth object to pass to result
+            force (bool): set a new class attribute if not present
+
+        Returns:
+            Document: a document object
+        """
+
         logger.debug("Following %s link" % (tag))
 
         link = self._links[tag]['href']
@@ -198,7 +283,13 @@ class Document(Client):
         return document
 
     def follow_self_link(self):
-        """Follow self link and update class attributes"""
+        """Follow *self* link and update class attributes. For instance::
+
+            document.follow_self_link()
+
+        will reload document instance by requesting with
+        :py:meth:`Client.follow_link` using
+        ``document.data['_links']['self']['href']`` as link"""
 
         logger.debug("Following self link")
 
@@ -207,7 +298,7 @@ class Document(Client):
 
         # remove {?projection} from self link. This is unreachible
         if '{?projection}' in link:
-            logger.warning("removing {?projection} for link")
+            logger.debug("removing {?projection} from link")
             link = link.replace("{?projection}", "")
 
         # now follow link
@@ -226,7 +317,15 @@ class Document(Client):
 
     @classmethod
     def read_link(cls, auth, link):
-        """Read a link a returns an object"""
+        """Read a url and returns a :py:class:`Document` object
+
+        Args:
+            auth (Auth): an Auth object to pass to result
+            link (str): url to request
+
+        Returns:
+            Document: a document object
+        """
 
         # define a new client object
         client = Client(auth=auth)
@@ -271,7 +370,7 @@ class Document(Client):
                 setattr(self, key, value)
 
             else:
-                logger.error("key %s not implemented" % (key))
+                logger.debug("key %s not implemented" % (key))
 
 
 class Root(Document):
@@ -974,7 +1073,7 @@ class Submission(Document):
                 ValidationResult(self.auth, validation_data))
             logger.debug("Found %s sample" % (str(validation_results[i])))
 
-        logger.info("Got %s validation results" % len(validation_results))
+        logger.debug("Got %s validation results" % len(validation_results))
 
         return validation_results
 
