@@ -1121,8 +1121,7 @@ class Submission(Document):
         if not self.name:
             return "Submission not yet initialized"
 
-        name = self.name.split("-")[0]
-        return "%s %s %s" % (name, self.team, self.submissionStatus)
+        return "%s %s %s" % (self.name, self.team, self.submissionStatus)
 
     @property
     def team(self):

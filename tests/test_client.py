@@ -154,6 +154,28 @@ class RootTest(TestCase):
         self.assertIsInstance(completed1, list)
         self.assertEqual(len(completed1), 0)
 
+    def test_get_user_submission_pagination(self):
+        """Testing get user submission with pagination"""
+
+        with open(os.path.join(
+                data_path, "userSubmissionsPage1.json")) as handle:
+            page1 = json.load(handle)
+
+        with open(os.path.join(
+                data_path, "userSubmissionsPage2.json")) as handle:
+            page2 = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+
+        # simulating two distinct replies with side_effect
+        self.mock_get.return_value.json.side_effect = [page1, page2]
+        self.mock_get.return_value.status_code = 200
+
+        submissions = self.root.get_user_submissions()
+
+        self.assertIsInstance(submissions, list)
+        self.assertEqual(len(submissions), 2)
+
     def test_get_submission_by_name(self):
         with open(os.path.join(data_path, "newSubmission.json")) as handle:
             data = json.load(handle)

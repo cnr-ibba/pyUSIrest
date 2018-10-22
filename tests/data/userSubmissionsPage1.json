@@ -1,0 +1,63 @@
+{
+  "_embedded" : {
+    "submissions" : [ {
+      "submissionStatus" : "Draft",
+      "createdDate" : "2018-07-10T14:25:20.603+0000",
+      "lastModifiedDate" : "2018-07-10T14:25:20.603+0000",
+      "createdBy" : "api_docs_usi_user",
+      "lastModifiedBy" : "api_docs_usi_user",
+      "team" : "subs.dev-team-1",
+      "_links" : {
+        "self" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/10a35d6a-8abf-4d6a-a9bc-f07b47808f88"
+        },
+        "team" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/teams/subs.dev-team-1"
+        },
+        "contents" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/10a35d6a-8abf-4d6a-a9bc-f07b47808f88/contents"
+        },
+        "validationResults" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/validationResults/search/by-submission?submissionId=10a35d6a-8abf-4d6a-a9bc-f07b47808f88"
+        },
+        "self:update" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/10a35d6a-8abf-4d6a-a9bc-f07b47808f88"
+        },
+        "self:delete" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/10a35d6a-8abf-4d6a-a9bc-f07b47808f88"
+        },
+        "submissionStatus:update" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/10a35d6a-8abf-4d6a-a9bc-f07b47808f88/submissionStatus"
+        },
+        "availableStatuses" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/10a35d6a-8abf-4d6a-a9bc-f07b47808f88/availableSubmissionStatuses"
+        },
+        "processingStatusSummary" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/10a35d6a-8abf-4d6a-a9bc-f07b47808f88/processingStatusSummaryCounts"
+        },
+        "typeProcessingStatusSummary" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/submissions/10a35d6a-8abf-4d6a-a9bc-f07b47808f88/processingStatusSummaryTypeCounts"
+        },
+        "processingStatuses" : {
+          "href" : "https://submission-dev.ebi.ac.uk/api/processingStatuses/search/findBySubmissionId?submissionId=10a35d6a-8abf-4d6a-a9bc-f07b47808f88"
+        }
+      }
+    }]
+  },
+  "_links" : {
+    "first": {
+      "href": "https://submission-test.ebi.ac.uk/api/user/submissions?page=0&size=1"},
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/user/submissions?page=0&size=1"},
+    "next": {
+      "href": "https://submission-test.ebi.ac.uk/api/user/submissions?page=1&size=1"},
+    "last": {
+      "href": "https://submission-test.ebi.ac.uk/api/user/submissions?page=11&size=1"}
+  },
+  "page" : {
+    "size" : 1,
+    "totalElements" : 2,
+    "totalPages" : 2,
+    "number" : 0
+  }
+}
