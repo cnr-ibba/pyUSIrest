@@ -31,7 +31,7 @@ deploy:
   distributions: sdist bdist_wheel
   user: bunop
   password:
-    secure: PLEASE_REPLACE_ME
+    secure: jbpCurS3l47Y546Dil0CRsI6WXBXpvs2FawHn8XuXFYx1kMBjUpTAMlILhHEdsbOf73/L5RViQP7yooUQuDWsZYB65H+arv0jbdIVQgeUvMRe4vBDwai+AbBv7l6/5S7XXWVAikIJxzs0nzxpMU50/yksVsRpJDf+bEl74VmRKkg3VBvJLMOiFsTB0XLuWJbd2qls5KxIGE3I6spKGc784Wfg1AVJxSjrTu41HlG47H5qIya0S+91h9N4cpnsiRdk8F6RVbf+ydIU1oREngyT+wq3b7BB9nzkAvjrP3Cysl6agySG7AMHyIpM1FWmr8gf1/ai9nhncbIEA+10Mx4958/4T0kdgpCV5/GIWBkk+FIbxHph5NAeMuB5pQeeADO2a3tGhFh/4xjKYbt1DyUF/Q0yMJ9d0MebM+HLMw1p2tVBjDNTH5BPwLL8NSPvkJMrLvkqhaw+XZnCHfiFXoQwI6672IoNY4OwUZbLD35O/kvWGrokN3ITy7xVD55bjxoBL/F4aXr2QQRkJNRZVFv7RcxA54lsv2KmtZucT3jFVVsfFNvFC2Skm9uUNucAmHXssf4Fo0Yn4LeL4Duegx0gks0xi1MobHTbiz2Eshg1efoO3yrF4jZZGLAWLPE77/4mEtUsVrqpKeh6ZJ2sPQdHBmzEHj/l+j9KNLthAj6N3M=
   on:
     tags: true
     repo: cnr-ibba/pyUSIrest
