@@ -12,14 +12,6 @@ pyUSIrest.auth module
     :undoc-members:
     :show-inheritance:
 
-pyUSIrest.cli module
---------------------
-
-.. automodule:: pyUSIrest.cli
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 pyUSIrest.client module
 -----------------------
 
