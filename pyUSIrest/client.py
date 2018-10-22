@@ -1078,7 +1078,7 @@ class Submission(Document):
         lastModifiedDate (str): last modified date
         lastModifiedBy (str): last user_id who modified this submission
         submissionStatus (str): submission status
-        submitter (str): submitter email
+        submitter (dict): submitter data
         createdBy (str):  user_id who create this submission
         submissionDate (str): date when this submission is submitted to
             biosample
@@ -1396,6 +1396,10 @@ class Submission(Document):
 
         Args:
             ignorelist (list): ignore samples with errors in these databanks
+
+        Returns:
+            Document: output of finalize submission as a :py:class:`Document`
+            object
         """
 
         if not self.check_ready():
@@ -1419,8 +1423,7 @@ class Submission(Document):
         # add new element to headers
         headers['Content-Type'] = 'application/json;charset=UTF-8'
 
-        # TODO: move to a put call
-        response = self.patch(
+        response = self.put(
             url,
             payload={'status': 'Submitted'},
             headers=headers)

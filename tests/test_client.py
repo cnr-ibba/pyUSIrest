@@ -702,9 +702,9 @@ class SubmissionTest(TestCase):
 
     @patch('requests.get', side_effect=mocked_finalize)
     def test_finalize(self, mock_get):
-        self.mock_patch.return_value = Mock()
-        self.mock_patch.return_value.json.return_value = {}
-        self.mock_patch.return_value.status_code = 200
+        self.mock_put.return_value = Mock()
+        self.mock_put.return_value.json.return_value = {}
+        self.mock_put.return_value.status_code = 200
 
         document = self.submission.finalize()
         self.assertIsInstance(document, Document)

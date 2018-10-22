@@ -9,14 +9,15 @@ Features
 ^^^^^^^^
 
 * Fetch submission by name
-* changed library name to `pyUSIrest`
+* changed library name to ``pyUSIrest``
 * published to pypi
+* Finalize submission with *PUT*
 
 TODO
 ^^^^
 
-* Finalize submission with *PUT* (currently is *PATCH*)
 * ``Domain.users `` should returns ``User`` objects
+* update submission status after reload a just finalized submission
 
 0.1.0 (2018-10-17)
 ------------------
