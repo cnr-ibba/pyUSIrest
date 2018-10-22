@@ -1072,10 +1072,28 @@ class Team(Document):
 class Submission(Document):
     """A class to deal with USI Submissions_
 
+    Attributes:
+        name (str): submission name
+        createdDate (str): created date
+        lastModifiedDate (str): last modified date
+        lastModifiedBy (str): last user_id who modified this submission
+        submissionStatus (str): submission status
+        submitter (str): submitter email
+        createdBy (str):  user_id who create this submission
+        submissionDate (str): date when this submission is submitted to
+            biosample
+
     .. _Submissions: https://submission-test.ebi.ac.uk/api/docs/ref_submissions.html
     """  # noqa
 
     def __init__(self, auth, data=None):
+        """Instantiate the class
+
+        Args:
+            auth (Auth): a valid :py:class:`Auth` object
+            data (dict): instantiate the class from a dictionary of user data
+        """
+
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
@@ -1132,7 +1150,7 @@ class Submission(Document):
         self._team = value
 
     def read_data(self, data, force=False):
-        """Custom read_data method"""
+        # docstring is the same of the base class
 
         logger.debug("Reading data for submission")
         super().read_data(data, force)
@@ -1162,7 +1180,12 @@ class Submission(Document):
         return sample_data
 
     def check_ready(self):
-        """Test if a submission can be submitted or not"""
+        """Test if a submission can be submitted or not (Must have completed
+        validation processes)
+
+        Returns:
+            bool: True if ready for submission
+        """
 
         # I cant follow such urls for completed and submitted submission
         # document = self.follow_url(
@@ -1187,7 +1210,13 @@ class Submission(Document):
         return False
 
     def create_sample(self, sample_data):
-        """Create a sample"""
+        """Create a sample from a dictionary
+
+        Args:
+            sample_data (dict): a dictionary of data
+
+        Returns:
+            Sample: a :py:class:`Sample` object"""
 
         # check sample_data for required attributes
         sample_data = self.__check_relationship(sample_data)
@@ -1227,11 +1256,22 @@ class Submission(Document):
 
     def get_samples(self, validationResult=None, has_errors=None,
                     ignorelist=[]):
-        """returning all samples as a list"""
+        """Returning all samples as a list. Can filter by errors and error
+        types::
+
+            submission.get_samples(has_errors=True, ignorelist=['Ena'])
+
+        Get all sample with errors in other fields than *Ena* databank
+
+        Args:
+            validationResult (str): filter samples by this key
+            has_errors (bool): filter samples with errors or none
+            ingnore_list (list): a list of errors to ignore
+        """
 
         # deal with different subission instances
         if 'contents' not in self._links:
-            logger.warning("reloading submission")
+            logger.debug("reloading submission")
             self.reload()
 
         document = self.follow_url(
@@ -1262,7 +1302,10 @@ class Submission(Document):
         return samples
 
     def get_validation_results(self):
-        """Return validation results for submission"""
+        """Return validation results for submission
+
+        Returns:
+            list: a list of :py:class:`ValidationResult` objects"""
 
         # deal with different subission instances
         if 'validationResults' not in self._links:
@@ -1285,7 +1328,11 @@ class Submission(Document):
         return validation_results
 
     def get_status(self):
-        """Count validation statues for submission"""
+        """Count validation statues for submission
+
+        Returns:
+            collections.Counter: A counter object for different validation
+            status"""
 
         # get validation results
         validations = self.get_validation_results()
@@ -1297,7 +1344,14 @@ class Submission(Document):
 
     # there are errors that could be ignored
     def has_errors(self, ignorelist=[]):
-        """Count errors for submission"""
+        """Count sample errors for a submission
+
+        Args:
+            ignorelist (list): ignore samples with errors in these databanks
+
+        Returns:
+            collections.Counter: A counter object for samples with errors and
+            with no errors"""
 
         # check errors only if validation is completed
         if 'Pending' in self.get_status():
@@ -1314,7 +1368,7 @@ class Submission(Document):
         return collections.Counter(errors)
 
     def delete(self):
-        """Delete this instance from a submission"""
+        """Delete this submission instance from USI"""
 
         url = self._links['self:delete']['href']
         logger.info("Removing submission %s" % self.name)
@@ -1331,13 +1385,18 @@ class Submission(Document):
         # don't return anything
 
     def reload(self):
-        """refreshing data"""
+        """call :py:meth:`Document.follow_self_url` and reload class
+        attributes"""
 
         logger.info("Refreshing data data for submission")
         self.follow_self_url()
 
     def finalize(self, ignorelist=[]):
-        """Finalize a submission to insert data into biosample"""
+        """Finalize a submission to insert data into biosample
+
+        Args:
+            ignorelist (list): ignore samples with errors in these databanks
+        """
 
         if not self.check_ready():
             raise Exception("Submission not ready for finalization")
@@ -1387,7 +1446,35 @@ class Submission(Document):
 
 
 class Sample(Document):
+    """A class to deal with USI Samples_
+
+    Attributes:
+        alias (str): The sample alias (used to reference the same object)
+        team (dict): team data
+        title (str): sample title
+        description (str): sample description
+        attributes (dict): sample attributes
+        sampleRelationships (list): relationship between samples
+        taxonId (int): taxon id
+        taxon (str): taxon name
+        releaseDate (str): when this sample will be relased to public
+        createdDate (str): created date
+        lastModifiedDate (str): last modified date
+        createdBy (str):  user_id who create this sample
+        lastModifiedBy (str): last user_id who modified this sample
+        accession (str): the biosample_id after submission to USI
+
+    .. _Samples: https://submission-test.ebi.ac.uk/api/docs/ref_samples.html
+    """
+
     def __init__(self, auth, data=None):
+        """Instantiate the class
+
+        Args:
+            auth (Auth): a valid :py:class:`Auth` object
+            data (dict): instantiate the class from a dictionary of user data
+        """
+
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
@@ -1421,7 +1508,7 @@ class Sample(Document):
             return "%s (%s)" % (self.alias, self.title)
 
     def read_data(self, data, force=False):
-        """Custom read_data method"""
+        # docstring is the same of the base class
 
         logger.debug("Reading data for Sample")
         super().read_data(data, force)
@@ -1449,13 +1536,17 @@ class Sample(Document):
         # don't return anything
 
     def reload(self):
-        """refreshing data"""
+        """call :py:meth:`Document.follow_self_url` and reload class
+        attributes"""
 
         logger.info("Refreshing data data for sample")
         self.follow_self_url()
 
     def patch(self, sample_data):
-        """Patch a sample"""
+        """Update sample by patching data with :py:meth:`Client.patch`
+
+        Args:
+            sample_data (dict): sample data to update"""
 
         url = self._links['self']['href']
         logger.info("patching sample %s with %s" % (self.name, sample_data))
@@ -1473,7 +1564,11 @@ class Sample(Document):
         self.reload()
 
     def get_validation_result(self):
-        """Return validation result for this sample"""
+        """Return validation results for submission
+
+        Returns:
+            ValidationResult: the :py:class:`ValidationResult` of this sample
+        """
 
         document = self.follow_url(
             'validationResult',
@@ -1484,7 +1579,13 @@ class Sample(Document):
 
     # there are errors that could be ignored
     def has_errors(self, ignorelist=[]):
-        """Return True if validation results throw an error"""
+        """Return True if validation results throw an error
+
+        Args:
+            ignorelist (list): ignore errors in these databanks
+
+        Returns:
+            bool: True if sample has an errors in one or more databank"""
 
         validation = self.get_validation_result().has_errors(ignorelist)
 
@@ -1496,6 +1597,13 @@ class Sample(Document):
 
 class ValidationResult(Document):
     def __init__(self, auth, data=None):
+        """Instantiate the class
+
+        Args:
+            auth (Auth): a valid :py:class:`Auth` object
+            data (dict): instantiate the class from a dictionary of user data
+        """
+
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
@@ -1518,7 +1626,13 @@ class ValidationResult(Document):
 
     # there are errors that could be ignored
     def has_errors(self, ignorelist=[]):
-        """Return true if validation has errors"""
+        """Return True if validation has errors
+
+        Args:
+            ignorelist (list): ignore errors in these databanks
+
+        Returns:
+            bool: True if sample has errors for at least one databank"""
 
         has_errors = False
 
