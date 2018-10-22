@@ -217,7 +217,7 @@ class Document(Client):
         self.name = None
         self.data = {}
 
-    def paginate(self, data):
+    def __paginate(self, data):
         """Follow pages and join data"""
 
         # create a new dictionary
@@ -235,13 +235,21 @@ class Document(Client):
         return new_data
 
     def parse_response(self, response, force=False):
+        """Parse a :py:class:`requests.Response` object and instantiate
+        class attributes.
+
+        Args:
+            response (requests.Response): a response object
+            force (bool): set a new class attribute if not present
+        """
+
         # get data as dictionary
         data = super().parse_response(response)
 
         # do data has pages?
         if 'page' in data and data['page']['totalPages'] > 1:
             logger.debug("Found %s pages" % (data['page']['totalPages']))
-            data = self.paginate(data)
+            data = self.__paginate(data)
 
         # read data and setting self.data
         self.read_data(data, force)
@@ -760,7 +768,7 @@ class Domain(Document):
     def users(self, value):
         self._users = value
 
-    def create_profile(self, attributes={"centre name": "IMAGE Inject team"}):
+    def create_profile(self, attributes={}):
         """Create profile for this domain"""
 
         # see this url for more information
