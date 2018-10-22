@@ -98,10 +98,13 @@ def setup(app):
 
 # Link to other projects’ documentation
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3',
-               (None, 'python-inv.txt')),
-    'requests': ('http://docs.python-requests.org/en/master/',
-                 (None, 'request-inv.txt'))}
+    'python': (
+        'https://docs.python.org/3',
+        (None, 'python-inv.txt')),
+    'requests': (
+        'http://docs.python-requests.org/en/master/',
+        (None, 'request-inv.txt')),
+    }
 
 
 # -- Options for HTML output -------------------------------------------

@@ -73,7 +73,11 @@ Add profile to domain
 To create a profile for a team::
 
   domain = user.get_domain_by_name(<team name>)
-  domain.create_profile()
+  domain.create_profile(attributes={"centre name": "My Institution"})
+
+For more informations, take a look to `creating a domain profile`_
+
+.. _`creating a domain profile`: https://explore.api.aai.ebi.ac.uk/docs/profile/index.html#resource-create_domain_profile
 
 Adding user to team
 -------------------

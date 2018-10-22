@@ -5,6 +5,8 @@ Created on Thu May 24 15:46:37 2018
 
 @author: Paolo Cozzi <cozzi@ibba.cnr.it>
 
+.. _`python_jwt.process_jwt`: https://rawgit.now.sh/davedoesdev/python-jwt/master/docs/_build/html/index.html#python_jwt.process_jwt
+
 """
 
 import requests
@@ -18,12 +20,24 @@ logger = logging.getLogger(__name__)
 
 
 class Auth():
+    """
+    Deal with EBI AAP tokens. Starts from a token object or by providing
+    user credentials. It parse token and provide methods like checking
+    expiration times.
+
+    Attributes:
+        auth_url (str): Default url for EBI AAP.
+        expire (datetime.datetime): when token expires
+        issued (datetime.datetime): when token was requested
+        header (dict): token header read by `python_jwt.process_jwt`_
+        claims (dict): token claims read by `python_jwt.process_jwt`_
+    """
 
     auth_url = "https://explore.api.aai.ebi.ac.uk/auth"
 
     def __init__(self, user=None, password=None, token=None):
         """
-        Instantiate a python EBI AAP Object. You can generate a new object
+        Instantiate a new python EBI AAP Object. You can generate a new object
         providing both user and password, or by passing a valid token
         string
 

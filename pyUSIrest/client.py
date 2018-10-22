@@ -29,6 +29,13 @@ class Client():
         auth = Auth(user=<you_aap_user>, password=getpass.getpass())
         client = Client(auth)
         response = client.request("https://submission-test.ebi.ac.uk/api/")
+
+    Attributes:
+        headers (dict): default headers for requests
+        last_response (requests.Response): last response object read by this
+            class
+        last_satus_code (int): last status code read by this class
+
     """
 
     headers = {
@@ -40,7 +47,7 @@ class Client():
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
+            auth (Auth): a valid :py:class:`Auth` object
 
         """
 
@@ -54,7 +61,7 @@ class Client():
 
     @property
     def auth(self):
-        """Get/Set :py:class:`Auth <pyUSIrest.auth.Auth>` object"""
+        """Get/Set :py:class:`Auth` object"""
 
         return self._auth
 
@@ -204,6 +211,15 @@ class Document(Client):
     """Base class for pyUSIrest classes. It models common methods and
     attributes by calling :py:class:`Client <pyUSIrest.client.Client>`
     an reading json response from biosample API
+
+    Attributes:
+        _link (dict): ``_links`` data read from USI response
+        _embeddedd (dict): ``_embedded`` data read from USI response
+        page (dict): ``page`` data read from USI response
+        name (str): name of this object
+        data (dict): data from USI read with
+            :py:meth:`response.json() <requests.Response.json>`
+
     """
 
     def __init__(self, auth=None):
@@ -349,7 +365,13 @@ class Document(Client):
         return instance
 
     def read_data(self, data, force=False):
-        """Read data from dictionary object"""
+        """Read data from a dictionary object and set class attributes
+
+        Args:
+            data (dict): a data dictionary object read with
+                :py:meth:`response.json() <requests.Response.json>`
+            force (bool): If True, define a new class attribute from data keys
+        """
 
         # dealing with this type of documents
         for key in data.keys():
@@ -382,6 +404,14 @@ class Document(Client):
 
 
 class Root(Document):
+    """Models the USI API Root_ endpoint
+
+    Attributes:
+        api_root (str): The base URL for API endpoints
+
+    .. _Root: https://submission-test.ebi.ac.uk/api/docs/ref_root_endpoint.html
+    """
+
     # define the default url
     api_root = "https://submission-test.ebi.ac.uk/api/"
 
@@ -401,7 +431,11 @@ class Root(Document):
         return "Biosample API root at %s" % (self.api_root)
 
     def get_user_teams(self):
-        """follow userTeams url"""
+        """Follow userTeams url and returns all teams belonging to user
+
+        Returns:
+            list: A list of :py:class:`Team` objects
+        """
 
         # follow url
         document = self.follow_url('userTeams', auth=self.auth)
@@ -419,6 +453,15 @@ class Root(Document):
         return teams
 
     def get_team_by_name(self, team_name):
+        """Get a :py:class:`Team` object by name
+
+        Args:
+            team_name (str): the name of the team
+
+        Returns:
+            Team: a team object
+
+        """
         logger.debug("Searching for %s" % (team_name))
 
         # get all teams
@@ -432,7 +475,16 @@ class Root(Document):
         raise NameError("team: {team} not found".format(team=team_name))
 
     def get_user_submissions(self, status=None, team=None):
-        """Follow the userSubmission url"""
+        """Follow the userSubmission url and returns all submission owned by
+        the user
+
+        Args:
+            status (str): filter user submissions with submissionStatus
+            team (str): filter user submissions belonging to this team
+
+        Returns:
+            list: A list of :py:class:`Submission` objects
+        """
 
         # follow url
         document = self.follow_url('userSubmissions', auth=self.auth)
@@ -465,7 +517,14 @@ class Root(Document):
         return submissions
 
     def get_submission_by_name(self, submission_name):
-        """Got a specific submission object by providing its name"""
+        """Got a specific submission object by providing its name
+
+        Args:
+            submission_name (str): input submission name
+
+        Returns:
+            Submission: The desidered submission as instance
+        """
 
         # define submission url
         url = "/".join([self.api_root, 'submissions', submission_name])
@@ -491,9 +550,25 @@ class Root(Document):
             raise ConnectionError(self.last_response.text)
 
 
-# TODO: need this class be placed in auth module?
 class User(Document):
+    """Deal with EBI AAP endpoint to get user information
+
+    Attributes:
+        name (str): Output of ``Auth.claims['nickname']``
+        data (dict): data (dict): data from AAP read with
+            :py:meth:`response.json() <requests.Response.json>`
+        userName (str): AAP username
+        email (str): AAP email
+        userReference (str): AAP userReference
+    """
+
     def __init__(self, auth, data=None):
+        """Instantiate the class
+
+        Args:
+            auth (Auth): a valid :py:class:`Auth` object
+            data (dict): instantiate the class from a dictionary of user data
+        """
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
@@ -513,7 +588,11 @@ class User(Document):
             self.read_data(data)
 
     def get_my_id(self):
-        """Get user id using own credentials"""
+        """Get user id using own credentials, and set userReference attribute
+
+        Returns:
+            str: the user AAP reference as a string
+        """
 
         # defining URL
         url = "https://explore.api.aai.ebi.ac.uk/users/%s" % (self.name)
@@ -531,6 +610,15 @@ class User(Document):
         return self.userReference
 
     def get_user_by_id(self, user_id):
+        """Get a :py:class:`User` object by user_id
+
+        Args:
+            user_id (str): the required user_id
+
+        Returns:
+            User: a user object
+        """
+
         # defining URL
         url = "https://explore.api.aai.ebi.ac.uk/users/%s" % (user_id)
 
@@ -549,13 +637,25 @@ class User(Document):
     @classmethod
     def create_user(cls, user, password, confirmPwd, email, full_name,
                     organisation):
-        """Create another user into biosample AAP and return its ID"""
+        """Create another user into biosample AAP and return its ID
+
+        Args:
+            user (str): the new username
+            password (str): the user password
+            confirmPwd (str): the user confirm password
+            email (str): the user email
+            full_name (str): Full name of the user
+            organization (str): organization name
+
+        Returns:
+            str: the new user_id as a string
+        """
 
         # check that passwords are the same
         if password != confirmPwd:
             raise RuntimeError("passwords don't match!!!")
 
-        # TODO: set url as a class attribute
+        # the AAP url
         url = "https://explore.api.aai.ebi.ac.uk/auth"
 
         # define a new header
@@ -583,8 +683,16 @@ class User(Document):
         # returning user id
         return response.text
 
-    def create_team(self, description, centreName="IMAGE Inject"):
-        """Create a team"""
+    def create_team(self, description, centreName):
+        """Create a new team
+
+        Args:
+            description (str): team description
+            centreName (str): team center name
+
+        Returns:
+            Team: the new team as a :py:class:`Team` instance
+        """
 
         url = "https://submission-test.ebi.ac.uk/api/user/teams"
 
@@ -620,7 +728,11 @@ class User(Document):
         return team
 
     def get_teams(self):
-        """Get teams of which I'm a member"""
+        """Get teams belonging to this instance
+
+        Returns:
+            list: a list of :py:class:`Team` objects
+        """
 
         url = "https://submission-test.ebi.ac.uk/api/user/teams"
 
@@ -648,6 +760,14 @@ class User(Document):
         return teams
 
     def get_team_by_name(self, team_name):
+        """Get a team by name
+
+        Args:
+            team_name (str): the required team
+
+        Returns:
+            Team: the desidered :py:class:`Team` instance
+        """
         logger.debug("Searching for %s" % (team_name))
 
         # get all teams
@@ -661,7 +781,11 @@ class User(Document):
         raise NameError("team: {team} not found".format(team=team_name))
 
     def get_domains(self):
-        """Get my domains"""
+        """Get domains belonging to this instance
+
+        Returns:
+            list: a list of :py:class:`Domain` objects
+        """
 
         url = "https://explore.api.aai.ebi.ac.uk/my/domains"
 
@@ -685,6 +809,15 @@ class User(Document):
         return domains
 
     def get_domain_by_name(self, domain_name):
+        """Get a domain by name
+
+        Args:
+            domain_name (str): the required team
+
+        Returns:
+            Domain: the desidered :py:class:`Domain` instance
+        """
+
         logger.debug("Searching for %s" % (domain_name))
 
         # get all domains
@@ -699,7 +832,14 @@ class User(Document):
             domain=domain_name))
 
     def add_user_to_team(self, user_id, domain_id):
-        """Add a user to a team"""
+        """Add a user to a team
+
+        Args:
+            user_id (str): the required user_id
+            domain_id (str) the required domain_id
+
+        Returns:
+            Domain: the updated :py:class:`Domain` object"""
 
         url = (
             "https://explore.api.aai.ebi.ac.uk/domains/{domain_id}/"
@@ -722,7 +862,27 @@ class User(Document):
 
 
 class Domain(Document):
+    """
+    A class to deal with AAP domain objects
+
+    Attributes:
+        name (str): domain name
+        data (dict): data (dict): data from AAP read with
+            :py:meth:`response.json() <requests.Response.json>`
+        domainName (str): AAP domainName
+        domainDesc (str): AAP domainDesc
+        domainReference (str): AAP domainReference
+        link (dict): ``links`` data read from AAP response
+    """
+
     def __init__(self, auth, data=None):
+        """Instantiate the class
+
+        Args:
+            auth (Auth): a valid :py:class:`Auth` object
+            data (dict): instantiate the class from a dictionary of user data
+        """
+
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
@@ -754,6 +914,8 @@ class Domain(Document):
 
     @property
     def users(self):
+        """Get users belonging to this domain"""
+
         if not self._users and isinstance(self.links, list):
             for url in self.links:
                 if 'user' in url['href']:
@@ -762,6 +924,7 @@ class Domain(Document):
 
             self._users = response.json()
 
+        # TODO: parse users as User objects
         return self._users
 
     @users.setter
@@ -769,7 +932,11 @@ class Domain(Document):
         self._users = value
 
     def create_profile(self, attributes={}):
-        """Create profile for this domain"""
+        """Create a profile for this domain
+
+        Args:
+            attributes (dict): a dictionary of attributes
+        """
 
         # see this url for more information
         # https://explore.api.aai.ebi.ac.uk/docs/profile/index.html#resource-create_domain_profile
@@ -801,7 +968,23 @@ class Domain(Document):
 
 
 class Team(Document):
+    """A class to deal with USI Team_ objects
+
+    Attributes:
+        name (str): team name
+        data (dict): data (dict): data from USI read with
+            :py:meth:`response.json() <requests.Response.json>`
+
+    .. _Team: https://submission-test.ebi.ac.uk/api/docs/ref_teams.html
+    """
     def __init__(self, auth, data=None):
+        """Instantiate the class
+
+        Args:
+            auth (Auth): a valid :py:class:`Auth` object
+            data (dict): instantiate the class from a dictionary of user data
+        """
+
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
@@ -819,7 +1002,13 @@ class Team(Document):
         return self.name
 
     def get_submissions(self, status=None):
-        """Follows submission url"""
+        """Follows submission url and get submissions from this team
+
+        Args:
+            status (str): filter submission using submissionStatus
+
+        Returns:
+            list: A list of :py:class:`Submission` objects"""
 
         # follow url
         document = self.follow_url('submissions', auth=self.auth)
@@ -845,7 +1034,10 @@ class Team(Document):
         return submissions
 
     def create_submission(self):
-        """Create a submission"""
+        """Create a new submission
+
+        Returns:
+            Submission: the new submission as an instance"""
 
         # get the url for submission:create. I don't want a document using
         # get method, I need instead a POST request
@@ -878,6 +1070,11 @@ class Team(Document):
 
 
 class Submission(Document):
+    """A class to deal with USI Submissions_
+
+    .. _Submissions: https://submission-test.ebi.ac.uk/api/docs/ref_submissions.html
+    """
+
     def __init__(self, auth, data=None):
         # calling the base class method client
         Client.__init__(self, auth)
@@ -911,6 +1108,8 @@ class Submission(Document):
 
     @property
     def team(self):
+        """Get team name"""
+
         # get team name
         if isinstance(self._team, str):
             team_name = self._team
@@ -1161,6 +1360,7 @@ class Submission(Document):
         # add new element to headers
         headers['Content-Type'] = 'application/json;charset=UTF-8'
 
+        # TODO: move to a put call
         response = self.patch(
             url,
             payload={'status': 'Submitted'},
