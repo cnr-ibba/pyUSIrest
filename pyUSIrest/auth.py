@@ -7,7 +7,7 @@ Created on Thu May 24 15:46:37 2018
 
 .. _`python_jwt.process_jwt`: https://rawgit.now.sh/davedoesdev/python-jwt/master/docs/_build/html/index.html#python_jwt.process_jwt
 
-"""
+"""  # noqa
 
 import requests
 import datetime

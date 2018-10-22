@@ -1073,7 +1073,7 @@ class Submission(Document):
     """A class to deal with USI Submissions_
 
     .. _Submissions: https://submission-test.ebi.ac.uk/api/docs/ref_submissions.html
-    """
+    """  # noqa
 
     def __init__(self, auth, data=None):
         # calling the base class method client
