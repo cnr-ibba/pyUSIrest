@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)
 
 class Client():
     """A class to deal with Biosample Submission server. It perform request
-    modelling user token in request headers. You need to call this
-    class after instantiating an :class:`Auth <pyUSIrest.auth.Auth>` object::
+    modelling user token in request headers. You need to call this class after
+    instantiating an :py:class:`Auth <pyUSIrest.auth.Auth>` object::
 
         import getpass
         from pyUSIrest import Auth, Client
@@ -47,7 +47,7 @@ class Client():
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`Auth` object
+            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
 
         """
 
@@ -61,7 +61,7 @@ class Client():
 
     @property
     def auth(self):
-        """Get/Set :py:class:`Auth` object"""
+        """Get/Set :py:class:`Auth <pyUSIrest.auth.Auth>` object"""
 
         return self._auth
 
@@ -209,8 +209,8 @@ class Client():
 
 class Document(Client):
     """Base class for pyUSIrest classes. It models common methods and
-    attributes by calling :py:class:`Client <pyUSIrest.client.Client>`
-    an reading json response from biosample API
+    attributes by calling :py:class:`Client` and reading json response from
+    biosample API
 
     Attributes:
         _link (dict): ``_links`` data read from USI response
@@ -566,7 +566,7 @@ class User(Document):
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`Auth` object
+            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
             data (dict): instantiate the class from a dictionary of user data
         """
         # calling the base class method client
@@ -879,7 +879,7 @@ class Domain(Document):
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`Auth` object
+            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
             data (dict): instantiate the class from a dictionary of user data
         """
 
@@ -981,7 +981,7 @@ class Team(Document):
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`Auth` object
+            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
             data (dict): instantiate the class from a dictionary of user data
         """
 
@@ -1090,7 +1090,7 @@ class Submission(Document):
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`Auth` object
+            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
             data (dict): instantiate the class from a dictionary of user data
         """
 
@@ -1473,7 +1473,7 @@ class Sample(Document):
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`Auth` object
+            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
             data (dict): instantiate the class from a dictionary of user data
         """
 
@@ -1602,7 +1602,7 @@ class ValidationResult(Document):
         """Instantiate the class
 
         Args:
-            auth (Auth): a valid :py:class:`Auth` object
+            auth (Auth): a valid :py:class:`Auth <pyUSIrest.auth.Auth>` object
             data (dict): instantiate the class from a dictionary of user data
         """
 
