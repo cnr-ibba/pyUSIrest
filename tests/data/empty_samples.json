@@ -1,0 +1,38 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/87e7abda-81a8-4b5e-a1c0-323f7f0a4e43/contents/samples?page=0&size=20"
+    },
+    "checklists": {
+      "href": "https://submission-test.ebi.ac.uk/api/checklists/search/by-data-type-id?dataTypeId=samples"
+    },
+    "spreadsheets": {
+      "href": "https://submission-test.ebi.ac.uk/api/spreadsheets/search/by-submission-and-data-type?submissionId=87e7abda-81a8-4b5e-a1c0-323f7f0a4e43&dataTypeId=samples"
+    },
+    "validationSummaryCounts": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/87e7abda-81a8-4b5e-a1c0-323f7f0a4e43/contents/samples/summary"
+    },
+    "dataType": {
+      "href": "https://submission-test.ebi.ac.uk/api/dataTypes/samples"
+    },
+    "documents-with-errors": {
+      "href": "https://submission-test.ebi.ac.uk/api/samples/search/by-submission-and-data-type-with-errors?submissionId=87e7abda-81a8-4b5e-a1c0-323f7f0a4e43&dataTypeId=samples"
+    },
+    "documents-with-warnings": {
+      "href": "https://submission-test.ebi.ac.uk/api/samples/search/by-submission-and-data-type-with-warnings?submissionId=87e7abda-81a8-4b5e-a1c0-323f7f0a4e43&dataTypeId=samples"
+    },
+    "create": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/87e7abda-81a8-4b5e-a1c0-323f7f0a4e43/contents/samples"
+    },
+    "sheetUpload": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/87e7abda-81a8-4b5e-a1c0-323f7f0a4e43/spreadsheet?checklistId={checklistId}",
+      "templated": true
+    }
+  },
+  "page": {
+    "size": 20,
+    "totalElements": 0,
+    "totalPages": 0,
+    "number": 0
+  }
+}

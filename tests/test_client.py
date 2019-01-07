@@ -645,6 +645,50 @@ class SubmissionTest(TestCase):
         self.assertIsInstance(samples, list)
         self.assertEqual(len(samples), 2)
 
+    def mocked_get_empty_samples(*args, **kwargs):
+        """Simulate a submission with no samples at all"""
+
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+
+            def json(self):
+                return self.json_data
+
+        get_samples_link = (
+            "https://submission-test.ebi.ac.uk/api/samples/search/by-"
+            "submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e")
+
+        with open(os.path.join(data_path, "empty_samples.json")) as handle:
+            samples = json.load(handle)
+
+        # following content
+        if args[0] == (
+                'https://submission-dev.ebi.ac.uk/api/submissions/c8c86558-'
+                '8d3a-4ac5-8638-7aa354291d61/contents'):
+            return MockResponse({
+                '_links': {
+                    'samples': {
+                        'href': get_samples_link
+                    }
+                }}, 200)
+
+        # followin content -> samples
+        elif args[0] == get_samples_link:
+            return MockResponse(samples, 200)
+
+        # default response
+        return MockResponse(None, 404)
+
+    # patch a request.get to return 0 samples for a submission
+    @patch('requests.get', side_effect=mocked_get_empty_samples)
+    def test_get_empty_samples(self, mock_get):
+        samples = self.submission.get_samples(validationResult='Complete')
+
+        self.assertIsInstance(samples, list)
+        self.assertEqual(len(samples), 0)
+
     def test_get_status(self):
         with open(os.path.join(data_path, "validationResults.json")) as handle:
             data = json.load(handle)

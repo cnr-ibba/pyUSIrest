@@ -13,6 +13,7 @@ import collections
 
 from url_normalize import url_normalize
 
+from . import __version__
 from .auth import Auth
 
 
@@ -40,7 +41,7 @@ class Client():
 
     headers = {
         'Accept': 'application/hal+json',
-        'User-Agent': 'pyUSIrest v0.1.0'
+        'User-Agent': 'pyUSIrest %s' % (__version__)
     }
 
     def __init__(self, auth):
@@ -1279,6 +1280,10 @@ class Submission(Document):
 
         # a list ob objects to return
         samples = []
+
+        # empty submission hasn't '_embedded' key
+        if '_embedded' not in document.data:
+            return samples
 
         for i, sample_data in enumerate(document.data['_embedded']['samples']):
             sample = Sample(self.auth, sample_data)
