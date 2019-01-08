@@ -1,0 +1,22 @@
+{
+  "status": "Submitted",
+  "lastModifiedDate": "2019-01-07T11:45:09.192+0000",
+  "lastModifiedBy": "usr-f1801430-51e1-4718-8fca-778887087bad",
+  "_links": {
+    "submissionStatus": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionStatuses/5e86c584-4c1f-45ed-b28e-9da47393fe19"
+    },
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionStatuses/5e86c584-4c1f-45ed-b28e-9da47393fe19"
+    },
+    "statusDescription": {
+      "href": "https://submission-test.ebi.ac.uk/api/statusDescriptions/submissionStatuses/Submitted"
+    },
+    "self:update": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionStatuses/5e86c584-4c1f-45ed-b28e-9da47393fe19"
+    },
+    "availableStatuses": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000/availableSubmissionStatuses"
+    }
+  }
+}

@@ -480,7 +480,7 @@ class Root(Document):
         the user
 
         Args:
-            status (str): filter user submissions with submissionStatus
+            status (str): filter user submissions using this status
             team (str): filter user submissions belonging to this team
 
         Returns:
@@ -502,7 +502,7 @@ class Root(Document):
         for i, submission_data in enumerate(document._embedded['submissions']):
             submission = Submission(self.auth, submission_data)
 
-            if status and submission.submissionStatus != status:
+            if status and submission.status != status:
                 logger.debug("Filtering %s submission" % (submission.name))
                 continue
 
@@ -1006,7 +1006,7 @@ class Team(Document):
         """Follows submission url and get submissions from this team
 
         Args:
-            status (str): filter submission using submissionStatus
+            status (str): filter submission using status
 
         Returns:
             list: A list of :py:class:`Submission` objects"""
@@ -1021,7 +1021,7 @@ class Team(Document):
         for i, submission_data in enumerate(document._embedded['submissions']):
             submission = Submission(self.auth, submission_data)
 
-            if status and submission.submissionStatus != status:
+            if status and submission.status != status:
                 logger.debug("Filtering %s submission" % (submission.name))
                 continue
 
@@ -1078,7 +1078,6 @@ class Submission(Document):
         createdDate (str): created date
         lastModifiedDate (str): last modified date
         lastModifiedBy (str): last user_id who modified this submission
-        submissionStatus (str): submission status
         submitter (dict): submitter data
         createdBy (str):  user_id who create this submission
         submissionDate (str): date when this submission is submitted to
@@ -1105,12 +1104,14 @@ class Submission(Document):
         self.createdDate = None
         self.lastModifiedDate = None
         self.lastModifiedBy = None
-        self.submissionStatus = None
         self.submitter = None
         self.createdBy = None
 
         # when this attribute appears? maybe when submission take place
         self.submissionDate = None
+
+        # track status
+        self.submissionStatus = None
 
         # each document need to parse data as dictionary, since there could be
         # more submission read from the same page. I cant read data from
@@ -1122,7 +1123,7 @@ class Submission(Document):
         if not self.name:
             return "Submission not yet initialized"
 
-        return "%s %s %s" % (self.name, self.team, self.submissionStatus)
+        return "%s %s %s" % (self.name, self.team, self.status)
 
     @property
     def team(self):
@@ -1187,11 +1188,6 @@ class Submission(Document):
             bool: True if ready for submission
         """
 
-        # I cant follow such urls for completed and submitted submission
-        # document = self.follow_url(
-        #    "submissionStatus", self.auth
-        #    ).follow_url("availableStatuses", self.auth)
-
         # Try to determine url manually
         url = (
             "https://submission-test.ebi.ac.uk/api/submissions/"
@@ -1208,6 +1204,24 @@ class Submission(Document):
 
         # default response
         return False
+
+    @property
+    def status(self):
+        """Return submission status
+
+        Returns:
+            str: submission status as string"""
+
+        if self.submissionStatus is None:
+            self.__update_status()
+
+        return self.submissionStatus
+
+    def __update_status(self):
+        """Update submission status"""
+
+        document = self.follow_url('submissionStatus', auth=self.auth)
+        self.submissionStatus = document.status
 
     def create_sample(self, sample_data):
         """Create a sample from a dictionary
@@ -1270,6 +1284,7 @@ class Submission(Document):
         """
 
         # deal with different subission instances
+        # TODO: define the final link in one step
         if 'contents' not in self._links:
             logger.debug("reloading submission")
             self.reload()
@@ -1394,6 +1409,9 @@ class Submission(Document):
 
         logger.info("Refreshing data data for submission")
         self.follow_self_url()
+
+        # reload submission status
+        self.__update_status()
 
     def finalize(self, ignorelist=[]):
         """Finalize a submission to insert data into biosample

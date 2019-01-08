@@ -1,52 +1,55 @@
 {
-  "_links" : {
-    "processingStatusDescriptions" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/statusDescriptions/processingStatuses"
+  "_links": {
+    "aap-api-root": {
+      "href": "https://explore.api.aai.ebi.ac.uk/"
     },
-    "releaseStatusDescriptions" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/statusDescriptions/releaseStatuses"
+    "checklists": {
+      "href": "https://submission-test.ebi.ac.uk/api/checklists"
     },
-    "submissionStatusDescriptions" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/statusDescriptions/submissionStatuses"
+    "checklists:search": {
+      "href": "https://submission-test.ebi.ac.uk/api/checklists/search"
     },
-    "userTeams" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/user/teams"
+    "dataTypes": {
+      "href": "https://submission-test.ebi.ac.uk/api/dataTypes"
     },
-    "team" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/teams/{teamName:.+}"
+    "processingStatusDescriptions": {
+      "href": "https://submission-test.ebi.ac.uk/api/statusDescriptions/processingStatuses"
     },
-    "userProjects" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/user/projects"
+    "profile": {
+      "href": "https://submission-test.ebi.ac.uk/api/profile"
     },
-    "userSubmissions" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/user/submissions"
+    "releaseStatusDescriptions": {
+      "href": "https://submission-test.ebi.ac.uk/api/statusDescriptions/releaseStatuses"
     },
-    "userSubmissionStatusSummary" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/user/submissionStatusSummary"
+    "submissionPlans": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionPlans"
     },
-    "studyDataTypes" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/studyDataTypes"
+    "submissionStatusDescriptions": {
+      "href": "https://submission-test.ebi.ac.uk/api/statusDescriptions/submissionStatuses"
     },
-    "aap-api-root" : {
-      "href" : "https://explore.api.aai.ebi.ac.uk/"
+    "team": {
+      "href": "https://submission-test.ebi.ac.uk/api/teams/{teamName:.+}"
     },
-    "tus-upload" : {
-      "href" : "https://submission-dev.ebi.ac.uk/files/"
+    "tus-upload": {
+      "href": "https://submission-test.ebi.ac.uk/files/"
     },
-    "uiSupportItems:search" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/uiSupportItems/search"
+    "uiSupportItems": {
+      "href": "https://submission-test.ebi.ac.uk/api/uiSupportItems"
     },
-    "uiSupportItems" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/uiSupportItems"
+    "uiSupportItems:search": {
+      "href": "https://submission-test.ebi.ac.uk/api/uiSupportItems/search"
     },
-    "templates:search" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/templates/search"
+    "userProjects": {
+      "href": "https://submission-test.ebi.ac.uk/api/user/projects"
     },
-    "templates" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/templates"
+    "userSubmissionStatusSummary": {
+      "href": "https://submission-test.ebi.ac.uk/api/user/submissionStatusSummary"
     },
-    "profile" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/profile"
+    "userSubmissions": {
+      "href": "https://submission-test.ebi.ac.uk/api/user/submissions"
+    },
+    "userTeams": {
+      "href": "https://submission-test.ebi.ac.uk/api/user/teams"
     }
   }
 }

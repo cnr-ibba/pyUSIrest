@@ -17,6 +17,10 @@ Features
 ^^^^^^^^
 
 * test for an empty submission (no samples)
+* updated `root.json`, `userSubmission.json` test data
+* submissionStatus is no longer an attribute, when feching submission by name
+  is present when getting user submissions
+* follow submissionStatus link (if necessary)
 
 0.2.0 (2018-10-23)
 ------------------

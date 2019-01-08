@@ -1,0 +1,39 @@
+{
+  "status": "Draft",
+  "createdDate": "2019-01-07T11:30:33.415+0000",
+  "lastModifiedDate": "2019-01-07T11:30:33.415+0000",
+  "createdBy": "usr-ab349b73-e2c7-41f8-b029-44c8aeabc97a",
+  "lastModifiedBy": "usr-ab349b73-e2c7-41f8-b029-44c8aeabc97a",
+  "team": {
+    "name": "subs.test-team-19",
+    "description": "Team for Paolo Cozzi",
+    "profile": {
+      "centre name": "IMAGE Inject"
+    },
+    "_links": {
+      "submissions": {
+        "href": "https://submission-test.ebi.ac.uk/api/submissions/search/by-team?teamName=subs.test-team-19"
+      },
+      "submissions:create": {
+        "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-19/submissions"
+      },
+      "items": {
+        "href": "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-19/items"
+      }
+    }
+  },
+  "_links": {
+    "submissionStatus": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionStatuses/240031e1-4c8b-4643-a5c4-7f7595467e37"
+    },
+    "self": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissionStatuses/240031e1-4c8b-4643-a5c4-7f7595467e37"
+    },
+    "statusDescription": {
+      "href": "https://submission-test.ebi.ac.uk/api/statusDescriptions/submissionStatuses/Draft"
+    },
+    "availableStatuses": {
+      "href": "https://submission-test.ebi.ac.uk/api/submissions/87e7abda-81a8-4b5e-a1c0-323f7f0a4e43/availableSubmissionStatuses"
+    }
+  }
+}

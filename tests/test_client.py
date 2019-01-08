@@ -123,14 +123,53 @@ class RootTest(TestCase):
             self.root.get_team_by_name,
             "subs.dev-team-2")
 
-    def test_get_user_submissions(self):
+    def mocked_get_submission(*args, **kwargs):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+                self.text = "Not implemented: %s" % (args[0])
+
+            def json(self):
+                return self.json_data
+
         with open(os.path.join(data_path, "userSubmissions.json")) as handle:
-            data = json.load(handle)
+            submissions = json.load(handle)
 
-        self.mock_get.return_value = Mock()
-        self.mock_get.return_value.json.return_value = data
-        self.mock_get.return_value.status_code = 200
+        status_prefix = "https://submission-test.ebi.ac.uk/api/submissions"
+        status_suffix = "submissionStatus"
 
+        status_link1 = "/".join([
+            status_prefix,
+            "87e7abda-81a8-4b5e-a1c0-323f7f0a4e43",
+            status_suffix])
+
+        status_link2 = "/".join([
+            status_prefix,
+            "8b05e7f2-92c1-4651-94cb-9101f351f000",
+            status_suffix])
+
+        with open(os.path.join(data_path, "submissionStatus1.json")) as handle:
+            status_data1 = json.load(handle)
+
+        with open(os.path.join(data_path, "submissionStatus2.json")) as handle:
+            status_data2 = json.load(handle)
+
+        if args[0] == (
+                'https://submission-test.ebi.ac.uk/api/user/submissions'):
+            return MockResponse(submissions, 200)
+
+        elif args[0] == status_link1:
+            return MockResponse(status_data1, 200)
+
+        elif args[0] == status_link2:
+            return MockResponse(status_data2, 200)
+
+        return MockResponse(None, 404)
+
+    @patch('requests.get', side_effect=mocked_get_submission)
+    def test_get_user_submissions(self, mock_get):
+        # get userSubmissions
         submissions = self.root.get_user_submissions()
 
         self.assertIsInstance(submissions, list)
@@ -145,7 +184,7 @@ class RootTest(TestCase):
         self.assertIsInstance(draft, list)
         self.assertEqual(len(draft), 1)
 
-        team1 = self.root.get_user_submissions(team="subs.dev-team-1")
+        team1 = self.root.get_user_submissions(team="subs.test-team-1")
         self.assertIsInstance(team1, list)
         self.assertEqual(len(team1), 1)
 
@@ -561,6 +600,13 @@ class SubmissionTest(TestCase):
             }
 
     def test_str(self):
+        with open(os.path.join(data_path, "submissionStatus1.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
         test = self.submission.__str__()
         self.assertIsInstance(test, str)
 
@@ -749,7 +795,7 @@ class SubmissionTest(TestCase):
             "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-"
             "47e2-bace-59f9f5b2346e/submissionStatus")
 
-        with open(os.path.join(data_path, "submissionStatus.json")) as handle:
+        with open(os.path.join(data_path, "submissionStatus2.json")) as handle:
             status_data = json.load(handle)
 
         if args[0] == check_ready_link:
