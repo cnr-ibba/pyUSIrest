@@ -770,8 +770,7 @@ class SubmissionTest(TestCase):
 
         check_ready_link = (
             "https://submission-test.ebi.ac.uk/api/submissions/c8c86558-"
-            "8d3a-4ac5-8638-7aa354291d61{?projection}/availableSubmissio"
-            "nStatuses")
+            "8d3a-4ac5-8638-7aa354291d61/availableSubmissionStatuses")
 
         with open(os.path.join(
                 data_path, "availableSubmissionStatuses.json")) as handle:

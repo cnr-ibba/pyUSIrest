@@ -321,7 +321,7 @@ class Document(Client):
         # get a url to follow
         url = self._links['self']['href']
 
-        # remove {?projection} from self url. This is unreachible
+        # remove {?projection} from self url. This is unreachable
         if '{?projection}' in url:
             logger.debug("removing {?projection} from url")
             url = url.replace("{?projection}", "")
@@ -397,11 +397,11 @@ class Document(Client):
 
         else:
             if force is True:
-                logger.debug("Forcing %s -> %s" % (key, value))
+                logger.info("Forcing %s -> %s" % (key, value))
                 setattr(self, key, value)
 
             else:
-                logger.debug("key %s not implemented" % (key))
+                logger.warning("key %s not implemented" % (key))
 
 
 class Root(Document):
@@ -993,6 +993,8 @@ class Team(Document):
         # my class attributes
         self.name = None
         self.data = None
+        self.description = None
+        self.profile = None
 
         # dealing with this type of documents.
         if data:
@@ -1064,7 +1066,9 @@ class Team(Document):
         submission = Submission(auth=self.auth)
         submission.parse_response(response)
 
-        # reload self url to fix issues
+        # there are some difference between a new submission and
+        # an already defined submission
+        logger.debug("reload submission to fix issues")
         submission.follow_self_url()
 
         return submission
@@ -1094,12 +1098,14 @@ class Submission(Document):
             data (dict): instantiate the class from a dictionary of user data
         """
 
+        # this will track submission name
+        self.id = None
+
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
 
         # my class attributes
-        self.name = None
         self._team = None
         self.createdDate = None
         self.lastModifiedDate = None
@@ -1124,6 +1130,19 @@ class Submission(Document):
             return "Submission not yet initialized"
 
         return "%s %s %s" % (self.name, self.team, self.status)
+
+    # for compatibility
+    @property
+    def name(self):
+        return self.id
+
+    @name.setter
+    def name(self, submission_id):
+        if submission_id != self.id:
+            logger.warning(
+                    "Overriding id (%s > %s)" % (self.id, submission_id))
+
+        self.id = submission_id
 
     @property
     def team(self):
@@ -1158,8 +1177,15 @@ class Submission(Document):
 
         # check for name
         if 'self' in self._links:
-            self.name = self._links['self']['href'].split("/")[-1]
-            logger.debug("Using %s as submission name" % (self.name))
+            name = self._links['self']['href'].split("/")[-1]
+
+            # remove {?projection} name
+            if '{?projection}' in name:
+                logger.debug("removing {?projection} from name")
+                name = name.replace("{?projection}", "")
+
+            logger.debug("Using %s as submission name" % (name))
+            self.name = name
 
     def __check_relationship(self, sample_data):
         """Check relationship and add additional fields"""
@@ -1213,11 +1239,11 @@ class Submission(Document):
             str: submission status as string"""
 
         if self.submissionStatus is None:
-            self.__update_status()
+            self.update_status()
 
         return self.submissionStatus
 
-    def __update_status(self):
+    def update_status(self):
         """Update submission status"""
 
         document = self.follow_url('submissionStatus', auth=self.auth)
@@ -1411,7 +1437,7 @@ class Submission(Document):
         self.follow_self_url()
 
         # reload submission status
-        self.__update_status()
+        self.update_status()
 
     def finalize(self, ignorelist=[]):
         """Finalize a submission to insert data into biosample
@@ -1431,8 +1457,8 @@ class Submission(Document):
         if True in self.has_errors(ignorelist):
             raise Exception("Submission has errors, fix them")
 
-        # follow self url to reload my data
-        self.follow_self_url()
+        # refresh my data
+        self.reload()
 
         document = self.follow_url('submissionStatus', self.auth)
 
