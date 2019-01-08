@@ -449,13 +449,21 @@ class DomainTest(TestCase):
         cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
+        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
+        cls.mock_get = cls.mock_get_patcher.start()
+
     @classmethod
     def teardown_class(cls):
         cls.mock_post_patcher.stop()
 
     def setUp(self):
         self.auth = Auth(token=generate_token())
-        self.domain = Domain(self.auth)
+
+        # read domain data (a list of domains)
+        with open(os.path.join(data_path, "myDomain.json")) as handle:
+            data = json.load(handle)
+
+        self.domain = Domain(self.auth, data=data[0])
 
     def test_str(self):
         test = self.domain.__str__()
@@ -478,6 +486,27 @@ class DomainTest(TestCase):
                 "address": "South Building, EMBL-EBI, Wellcome Genome Campus,"
                            "Hinxton, Cambridgeshire, CB10 1SD"
             })
+
+    def read_myUsers(self):
+        with open(os.path.join(data_path, "domainUsers.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+    def test_users(self):
+        # initialize
+        self.read_myUsers()
+
+        # get my users
+        users = self.domain.users
+
+        self.assertIsInstance(users, list)
+        self.assertEqual(len(users), 2)
+
+        for user in users:
+            self.assertIsInstance(user, User)
 
 
 class TeamTest(TestCase):

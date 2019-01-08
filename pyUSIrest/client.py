@@ -587,6 +587,7 @@ class User(Document):
         self.userName = None
         self.email = None
         self.userReference = None
+        self.links = None
 
         # dealing with this type of documents.
         if data:
@@ -928,9 +929,14 @@ class Domain(Document):
                     response = self.request(url['href'])
                     break
 
-            self._users = response.json()
+            tmp_data = response.json()
 
-        # TODO: parse users as User objects
+            # parse users as User objects
+            self._users = []
+
+            for user_data in tmp_data:
+                self._users.append(User(self.auth, data=user_data))
+
         return self._users
 
     @users.setter

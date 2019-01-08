@@ -8,8 +8,6 @@ History
 TODO
 ^^^^
 
-* ``Domain.users`` should returns ``User`` objects
-
 Features
 ^^^^^^^^
 
@@ -21,6 +19,7 @@ Features
 * update submission status after create a new submission
 * update submission status after ``get_submission_by_name``
 * update submission status after reload a just finalized submission
+* ``Domain.users`` returns ``User`` objects in a list
 
 0.2.0 (2018-10-23)
 ------------------

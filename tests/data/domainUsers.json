@@ -1,0 +1,24 @@
+[
+  {
+    "userName": "foo",
+    "email": "foo@example.mail",
+    "userReference": "usr-ab349b73-e2c7-41f8-b029-44c8aeabc97a",
+    "links": [
+      {
+        "rel": "self",
+        "href": "https://explore.api.aai.ebi.ac.uk/users/usr-ab349b73-e2c7-41f8-b029-44c8aeabc97a"
+      }
+    ]
+  },
+  {
+    "userName": "bar",
+    "email": "bar@example.mail",
+    "userReference": "usr-f1801430-51e1-4718-8fca-778887087bad",
+    "links": [
+      {
+        "rel": "self",
+        "href": "https://explore.api.aai.ebi.ac.uk/users/usr-f1801430-51e1-4718-8fca-778887087bad"
+      }
+    ]
+  }
+]
