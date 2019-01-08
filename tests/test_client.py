@@ -53,7 +53,7 @@ class ClientTest(TestCase):
             RuntimeError,
             "Your token is expired",
             client.follow_url,
-            "https://submission-dev.ebi.ac.uk/api/"
+            "https://submission-test.ebi.ac.uk/api/"
         )
 
 
@@ -136,16 +136,16 @@ class RootTest(TestCase):
         with open(os.path.join(data_path, "userSubmissions.json")) as handle:
             submissions = json.load(handle)
 
-        status_prefix = "https://submission-test.ebi.ac.uk/api/submissions"
+        submission_prefix = "https://submission-test.ebi.ac.uk/api/submissions"
         status_suffix = "submissionStatus"
 
         status_link1 = "/".join([
-            status_prefix,
+            submission_prefix,
             "87e7abda-81a8-4b5e-a1c0-323f7f0a4e43",
             status_suffix])
 
         status_link2 = "/".join([
-            status_prefix,
+            submission_prefix,
             "8b05e7f2-92c1-4651-94cb-9101f351f000",
             status_suffix])
 
@@ -155,6 +155,19 @@ class RootTest(TestCase):
         with open(os.path.join(data_path, "submissionStatus2.json")) as handle:
             status_data2 = json.load(handle)
 
+        # --- to test get_submission_by_name
+        byname_link = "/".join([
+            submission_prefix, "c8c86558-8d3a-4ac5-8638-7aa354291d61"])
+
+        with open(os.path.join(data_path, "newSubmission.json")) as handle:
+            new_submission = json.load(handle)
+
+        status_link3 = "/".join([
+            submission_prefix,
+            "c8c86558-8d3a-4ac5-8638-7aa354291d61",
+            status_suffix])
+
+        # --- for each url, return a different response
         if args[0] == (
                 'https://submission-test.ebi.ac.uk/api/user/submissions'):
             return MockResponse(submissions, 200)
@@ -163,6 +176,13 @@ class RootTest(TestCase):
             return MockResponse(status_data1, 200)
 
         elif args[0] == status_link2:
+            return MockResponse(status_data2, 200)
+
+        # --- links for get_submission_by_name
+        elif args[0] == byname_link:
+            return MockResponse(new_submission, 200)
+
+        elif args[0] == status_link3:
             return MockResponse(status_data2, 200)
 
         return MockResponse(None, 404)
@@ -215,13 +235,14 @@ class RootTest(TestCase):
         self.assertIsInstance(submissions, list)
         self.assertEqual(len(submissions), 2)
 
-    def test_get_submission_by_name(self):
-        with open(os.path.join(data_path, "newSubmission.json")) as handle:
-            data = json.load(handle)
-
-        self.mock_get.return_value = Mock()
-        self.mock_get.return_value.json.return_value = data
-        self.mock_get.return_value.status_code = 200
+    @patch('requests.get', side_effect=mocked_get_submission)
+    def test_get_submission_by_name(self, mock_get):
+#        with open(os.path.join(data_path, "newSubmission.json")) as handle:
+#            data = json.load(handle)
+#
+#        self.mock_get.return_value = Mock()
+#        self.mock_get.return_value.json.return_value = data
+#        self.mock_get.return_value.status_code = 200
 
         submission = self.root.get_submission_by_name(
             submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
@@ -489,18 +510,42 @@ class TeamTest(TestCase):
         test = self.team.__str__()
         self.assertIsInstance(test, str)
 
-    def test_create_submission(self):
+    def mocked_create_submission(*args, **kwargs):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+                self.text = "Not implemented: %s" % (args[0])
+
+            def json(self):
+                return self.json_data
+
         with open(os.path.join(data_path, "newSubmission.json")) as handle:
             data = json.load(handle)
 
-        self.mock_post.return_value = Mock()
-        self.mock_post.return_value.json.return_value = data
-        self.mock_post.return_value.status_code = 201
+        with open(os.path.join(data_path, "submissionStatus1.json")) as handle:
+            status = json.load(handle)
 
-        self.mock_get.return_value = Mock()
-        self.mock_get.return_value.json.return_value = data
-        self.mock_get.return_value.status_code = 200
+        if args[0] == (
+                "https://submission-test.ebi.ac.uk/api/teams/subs.test"
+                "-team-1/submissions"):
+            return MockResponse(data, 201)
 
+        elif args[0] == (
+                "https://submission-test.ebi.ac.uk/api/submissions/"
+                "c8c86558-8d3a-4ac5-8638-7aa354291d61"):
+            return MockResponse(data, 200)
+
+        elif args[0] == (
+                "https://submission-test.ebi.ac.uk/api/submissions/"
+                "c8c86558-8d3a-4ac5-8638-7aa354291d61/submissionStatus"):
+            return MockResponse(status, 200)
+
+        return MockResponse(None, 404)
+
+    @patch('requests.get', side_effect=mocked_create_submission)
+    @patch('requests.post', side_effect=mocked_create_submission)
+    def test_create_submission(self, mock_get, mock_post):
         submission = self.team.create_submission()
         self.assertIsInstance(submission, Submission)
 
@@ -655,7 +700,7 @@ class SubmissionTest(TestCase):
 
         # following content
         if args[0] == (
-                'https://submission-dev.ebi.ac.uk/api/submissions/c8c86558-'
+                'https://submission-test.ebi.ac.uk/api/submissions/c8c86558-'
                 '8d3a-4ac5-8638-7aa354291d61/contents'):
             return MockResponse({
                 '_links': {
@@ -711,7 +756,7 @@ class SubmissionTest(TestCase):
 
         # following content
         if args[0] == (
-                'https://submission-dev.ebi.ac.uk/api/submissions/c8c86558-'
+                'https://submission-test.ebi.ac.uk/api/submissions/c8c86558-'
                 '8d3a-4ac5-8638-7aa354291d61/contents'):
             return MockResponse({
                 '_links': {
@@ -777,22 +822,22 @@ class SubmissionTest(TestCase):
             check_ready_data = json.load(handle)
 
         validation_link = (
-            "https://submission-dev.ebi.ac.uk/api/validationResults/search/"
+            "https://submission-test.ebi.ac.uk/api/validationResults/search/"
             "by-submission?submissionId=c8c86558-8d3a-4ac5-8638-7aa354291d61")
 
         with open(os.path.join(data_path, "validationResults.json")) as handle:
             validation_data = json.load(handle)
 
         self_link = (
-            "https://submission-dev.ebi.ac.uk/api/submissions/"
+            "https://submission-test.ebi.ac.uk/api/submissions/"
             "c8c86558-8d3a-4ac5-8638-7aa354291d61")
 
         with open(os.path.join(data_path, "newSubmission.json")) as handle:
             self_data = json.load(handle)
 
         status_link = (
-            "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-"
-            "47e2-bace-59f9f5b2346e/submissionStatus")
+            "https://submission-test.ebi.ac.uk/api/submissions/c8c86558-"
+            "8d3a-4ac5-8638-7aa354291d61/submissionStatus")
 
         with open(os.path.join(data_path, "submissionStatus2.json")) as handle:
             status_data = json.load(handle)

@@ -9,9 +9,6 @@ TODO
 ^^^^
 
 * ``Domain.users`` should returns ``User`` objects
-* update submission status after reload a just finalized submission
-* update submission status after create a new submission
-* update submission status after ``get_submission_by_name``
 
 Features
 ^^^^^^^^
@@ -21,6 +18,9 @@ Features
 * submissionStatus is no longer an attribute, when feching submission by name
   is present when getting user submissions
 * follow submissionStatus link (if necessary)
+* update submission status after create a new submission
+* update submission status after ``get_submission_by_name``
+* update submission status after reload a just finalized submission
 
 0.2.0 (2018-10-23)
 ------------------

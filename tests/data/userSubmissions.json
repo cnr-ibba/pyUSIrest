@@ -95,7 +95,7 @@
   },
   "_links" : {
     "self" : {
-      "href" : "https://submission-dev.ebi.ac.uk/api/user/submissions?page=0&size=20"
+      "href" : "https://submission-test.ebi.ac.uk/api/user/submissions?page=0&size=20"
     }
   },
   "page" : {

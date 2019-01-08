@@ -540,7 +540,12 @@ class Root(Document):
         if self.last_status_code == 200:
             # read submission data
             submission_data = self.last_response.json()
-            return Submission(self.auth, submission_data)
+            submission = Submission(self.auth, submission_data)
+
+            # update status
+            submission.update_status()
+
+            return submission
 
         elif self.last_status_code == 404:
             # if I arrive here, no submission is found
@@ -1069,7 +1074,9 @@ class Team(Document):
         # there are some difference between a new submission and
         # an already defined submission
         logger.debug("reload submission to fix issues")
-        submission.follow_self_url()
+
+        # calling this method will reload submission and its status
+        submission.reload()
 
         return submission
 
@@ -1492,6 +1499,9 @@ class Submission(Document):
 
         document.last_response = response
         document.last_status_code = response.status_code
+
+        # update submission status
+        self.update_status()
 
         return document
 
