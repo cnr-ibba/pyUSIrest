@@ -117,11 +117,19 @@ $ py.test tests/test_client.py
 Deploying
 ---------
 
+Current development version is created using::
+
+$ bumpversion patch # possible: major / minor / patch
+
+Other development version (``dev1``, ```dev2``) are managed using::
+
+$ bumpversion build
+
 A reminder for the maintainers on how to deploy.
 Make sure all your changes are committed (including an entry in HISTORY.rst).
 Then run::
 
-$ bumpversion patch # possible: major / minor / patch
+$ bumpversion --tag release
 $ git push
 $ git push --tags
 

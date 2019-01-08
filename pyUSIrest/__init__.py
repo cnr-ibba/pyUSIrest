@@ -4,7 +4,7 @@
 
 __author__ = """Paolo Cozzi"""
 __email__ = 'cozzi@ibba.cnr.it'
-__version__ = '0.2.0.post2'
+__version__ = '0.2.1.dev0'
 
 from . import auth
 from . import client
