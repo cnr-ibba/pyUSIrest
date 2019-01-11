@@ -307,6 +307,24 @@ class Document(Client):
 
         return document
 
+    @classmethod
+    def clean_url(cls, url):
+        """Remove stuff like ``{?projection}`` from url
+
+        Args:
+            url (str): a string url
+
+        Returns:
+            str: the cleaned url
+        """
+
+        # remove {?projection} from self url. This is unreachable
+        if '{?projection}' in url:
+            logger.debug("removing {?projection} from url")
+            url = url.replace("{?projection}", "")
+
+        return url
+
     def follow_self_url(self):
         """Follow *self* url and update class attributes. For instance::
 
@@ -321,10 +339,8 @@ class Document(Client):
         # get a url to follow
         url = self._links['self']['href']
 
-        # remove {?projection} from self url. This is unreachable
-        if '{?projection}' in url:
-            logger.debug("removing {?projection} from url")
-            url = url.replace("{?projection}", "")
+        # clean url
+        url = self.clean_url(url)
 
         # now follow url
         response = super().follow_url(url)
@@ -354,6 +370,9 @@ class Document(Client):
 
         # define a new client object
         client = Client(auth=auth)
+
+        # clean url
+        url = cls.clean_url(url)
 
         # get a response
         response = client.follow_url(url)
@@ -1332,15 +1351,12 @@ class Submission(Document):
             ingnore_list (list): a list of errors to ignore
         """
 
-        # deal with different subission instances
-        # TODO: define the final link in one step
-        if 'contents' not in self._links:
-            logger.debug("reloading submission")
-            self.reload()
+        # get sample url in one step
+        self_url = self._links['self']['href']
+        samples_url = "/".join([self_url, "contents/samples"])
 
-        document = self.follow_url(
-            'contents', auth=self.auth
-            ).follow_url('samples', auth=self.auth)
+        # read a new documen
+        document = Document.read_url(self.auth, samples_url)
 
         # a list ob objects to return
         samples = []

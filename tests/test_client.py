@@ -128,7 +128,7 @@ class RootTest(TestCase):
             def __init__(self, json_data, status_code):
                 self.json_data = json_data
                 self.status_code = status_code
-                self.text = "Not implemented: %s" % (args[0])
+                self.text = "MockResponse not implemented: %s" % (args[0])
 
             def json(self):
                 return self.json_data
@@ -237,13 +237,6 @@ class RootTest(TestCase):
 
     @patch('requests.get', side_effect=mocked_get_submission)
     def test_get_submission_by_name(self, mock_get):
-#        with open(os.path.join(data_path, "newSubmission.json")) as handle:
-#            data = json.load(handle)
-#
-#        self.mock_get.return_value = Mock()
-#        self.mock_get.return_value.json.return_value = data
-#        self.mock_get.return_value.status_code = 200
-
         submission = self.root.get_submission_by_name(
             submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
 
@@ -544,7 +537,7 @@ class TeamTest(TestCase):
             def __init__(self, json_data, status_code):
                 self.json_data = json_data
                 self.status_code = status_code
-                self.text = "Not implemented: %s" % (args[0])
+                self.text = "MockResponse not implemented: %s" % (args[0])
 
             def json(self):
                 return self.json_data
@@ -710,13 +703,14 @@ class SubmissionTest(TestCase):
             def __init__(self, json_data, status_code):
                 self.json_data = json_data
                 self.status_code = status_code
+                self.text = "MockResponse not implemented: %s" % (args[0])
 
             def json(self):
                 return self.json_data
 
         get_samples_link = (
-            "https://submission-test.ebi.ac.uk/api/samples/search/by-"
-            "submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e")
+            "https://submission-test.ebi.ac.uk/api/submissions/"
+            "c8c86558-8d3a-4ac5-8638-7aa354291d61/contents/samples")
 
         with open(os.path.join(data_path, "samples.json")) as handle:
             samples = json.load(handle)
@@ -727,22 +721,11 @@ class SubmissionTest(TestCase):
         with open(os.path.join(data_path, "validation2.json")) as handle:
             validation2 = json.load(handle)
 
-        # following content
-        if args[0] == (
-                'https://submission-test.ebi.ac.uk/api/submissions/c8c86558-'
-                '8d3a-4ac5-8638-7aa354291d61/contents'):
-            return MockResponse({
-                '_links': {
-                    'samples': {
-                        'href': get_samples_link
-                    }
-                }}, 200)
-
         # followin content -> samples
-        elif args[0] == get_samples_link:
+        if args[0] == get_samples_link:
             return MockResponse(samples, 200)
 
-        # sample1 validtation result
+        # sample1 validation result
         elif args[0] == (
                 'https://submission-test.ebi.ac.uk/api/samples/90c8f449-'
                 'b3c2-4238-a22b-fd03bc02a5d2/validationResult'):
@@ -772,30 +755,20 @@ class SubmissionTest(TestCase):
             def __init__(self, json_data, status_code):
                 self.json_data = json_data
                 self.status_code = status_code
+                self.text = "MockResponse not implemented: %s" % (args[0])
 
             def json(self):
                 return self.json_data
 
         get_samples_link = (
-            "https://submission-test.ebi.ac.uk/api/samples/search/by-"
-            "submission?submissionId=74f32583-93bf-47e2-bace-59f9f5b2346e")
+            "https://submission-test.ebi.ac.uk/api/submissions/"
+            "c8c86558-8d3a-4ac5-8638-7aa354291d61/contents/samples")
 
         with open(os.path.join(data_path, "empty_samples.json")) as handle:
             samples = json.load(handle)
 
-        # following content
-        if args[0] == (
-                'https://submission-test.ebi.ac.uk/api/submissions/c8c86558-'
-                '8d3a-4ac5-8638-7aa354291d61/contents'):
-            return MockResponse({
-                '_links': {
-                    'samples': {
-                        'href': get_samples_link
-                    }
-                }}, 200)
-
         # followin content -> samples
-        elif args[0] == get_samples_link:
+        if args[0] == get_samples_link:
             return MockResponse(samples, 200)
 
         # default response
@@ -837,7 +810,7 @@ class SubmissionTest(TestCase):
             def __init__(self, json_data, status_code):
                 self.json_data = json_data
                 self.status_code = status_code
-                self.text = "Not implemented: %s" % (args[0])
+                self.text = "MockResponse not implemented: %s" % (args[0])
 
             def json(self):
                 return self.json_data
