@@ -1091,10 +1091,11 @@ class Submission(Document):
     """A class to deal with USI Submissions_
 
     Attributes:
-        name (str): submission name
+        id (str): submission id (:py:meth:`~name` for compatibility)
         createdDate (str): created date
         lastModifiedDate (str): last modified date
         lastModifiedBy (str): last user_id who modified this submission
+        submissionStatus (str): submission status
         submitter (dict): submitter data
         createdBy (str):  user_id who create this submission
         submissionDate (str): date when this submission is submitted to
@@ -1123,14 +1124,12 @@ class Submission(Document):
         self.createdDate = None
         self.lastModifiedDate = None
         self.lastModifiedBy = None
+        self.submissionStatus = None
         self.submitter = None
         self.createdBy = None
 
         # when this attribute appears? maybe when submission take place
         self.submissionDate = None
-
-        # track status
-        self.submissionStatus = None
 
         # each document need to parse data as dictionary, since there could be
         # more submission read from the same page. I cant read data from
@@ -1147,6 +1146,8 @@ class Submission(Document):
     # for compatibility
     @property
     def name(self):
+        """Get/Set Submission :py:attr:`~id`"""
+
         return self.id
 
     @name.setter
@@ -1159,7 +1160,7 @@ class Submission(Document):
 
     @property
     def team(self):
-        """Get team name"""
+        """Get/Set team name"""
 
         # get team name
         if isinstance(self._team, str):
@@ -1183,7 +1184,13 @@ class Submission(Document):
         self._team = value
 
     def read_data(self, data, force=False):
-        # docstring is the same of the base class
+        """Read data from a dictionary object and set class attributes
+
+        Args:
+            data (dict): a data dictionary object read with
+                :py:meth:`response.json() <requests.Response.json>`
+            force (bool): If True, define a new class attribute from data keys
+        """
 
         logger.debug("Reading data for submission")
         super().read_data(data, force)
@@ -1246,10 +1253,12 @@ class Submission(Document):
 
     @property
     def status(self):
-        """Return submission status
+        """Return :py:attr:`~submissionStatus` attribute. Follow
+        ``submissionStatus`` link and update attribute is such attribute is
+        None
 
         Returns:
-            str: submission status as string"""
+            str: submission status as a string"""
 
         if self.submissionStatus is None:
             self.update_status()
@@ -1257,7 +1266,8 @@ class Submission(Document):
         return self.submissionStatus
 
     def update_status(self):
-        """Update submission status"""
+        """Update :py:attr:`~submissionStatus` attribute by following
+        ``submissionStatus`` link"""
 
         document = self.follow_url('submissionStatus', auth=self.auth)
         self.submissionStatus = document.status
@@ -1575,7 +1585,13 @@ class Sample(Document):
             return "%s (%s)" % (self.alias, self.title)
 
     def read_data(self, data, force=False):
-        # docstring is the same of the base class
+        """Read data from a dictionary object and set class attributes
+
+        Args:
+            data (dict): a data dictionary object read with
+                :py:meth:`response.json() <requests.Response.json>`
+            force (bool): If True, define a new class attribute from data keys
+        """
 
         logger.debug("Reading data for Sample")
         super().read_data(data, force)
