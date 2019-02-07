@@ -184,6 +184,11 @@ class Client():
             :py:meth:`response.json() <requests.Response.json>`
         """
 
+        # check with status code. deal with 50X statuses (internal error)
+        if int(response.status_code / 100) == 5:
+            raise ConnectionError(
+                "Problems with API endpoints: %s" % response.text)
+
         return response.json()
 
     def follow_url(self, url):

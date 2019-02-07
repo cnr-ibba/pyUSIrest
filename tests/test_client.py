@@ -56,6 +56,49 @@ class ClientTest(TestCase):
             "https://submission-test.ebi.ac.uk/api/"
         )
 
+    def test_server_error(self):
+        """Deal with the generic 50x states"""
+
+        token = generate_token()
+        client = Client(token)
+
+        # create a mock response
+        response = Mock()
+        response.status_code = 500
+        response.text = (
+            '<!DOCTYPE html>\n<html>\n<body>\n<meta http-equiv="refresh" '
+            'content=\'0;URL=http://www.ebi.ac.uk/errors/failure.html\'>\n'
+            '</body>\n</html>\n')
+
+        self.assertRaisesRegex(
+            ConnectionError,
+            "Problems with API endpoints",
+            client.parse_response,
+            response
+        )
+
+    def test_follow_url_with_errors(self):
+        """Deal with problems with following URL (no 200 status code)"""
+
+        # create a mock response
+        response = Mock()
+        response.status_code = 404
+        response.text = (
+            '<h1>Not Found</h1><p>The requested resource was not found on '
+            'this server.</p>')
+
+        token = generate_token()
+        client = Client(token)
+
+        self.mock_get.return_value = response
+
+        self.assertRaisesRegex(
+            ConnectionError,
+            "Not Found",
+            client.follow_url,
+            Root.api_root + "/meow"
+        )
+
 
 class RootTest(TestCase):
     @classmethod
