@@ -676,7 +676,7 @@ class User(Document):
             confirmPwd (str): the user confirm password
             email (str): the user email
             full_name (str): Full name of the user
-            organization (str): organization name
+            organisation (str): organisation name
 
         Returns:
             str: the new user_id as a string
