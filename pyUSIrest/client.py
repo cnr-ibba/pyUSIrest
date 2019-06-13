@@ -1354,13 +1354,16 @@ class Submission(Document):
             validationResult (str): filter samples by this key
             has_errors (bool): filter samples with errors or none
             ingnore_list (list): a list of errors to ignore
+
+        Returns:
+            list: a list of :py:class:`Sample` objects
         """
 
         # get sample url in one step
         self_url = self._links['self']['href']
         samples_url = "/".join([self_url, "contents/samples"])
 
-        # read a new documen
+        # read a new document
         document = Document.read_url(self.auth, samples_url)
 
         # a list ob objects to return

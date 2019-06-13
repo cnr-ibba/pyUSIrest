@@ -2,6 +2,26 @@
 History
 =======
 
+0.3.0.dev0
+----------
+
+TODO
+^^^^
+
+* Root.get_user_submissions() should return an iterator object
+* document how to sort objects like submissions (consider iterators)
+* filter by date?
+* Submission.get_samples() should return an iterator object
+* Model custom exceptions
+* after completed, check available submission statuses
+
+  * To check if a submission is submittable you can check the available statuses
+    with this link: https://submission-test.ebi.ac.uk/api/submissions/<SUBMISSION_ID>/availableSubmissionStatuses
+  * If the "Submitted" is available, then you can submit it.
+
+* displaying dates when ``print(Submission)`` instances
+* get a Team instance from Submission instance
+
 0.2.2 (2019-03-28)
 ------------------
 
