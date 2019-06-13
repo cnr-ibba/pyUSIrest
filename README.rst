@@ -17,7 +17,7 @@ Python USI submission REST API
         :target: https://coveralls.io/github/cnr-ibba/pyUSIrest?branch=master
 
 .. image:: https://scrutinizer-ci.com/g/cnr-ibba/pyUSIrest/badges/quality-score.png?b=master
-        :target: https://scrutinizer-ci.com/g/cnr-ibba/pyUSIrest/badges/quality-score.png?b=master
+        :target: https://scrutinizer-ci.com/g/cnr-ibba/pyUSIrest/?branch=master
 
 
 Python USI submission REST API contain all methods to interact with EMBL-EBI
