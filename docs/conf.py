@@ -102,7 +102,7 @@ intersphinx_mapping = {
         'https://docs.python.org/3',
         (None, 'python-inv.txt')),
     'requests': (
-        'http://docs.python-requests.org/en/master/',
+        'http://requests.kennethreitz.org/en/master/',
         (None, 'request-inv.txt')),
     }
 
