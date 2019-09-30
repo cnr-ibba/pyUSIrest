@@ -130,8 +130,8 @@ class RootTest(TestCase):
         self.assertIsInstance(test, str)
         self.assertEqual(reference, test)
 
-    def read_userTeams(self):
-        with open(os.path.join(data_path, "userTeams.json")) as handle:
+    def read_userTeams(self, filename="userTeams.json"):
+        with open(os.path.join(data_path, filename)) as handle:
             data = json.load(handle)
 
         self.mock_get.return_value = Mock()
@@ -150,6 +150,18 @@ class RootTest(TestCase):
 
         team = teams[0]
         self.assertIsInstance(team, Team)
+
+    def test_get_user_no_teams(self):
+        """Test for a user having no teams"""
+
+        # initialize
+        self.read_userTeams(filename="userNoTeams.json")
+
+        # get user teams
+        teams = self.root.get_user_teams()
+
+        self.assertIsInstance(teams, list)
+        self.assertEqual(len(teams), 0)
 
     def test_get_team_by_name(self):
         # initialize

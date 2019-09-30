@@ -22,6 +22,12 @@ TODO
 * displaying dates when ``print(Submission)`` instances
 * get a Team instance from Submission instance
 
+
+Features
+^^^^^^^^
+
+* raise no exceptions where no team is found (returning an empty list)
+
 0.2.2 (2019-03-28)
 ------------------
 
