@@ -468,6 +468,11 @@ class Root(Document):
         # a list ob objects to return
         teams = []
 
+        # check if I have submission
+        if 'teams' not in document._embedded:
+            logger.warning("You haven't any team yet!")
+            return teams
+
         # now iterate over teams and create new objects
         for i, team_data in enumerate(document._embedded['teams']):
             teams.append(Team(self.auth, team_data))
