@@ -447,7 +447,7 @@ class Root(Document):
         Document.__init__(self)
 
         # setting api_root
-        self.api_root = settings.API_ROOT + "/api/"
+        self.api_root = settings.ROOT_URL + "/api/"
 
         # defining my attributes. Headers are inherited
         self.last_response = self.request(self.api_root, headers=self.headers)
@@ -739,7 +739,7 @@ class User(Document):
             Team: the new team as a :py:class:`Team` instance
         """
 
-        url = settings.API_ROOT + "/api/user/teams"
+        url = settings.ROOT_URL + "/api/user/teams"
 
         # define a new header. Copy the dictionary, don't use the same object
         headers = copy.copy(self.headers)
@@ -779,7 +779,7 @@ class User(Document):
             list: a list of :py:class:`Team` objects
         """
 
-        url = settings.API_ROOT + "/api/user/teams"
+        url = settings.ROOT_URL + "/api/user/teams"
 
         response = self.request(url, headers=self.headers)
 
@@ -1279,7 +1279,7 @@ class Submission(Document):
             "{api_root}/api/submissions/"
             "{submission_name}/availableSubmissionStatuses".format(
                 submission_name=self.name,
-                api_root=settings.API_ROOT)
+                api_root=settings.ROOT_URL)
         )
 
         # read a url in a new docume nt

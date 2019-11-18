@@ -16,7 +16,7 @@ from unittest import TestCase
 from pyUSIrest.auth import Auth
 from pyUSIrest.client import (
     Root, Team, User, Domain, Submission, Client, Sample, Document)
-from pyUSIrest.settings import API_ROOT
+from pyUSIrest.settings import ROOT_URL
 
 from .test_auth import generate_token
 
@@ -97,7 +97,7 @@ class ClientTest(TestCase):
             ConnectionError,
             "Not Found",
             client.follow_url,
-            API_ROOT + "/meow"
+            ROOT_URL + "/meow"
         )
 
 
@@ -126,7 +126,7 @@ class RootTest(TestCase):
 
     def test_str(self):
         test = self.root.__str__()
-        reference = "Biosample API root at %s" % (API_ROOT + "/api/")
+        reference = "Biosample API root at %s" % (ROOT_URL + "/api/")
 
         self.assertIsInstance(test, str)
         self.assertEqual(reference, test)

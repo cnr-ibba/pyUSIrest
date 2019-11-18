@@ -8,4 +8,4 @@ Created on Mon Nov 18 11:47:42 2019
 
 # define endpoints variables
 AUTH_URL = "https://explore.api.aai.ebi.ac.uk"
-API_ROOT = "https://submission-test.ebi.ac.uk"
+ROOT_URL = "https://submission-test.ebi.ac.uk"
