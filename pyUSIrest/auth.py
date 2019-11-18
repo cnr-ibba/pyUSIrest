@@ -15,6 +15,7 @@ import logging
 
 import python_jwt
 
+from . import settings
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class Auth():
         claims (dict): token claims read by `python_jwt.process_jwt`_
     """
 
-    auth_url = "https://explore.api.aai.ebi.ac.uk/auth"
+    auth_url = None
 
     def __init__(self, user=None, password=None, token=None):
         """
@@ -52,6 +53,9 @@ class Auth():
         self.header = None
         self.claims = None
         self._token = None
+
+        # load auth url form init
+        self.auth_url = settings.AUTH_URL + "/auth"
 
         # get a response
         if password and user:

@@ -14,6 +14,7 @@ import collections
 from url_normalize import url_normalize
 
 from . import __version__
+from . import settings
 from .auth import Auth
 
 
@@ -438,12 +439,15 @@ class Root(Document):
     """
 
     # define the default url
-    api_root = "https://submission-test.ebi.ac.uk/api/"
+    api_root = None
 
     def __init__(self, auth):
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
+
+        # setting api_root
+        self.api_root = settings.API_ROOT + "/api/"
 
         # defining my attributes. Headers are inherited
         self.last_response = self.request(self.api_root, headers=self.headers)
@@ -597,6 +601,8 @@ class User(Document):
         userReference (str): AAP userReference
     """
 
+    user_url = None
+
     def __init__(self, auth, data=None):
         """Instantiate the class
 
@@ -607,6 +613,9 @@ class User(Document):
         # calling the base class method client
         Client.__init__(self, auth)
         Document.__init__(self)
+
+        # define the base user url
+        self.user_url = settings.AUTH_URL + "/users"
 
         # my class attributes
         self.name = self.auth.claims["nickname"]
@@ -631,7 +640,7 @@ class User(Document):
         """
 
         # defining URL
-        url = "https://explore.api.aai.ebi.ac.uk/users/%s" % (self.name)
+        url = "%s/%s" % (self.user_url, self.name)
 
         logger.debug("Getting info from %s" % (url))
 
@@ -656,7 +665,7 @@ class User(Document):
         """
 
         # defining URL
-        url = "https://explore.api.aai.ebi.ac.uk/users/%s" % (user_id)
+        url = "%s/%s" % (self.user_url, user_id)
 
         logger.debug("Getting info from %s" % (url))
 
@@ -692,7 +701,7 @@ class User(Document):
             raise RuntimeError("passwords don't match!!!")
 
         # the AAP url
-        url = "https://explore.api.aai.ebi.ac.uk/auth"
+        url = settings.AUTH_URL + "/auth"
 
         # define a new header
         headers = {}
@@ -730,7 +739,7 @@ class User(Document):
             Team: the new team as a :py:class:`Team` instance
         """
 
-        url = "https://submission-test.ebi.ac.uk/api/user/teams"
+        url = settings.API_ROOT + "/api/user/teams"
 
         # define a new header. Copy the dictionary, don't use the same object
         headers = copy.copy(self.headers)
@@ -770,7 +779,7 @@ class User(Document):
             list: a list of :py:class:`Team` objects
         """
 
-        url = "https://submission-test.ebi.ac.uk/api/user/teams"
+        url = settings.API_ROOT + "/api/user/teams"
 
         response = self.request(url, headers=self.headers)
 
@@ -804,6 +813,7 @@ class User(Document):
         Returns:
             Team: the desidered :py:class:`Team` instance
         """
+
         logger.debug("Searching for %s" % (team_name))
 
         # get all teams
@@ -823,7 +833,7 @@ class User(Document):
             list: a list of :py:class:`Domain` objects
         """
 
-        url = "https://explore.api.aai.ebi.ac.uk/my/domains"
+        url = settings.AUTH_URL + "/my/domains"
 
         response = self.request(url, headers=self.headers)
 
@@ -878,10 +888,11 @@ class User(Document):
             Domain: the updated :py:class:`Domain` object"""
 
         url = (
-            "https://explore.api.aai.ebi.ac.uk/domains/{domain_id}/"
+            "{auth_url}/domains/{domain_id}/"
             "{user_id}/user".format(
                 domain_id=domain_id,
-                user_id=user_id)
+                user_id=user_id,
+                auth_url=settings.AUTH_URL)
         )
 
         response = self.put(url, headers=self.headers)
@@ -981,7 +992,7 @@ class Domain(Document):
 
         # see this url for more information
         # https://explore.api.aai.ebi.ac.uk/docs/profile/index.html#resource-create_domain_profile
-        url = "https://explore.api.aai.ebi.ac.uk/profiles"
+        url = settings.AUTH_URL + "/profiles"
 
         # define a new header. Copy the dictionary, don't use the same object
         headers = copy.copy(self.headers)
@@ -1265,9 +1276,10 @@ class Submission(Document):
 
         # Try to determine url manually
         url = (
-            "https://submission-test.ebi.ac.uk/api/submissions/"
+            "{api_root}/api/submissions/"
             "{submission_name}/availableSubmissionStatuses".format(
-                submission_name=self.name)
+                submission_name=self.name,
+                api_root=settings.API_ROOT)
         )
 
         # read a url in a new docume nt
