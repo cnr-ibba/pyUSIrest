@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Paolo Cozzi <cozzi@ibba.cnr.it>
+* Paolo Cozzi <paolo.cozzi@ibba.cnr.it>
 
 Contributors
 ------------

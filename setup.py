@@ -19,7 +19,7 @@ test_requirements = ['pytest', ]
 
 setup(
     author="Paolo Cozzi",
-    author_email='cozzi@ibba.cnr.it',
+    author_email='paolo.cozzi@ibba.cnr.it',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
