@@ -154,12 +154,18 @@ class Auth():
         return self.get_duration().days < 0
 
     def __str__(self):
-        total_time = self.get_duration().total_seconds()
+        duration = self.get_duration()
+        total_time = duration.total_seconds()
+
+        formatted = "%.2d:%.2d:%.2d" % (
+            duration.seconds // 3600,
+            (duration.seconds // 60) % 60,
+            duration.seconds % 60)
 
         if total_time < 0:
             return "Token for {user} is expired".format(
                 user=self.claims['name'])
         else:
-            return "Token for {user} will last {seconds} seconds".format(
+            return "Token for {user} will last {duration}".format(
                 user=self.claims['name'],
-                seconds=total_time)
+                duration=formatted)
