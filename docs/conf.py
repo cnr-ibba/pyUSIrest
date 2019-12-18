@@ -20,9 +20,6 @@
 #
 import os
 import sys
-
-from sphinx.apidoc import main
-
 sys.path.insert(0, os.path.abspath('..'))
 
 import pyUSIrest
@@ -56,9 +53,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Python USI submission REST API'
-copyright = u"2018, Paolo Cozzi"
-author = u"Paolo Cozzi"
+project = 'Python USI submission REST API'
+copyright = "2018-2019, Paolo Cozzi"
+author = "Paolo Cozzi"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -161,8 +158,8 @@ latex_elements = {
 # [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'pyUSIrest.tex',
-     u'Python USI submission REST API Documentation',
-     u'Paolo Cozzi', 'manual'),
+     'Python USI submission REST API Documentation',
+     'Paolo Cozzi', 'manual'),
 ]
 
 
@@ -172,7 +169,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, 'pyUSIrest',
-     u'Python USI submission REST API Documentation',
+     'Python USI submission REST API Documentation',
      [author], 1)
 ]
 
@@ -184,7 +181,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'pyUSIrest',
-     u'Python USI submission REST API Documentation',
+     'Python USI submission REST API Documentation',
      author,
      'pyUSIrest',
      'One line description of project.',

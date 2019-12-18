@@ -8,10 +8,10 @@ History
 TODO
 ^^^^
 
-* Root.get_user_submissions() should return an iterator object
+* ``Root.get_user_submissions()`` should return an iterator object
 * document how to sort objects like submissions (consider iterators)
 * filter by date?
-* Submission.get_samples() should return an iterator object
+* ``Submission.get_samples()`` should return an iterator object
 * Model custom exceptions
 * after completed, check available submission statuses
 
@@ -20,19 +20,28 @@ TODO
   * If the "Submitted" is available, then you can submit it.
 
 * displaying dates when ``print(Submission)`` instances
-* get a Team instance from Submission instance
-* The number of seconds is not human-readable, better to use hh:mm:ss
+* get a ``Team`` instance from ``Submission`` instance
+* The number of seconds is not human-readable, better to use ``hh:mm:ss``
 * Set a default date for ``releaseDate`` (``str(datetime.now().date())`` could be
   ok)
 * Filter a sample by status (ex. pending validation)
-* compiling PDF using SVG images
-* Using namespaces to configure API endpoints
+* compiling PDF using PNG images (change badges)
+* fix this stuff::
 
+    submission = team.get_submissions()[0]
+    sample = submission.create_sample(animal_data)
+    # KeyError: 'contents'
+    submission.reload()
+    sample = submission.create_sample(animal_data)
+    # ok
+
+* Update documentation. Set ``taxon`` in sample data (mandatory attribute)
 
 Features
 ^^^^^^^^
 
 * raise no exceptions where no team is found (returning an empty list)
+* Using namespaces to configure API endpoints (``pyUSIrest.settings``)
 
 0.2.2 (2019-03-28)
 ------------------
