@@ -52,6 +52,15 @@ Features
 .. _Validation: https://submission-test.ebi.ac.uk/api/docs/guide_getting_started.html#_validation
 .. _Finalising: https://submission-test.ebi.ac.uk/api/docs/guide_getting_started.html#_finalising_your_submission
 
+API Endpoints
+-------------
+
+``pyUSIrest`` is written to exploit the BioSamples test environment endpoints.
+You are incuraged to understand how BioSamples submission works before do a
+real submission in BioSamples production servers. You can find more information
+on how to do a real submission in BioSamples production servers in readthedocs
+documentation: https://pyusirest.readthedocs.io
+
 Credits
 -------
 

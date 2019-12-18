@@ -12,6 +12,17 @@ in order to interact with USI_ endpoint ad EBI AAP_::
 .. _USI: https://submission-test.ebi.ac.uk/api/browser/index.html#/api/
 .. _AAP: https://explore.api.aai.ebi.ac.uk/docs/
 
+.. warning::
+
+  **Using the BioSamples production endpoints**: pyUSIrest is written in order to
+  explot the BioSamples testing environment. You are incuraged to do understand the
+  whole process of data submission in the test environment. In order to do a real
+  submission, you have to override the submission endpoints after importing modules
+  before modifying submission objects::
+
+    pyUSIrest.settings.AUTH_URL = "https://api.aai.ebi.ac.uk"
+    pyUSIrest.settings.ROOT_URL = "https://submission.ebi.ac.uk"
+
 Creating an Auth object
 -----------------------
 
