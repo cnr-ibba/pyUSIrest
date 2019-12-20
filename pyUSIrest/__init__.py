@@ -8,6 +8,7 @@ __version__ = '0.3.0.dev0'
 
 from . import auth
 from . import client
+from . import document
 from . import settings
 
-__all__ = ["auth", "client", "settings"]
+__all__ = ["auth", "client", "document", "settings"]
