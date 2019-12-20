@@ -103,6 +103,22 @@ class Client():
 
         return new_headers
 
+    def check_status(self, response, expected_status=200):
+        """Check response status
+
+        Args:
+            response (requests.Reponse): the reponse returned by requests
+            method
+        """
+
+        # check with status code. deal with 50X statuses (internal error)
+        if int(response.status_code / 100) == 5:
+            raise ConnectionError(
+                "Problems with API endpoints: %s" % response.text)
+
+        if response.status_code != expected_status:
+            raise ConnectionError(response.text)
+
     def get(self, url, params={}, headers={}):
         """Generic GET method
 
@@ -123,6 +139,7 @@ class Client():
         self.last_response = response
         self.last_status_code = response.status_code
 
-        # TODO: check response status code
+        # check response status code
+        self.check_status(response)
 
         return response
