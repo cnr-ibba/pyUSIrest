@@ -13,7 +13,7 @@ import datetime
 from unittest.mock import patch, Mock
 from unittest import TestCase
 
-from pyUSIrest.client import Auth
+from pyUSIrest.auth import Auth
 from pyUSIrest.client import Client
 from pyUSIrest.settings import ROOT_URL
 

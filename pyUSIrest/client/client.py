@@ -9,8 +9,8 @@ Created on Thu Dec 19 16:28:46 2019
 import requests
 import logging
 
-from . import __version__
-from .auth import Auth
+from .. import __version__
+from ..auth import Auth
 
 logger = logging.getLogger(__name__)
 
