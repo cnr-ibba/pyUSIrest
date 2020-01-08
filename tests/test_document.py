@@ -14,7 +14,7 @@ from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from pyUSIrest.auth import Auth
-from pyUSIrest.client import Client, Document
+from pyUSIrest.client import Document
 
 from .common import DATA_PATH
 from .test_auth import generate_token
@@ -62,15 +62,11 @@ class DocumentTest(TestCase):
         # getting a document instance
         document = Document(auth=self.auth)
 
-        # getting a client instance
-        client = Client(auth=self.auth)
-
-        # getting a response object
-        response = client.get(
-            "https://submission-test.ebi.ac.uk/api/user/submissions")
+        # getting a documehnt
+        document.get("https://submission-test.ebi.ac.uk/api/user/submissions")
 
         # ok parsing the response
-        responses = document.paginate(response)
+        responses = document.paginate()
 
         # assering instances
         self.assertIsInstance(responses, types.GeneratorType)

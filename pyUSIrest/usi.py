@@ -56,18 +56,17 @@ class Root(Document):
         # follow url
         document = self.follow_tag('userTeams')
 
-        # a list ob objects to return
-        teams = []
-
         # check if I have submission
         if 'teams' not in document._embedded:
             logger.warning("You haven't any team yet!")
-            return teams
+            return
 
         # now iterate over teams and create new objects
-        for document in document.paginate(document.last_response):
+        for document in document.paginate():
             for team_data in document._embedded['teams']:
                 team = Team(self.auth, team_data)
+
+                logger.debug("Found %s team" % (team.name))
 
                 # returning teams as generator
                 yield team
@@ -84,10 +83,7 @@ class Root(Document):
         """
         logger.debug("Searching for %s" % (team_name))
 
-        # get all teams
-        teams = self.get_user_teams()
-
-        for team in teams:
+        for team in self.get_user_teams():
             if team.name == team_name:
                 return team
 
@@ -109,32 +105,27 @@ class Root(Document):
         # follow url
         document = self.follow_tag('userSubmissions')
 
-        # a list of objects to return
-        submissions = []
-
         # check if I have submission
         if 'submissions' not in document._embedded:
             logger.warning("You haven't any submission yet!")
-            return submissions
+            return
 
-        # now iterate over teams and create new objects
-        for i, submission_data in enumerate(document._embedded['submissions']):
-            submission = Submission(self.auth, submission_data)
+        # now iterate over submissions and create new objects
+        for document in document.paginate():
+            for submission_data in document._embedded['submissions']:
+                submission = Submission(self.auth, submission_data)
 
-            if status and submission.status != status:
-                logger.debug("Filtering %s submission" % (submission.name))
-                continue
+                if status and submission.status != status:
+                    logger.debug("Filtering %s submission" % (submission.name))
+                    continue
 
-            if team and submission.team != team:
-                logger.debug("Filtering %s submission" % (submission.name))
-                continue
+                if team and submission.team != team:
+                    logger.debug("Filtering %s submission" % (submission.name))
+                    continue
 
-            submissions.append(submission)
-            logger.debug("Found %s submission" % (submission.name))
+                logger.debug("Found %s submission" % (submission.name))
 
-        logger.info("Got %s submissions" % len(submissions))
-
-        return submissions
+                yield submission
 
     def get_submission_by_name(self, submission_name):
         """Got a specific submission object by providing its name
@@ -152,27 +143,24 @@ class Root(Document):
         # fixing url (normalizing)
         url = url_normalize(url)
 
+        # create a new submission object
+        submission = Submission(self.auth)
+
         # doing a request
-        self.last_response = self.request(url, headers=self.headers)
-        self.last_status_code = self.last_response.status_code
+        try:
+            submission.get(url)
 
-        if self.last_status_code == 200:
-            # read submission data
-            submission_data = self.last_response.json()
-            submission = Submission(self.auth, submission_data)
+        except ConnectionError as exc:
+            if submission.last_status_code == 404:
+                # if I arrive here, no submission is found
+                raise NameError(
+                    "submission: '{name}' not found".format(
+                        name=submission_name))
 
-            # update status
-            submission.update_status()
+            else:
+                raise exc
 
-            return submission
-
-        elif self.last_status_code == 404:
-            # if I arrive here, no submission is found
-            raise NameError(
-                "submission: {name} not found".format(name=submission_name))
-
-        else:
-            raise ConnectionError(self.last_response.text)
+        return submission
 
 
 class User(Document):

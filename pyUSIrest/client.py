@@ -119,7 +119,8 @@ class Client():
 
         # TODO: evaluate a list of expected status?
         if response.status_code != expected_status:
-            raise ConnectionError(response.text)
+            raise ConnectionError(
+                "%s:%s" % (response.status_code, response.text))
 
     def get(self, url, params={}, headers={}):
         """Generic GET method
@@ -303,32 +304,6 @@ class Document(Client):
             else:
                 logger.warning("key %s not implemented" % (key))
 
-    def paginate(self, response):
-        """Convert a response in a dict object. Returns an iterator
-        of document objects
-
-        Args:
-            response (requests.Response): a response object
-
-        Yield:
-            Document: a new Document instance
-        """
-
-        data = response.json()
-
-        logger.debug("Reading %s" % (data['_links']['self']['href']))
-
-        yield Document(auth=self.auth, data=data)
-
-        while 'next' in data['_links']:
-            url = data['_links']['next']['href']
-            response = super().get(url)
-            data = response.json()
-
-            logger.debug("Reading %s" % (data['_links']['self']['href']))
-
-            yield Document(auth=self.auth, data=data)
-
     @classmethod
     def clean_url(cls, url):
         """Remove stuff like ``{?projection}`` from url
@@ -369,6 +344,29 @@ class Document(Client):
         document.get(url)
 
         return document
+
+    def paginate(self):
+        """Follow all the pages. Return an iterator of document objects
+
+        Args:
+            response (requests.Response): a response object
+
+        Yield:
+            Document: a new Document instance
+        """
+
+        # return myself
+        yield self
+
+        # track the current document
+        document = self
+
+        while 'next' in document._links:
+            url = document._links['next']['href']
+            document = Document.read_url(self.auth, url)
+
+            # return the last document
+            yield document
 
     def follow_tag(self, tag, force_keys=True):
         """Pick a url from data attribute relying on tag, perform a request

@@ -8,14 +8,14 @@ Created on Thu Jul 12 14:23:09 2018
 
 import os
 import json
-import datetime
 
 from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from pyUSIrest.auth import Auth
-from pyUSIrest.client import (
-    Root, Team, User, Domain, Submission, Client, Sample, Document)
+from pyUSIrest.client import Document
+from pyUSIrest.usi import (
+    Root, Team, User, Domain, Submission, Sample)
 from pyUSIrest.settings import ROOT_URL
 
 from .test_auth import generate_token
@@ -26,79 +26,6 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # define data path
 data_path = os.path.join(dir_path, "data")
-
-
-class ClientTest(TestCase):
-    @classmethod
-    def setup_class(cls):
-        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
-        cls.mock_get = cls.mock_get_patcher.start()
-
-    @classmethod
-    def teardown_class(cls):
-        cls.mock_get_patcher.stop()
-
-    def test_with_tocken_str(self):
-        token = generate_token()
-        client = Client(token)
-        self.assertFalse(client.auth.is_expired())
-
-    def test_expired_tocken(self):
-        now = int(datetime.datetime.now().timestamp())
-
-        token = generate_token(now=now-10000)
-        client = Client(token)
-
-        # do a generic request and get error
-        self.assertRaisesRegex(
-            RuntimeError,
-            "Your token is expired",
-            client.follow_url,
-            "https://submission-test.ebi.ac.uk/api/"
-        )
-
-    def test_server_error(self):
-        """Deal with the generic 50x states"""
-
-        token = generate_token()
-        client = Client(token)
-
-        # create a mock response
-        response = Mock()
-        response.status_code = 500
-        response.text = (
-            '<!DOCTYPE html>\n<html>\n<body>\n<meta http-equiv="refresh" '
-            'content=\'0;URL=http://www.ebi.ac.uk/errors/failure.html\'>\n'
-            '</body>\n</html>\n')
-
-        self.assertRaisesRegex(
-            ConnectionError,
-            "Problems with API endpoints",
-            client.parse_response,
-            response
-        )
-
-    def test_follow_url_with_errors(self):
-        """Deal with problems with following URL (no 200 status code)"""
-
-        # create a mock response
-        response = Mock()
-        response.status_code = 404
-        response.text = (
-            '<h1>Not Found</h1><p>The requested resource was not found on '
-            'this server.</p>')
-
-        token = generate_token()
-        client = Client(token)
-
-        self.mock_get.return_value = response
-
-        self.assertRaisesRegex(
-            ConnectionError,
-            "Not Found",
-            client.follow_url,
-            ROOT_URL + "/meow"
-        )
 
 
 class RootTest(TestCase):
