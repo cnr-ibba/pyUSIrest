@@ -28,6 +28,14 @@ pyUSIrest.settings module
     :undoc-members:
     :show-inheritance:
 
+pyUSIrest.usi module
+--------------------
+
+.. automodule:: pyUSIrest.usi
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

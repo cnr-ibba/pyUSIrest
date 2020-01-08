@@ -25,7 +25,7 @@ class Client():
         from pyUSIrest.client import Client
         auth = Auth(user=<you_aap_user>, password=getpass.getpass())
         client = Client(auth)
-        response = client.request("https://submission-test.ebi.ac.uk/api/")
+        response = client.get("https://submission-test.ebi.ac.uk/api/")
 
     Attributes:
         headers (dict): default headers for requests
@@ -252,22 +252,35 @@ class Document(Client):
         if data:
             self.read_data(data)
 
-    def read_data(self, data, force=False):
+    def get(self, url, force_keys=True):
+        """Override the Client.get method"""
+
+        # call the base method
+        response = super().get(url)
+
+        # read data
+        self.read_data(response.json(), force_keys)
+
+        # act like client object
+        return response
+
+    def read_data(self, data, force_keys=False):
         """Read data from a dictionary object and set class attributes
 
         Args:
             data (dict): a data dictionary object read with
                 :py:meth:`response.json() <requests.Response.json>`
-            force (bool): If True, define a new class attribute from data keys
+            force_keys (bool): If True, define a new class attribute from data
+                keys
         """
 
         # dealing with this type of documents
         for key in data.keys():
-            self.__update_key(key, data[key], force)
+            self.__update_key(key, data[key], force_keys)
 
         self.data = data
 
-    def __update_key(self, key, value, force=False):
+    def __update_key(self, key, value, force_keys=False):
         """Helper function to update keys"""
 
         if hasattr(self, key):
@@ -283,35 +296,128 @@ class Document(Client):
             setattr(self, key, value)
 
         else:
-            if force is True:
+            if force_keys is True:
                 logger.info("Forcing %s -> %s" % (key, value))
                 setattr(self, key, value)
 
             else:
                 logger.warning("key %s not implemented" % (key))
 
-    def parse_response(self, response):
+    def paginate(self, response):
         """Convert a response in a dict object. Returns an iterator
+        of document objects
 
         Args:
             response (requests.Response): a response object
 
         Yield:
-            dict: the output of
-            :py:meth:`response.json() <requests.Response.json>`
+            Document: a new Document instance
         """
 
         data = response.json()
 
         logger.debug("Reading %s" % (data['_links']['self']['href']))
 
-        yield data
+        yield Document(auth=self.auth, data=data)
 
         while 'next' in data['_links']:
             url = data['_links']['next']['href']
-            response = self.get(url)
+            response = super().get(url)
             data = response.json()
 
             logger.debug("Reading %s" % (data['_links']['self']['href']))
 
-            yield data
+            yield Document(auth=self.auth, data=data)
+
+    @classmethod
+    def clean_url(cls, url):
+        """Remove stuff like ``{?projection}`` from url
+
+        Args:
+            url (str): a string url
+
+        Returns:
+            str: the cleaned url
+        """
+
+        # remove {?projection} from self url. This is unreachable
+        if '{?projection}' in url:
+            logger.debug("removing {?projection} from url")
+            url = url.replace("{?projection}", "")
+
+        return url
+
+    @classmethod
+    def read_url(cls, auth, url):
+        """Read a url and returns a :py:class:`Document` object
+
+        Args:
+            auth (Auth): an Auth object to pass to result
+            url (str): url to request
+
+        Returns:
+            Document: a document object
+        """
+
+        # clean url
+        url = cls.clean_url(url)
+
+        # create a new document
+        document = cls(auth=auth)
+
+        # get url and load data
+        document.get(url)
+
+        return document
+
+    def follow_tag(self, tag, force_keys=True):
+        """Pick a url from data attribute relying on tag, perform a request
+        and returns a document object. For instance::
+
+            document.follow_tag('userSubmissions')
+
+        will return a document instance by requesting with
+        :py:meth:`Client.get` using
+        ``document._links['userSubmissions']['href']`` as url
+
+        Args:
+            tag (str): a key from USI response dictionary
+            force_keys (bool): set a new class attribute if not present
+
+        Returns:
+            Document: a document object
+        """
+
+        logger.debug("Following %s url" % (tag))
+
+        url = self._links[tag]['href']
+
+        # create a new document
+        document = Document(auth=self.auth)
+
+        # read data
+        document.get(url, force_keys)
+
+        return document
+
+    def follow_self_url(self):
+        """Follow *self* url and update class attributes. For instance::
+
+            document.follow_self_url()
+
+        will reload document instance by requesting with
+        :py:meth:`Client.get` using
+        ``document.data['_links']['self']['href']`` as url"""
+
+        logger.debug("Following self url")
+
+        # get a url to follow
+        url = self._links['self']['href']
+
+        # clean url
+        url = self.clean_url(url)
+
+        logger.debug("Updating self")
+
+        # now follow self url and load data to self
+        self.get(url)

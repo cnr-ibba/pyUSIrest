@@ -14,7 +14,7 @@ from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from pyUSIrest.auth import Auth
-from pyUSIrest.client import Document
+from pyUSIrest.client import Client, Document
 
 from .common import DATA_PATH
 from .test_auth import generate_token
@@ -44,7 +44,7 @@ class DocumentTest(TestCase):
 
         self.assertIsInstance(document, Document)
 
-    def test_parse_response(self):
+    def test_paginate(self):
         with open(os.path.join(
                 DATA_PATH, "userSubmissionsPage1.json")) as handle:
             page1 = json.load(handle)
@@ -62,16 +62,20 @@ class DocumentTest(TestCase):
         # getting a document instance
         document = Document(auth=self.auth)
 
+        # getting a client instance
+        client = Client(auth=self.auth)
+
         # getting a response object
-        response = document.get(
+        response = client.get(
             "https://submission-test.ebi.ac.uk/api/user/submissions")
 
         # ok parsing the response
-        responses = document.parse_response(response)
+        responses = document.paginate(response)
 
         # assering instances
         self.assertIsInstance(responses, types.GeneratorType)
 
         # reading objects and asserting lengths
         test = list(responses)
+
         self.assertEqual(len(test), 2)
