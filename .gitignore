@@ -107,3 +107,6 @@ ENV/
 
 # jwt files
 *.jwt
+
+# backup files
+*.bak
