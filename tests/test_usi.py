@@ -762,13 +762,17 @@ class SubmissionTest(TestCase):
 
         return MockResponse(None, 404)
 
-    # We patch 'requests.Session.get' with our own method. The mock object is passed
-    # in to our test case method.
+    # We patch 'requests.Session.get' with our own method. The mock object is
+    # passed in to our test case method.
     @patch('requests.Session.get', side_effect=mocked_get_samples)
     def test_get_samples(self, mock_get):
         samples = self.submission.get_samples(validationResult='Complete')
 
-        self.assertIsInstance(samples, list)
+        # samples is now a generator
+        self.assertIsInstance(samples, types.GeneratorType)
+
+        # convert it into a list
+        samples = list(samples)
         self.assertEqual(len(samples), 2)
 
     def mocked_get_empty_samples(*args, **kwargs):
@@ -802,8 +806,7 @@ class SubmissionTest(TestCase):
     def test_get_empty_samples(self, mock_get):
         samples = self.submission.get_samples(validationResult='Complete')
 
-        self.assertIsInstance(samples, list)
-        self.assertEqual(len(samples), 0)
+        self.assertRaises(StopIteration, next, samples)
 
     def test_get_status(self):
         with open(os.path.join(data_path, "validationResults.json")) as handle:

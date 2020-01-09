@@ -868,16 +868,8 @@ class Submission(Document):
         # call a post method a deal with response
         response = self.post(url, payload=sample_data, headers=headers)
 
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
-        if response.status_code != 201:
-            raise ConnectionError(response.text)
-
         # create a new sample
-        sample = Sample(auth=self.auth)
-        sample.parse_response(response)
+        sample = Sample(auth=self.auth, data=response.json())
 
         # returning sample as and object
         return sample
@@ -896,8 +888,8 @@ class Submission(Document):
             has_errors (bool): filter samples with errors or none
             ingnore_list (list): a list of errors to ignore
 
-        Returns:
-            list: a list of :py:class:`Sample` objects
+        Yield:
+            Sample: a :py:class:`Sample` object
         """
 
         # get sample url in one step
@@ -907,32 +899,29 @@ class Submission(Document):
         # read a new document
         document = Document.read_url(self.auth, samples_url)
 
-        # a list ob objects to return
-        samples = []
-
         # empty submission hasn't '_embedded' key
         if '_embedded' not in document.data:
-            return samples
+            logger.warning("You haven't any samples yet!")
+            return
 
-        for i, sample_data in enumerate(document.data['_embedded']['samples']):
-            sample = Sample(self.auth, sample_data)
+        # now iterate over samples and create new objects
+        for document in document.paginate():
+            for sample_data in document._embedded['samples']:
+                sample = Sample(self.auth, sample_data)
 
-            if (validationResult and
-                    sample.get_validation_result().validationStatus
-                    != validationResult):
-                logger.debug("Filtering %s sample" % (sample))
-                continue
+                if (validationResult and
+                        sample.get_validation_result().validationStatus
+                        != validationResult):
+                    logger.debug("Filtering %s sample" % (sample))
+                    continue
 
-            if has_errors and has_errors != sample.has_errors(ignorelist):
-                logger.debug("Filtering %s sample" % (sample))
-                continue
+                if has_errors and has_errors != sample.has_errors(ignorelist):
+                    logger.debug("Filtering %s sample" % (sample))
+                    continue
 
-            samples.append(sample)
-            logger.debug("Found %s sample" % (sample))
+                logger.debug("Found %s sample" % (sample))
 
-        logger.info("Got %s samples" % len(samples))
-
-        return samples
+                yield sample
 
     def get_validation_results(self):
         """Return validation results for submission
@@ -947,18 +936,15 @@ class Submission(Document):
 
         document = self.follow_tag('validationResults')
 
-        # a list ob objects to return
-        validation_results = []
+        # now iterate over validationresults and create new objects
+        for document in document.paginate():
+            for validation_data in document._embedded['validationResults']:
+                validation_result = ValidationResult(
+                    self.auth, validation_data)
 
-        for i, validation_data in enumerate(
-                document.data['_embedded']['validationResults']):
-            validation_results.append(
-                ValidationResult(self.auth, validation_data))
-            logger.debug("Found %s sample" % (str(validation_results[i])))
+                logger.debug("Found %s sample" % (validation_result))
 
-        logger.debug("Got %s validation results" % len(validation_results))
-
-        return validation_results
+                yield validation_result
 
     def get_status(self):
         """Count validation statues for submission
@@ -1006,16 +992,8 @@ class Submission(Document):
         url = self._links['self:delete']['href']
         logger.info("Removing submission %s" % self.name)
 
-        response = Client.delete(self, url)
-
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
-        if response.status_code != 204:
-            raise ConnectionError(response.text)
-
         # don't return anything
+        Client.delete(self, url)
 
     def reload(self):
         """call :py:meth:`Document.follow_self_url` and reload class
@@ -1064,16 +1042,8 @@ class Submission(Document):
             payload={'status': 'Submitted'},
             headers=headers)
 
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
         # create a new document
-        document = Document(auth=self.auth)
-        document.parse_response(response, force_keys=True)
+        document = Document(auth=self.auth, data=response.json())
 
         # copying last responsponse in order to improve data assignment
         logger.debug("Assigning %s to document" % (response))
@@ -1200,14 +1170,7 @@ class Sample(Document):
         url = self._links['self']['href']
         logger.info("patching sample %s with %s" % (self.name, sample_data))
 
-        response = Client.patch(self, url, payload=sample_data)
-
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
+        Client.patch(self, url, payload=sample_data)
 
         # reloading data
         self.reload()
