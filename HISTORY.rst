@@ -35,6 +35,7 @@ TODO
 Features
 ^^^^^^^^
 
+* Update documentation. Set ``taxon`` in sample data (mandatory attribute)
 * displaying dates when ``print(Submission)`` instances
 * ``Root.get_user_submissions()`` and other methods which returned list of objects
   now return iterator objects
