@@ -9,10 +9,28 @@ Created on Thu Dec 19 16:28:46 2019
 import requests
 import logging
 
+from dateutil.parser import parse as parse_date
+
 from . import __version__
 from .auth import Auth
 
 logger = logging.getLogger(__name__)
+
+
+# https://stackoverflow.com/a/25341965/4385116
+def is_date(string, fuzzy=False):
+    """
+    Return whether the string can be interpreted as a date.
+
+    :param string: str, string to check for date
+    :param fuzzy: bool, ignore unknown tokens in string if True
+    """
+    try:
+        parse_date(string, fuzzy=fuzzy)
+        return True
+
+    except ValueError:
+        return False
 
 
 class Client():
@@ -322,7 +340,11 @@ class Document(Client):
 
         # dealing with this type of documents
         for key in data.keys():
-            self.__update_key(key, data[key], force_keys)
+            if "date" in key.lower() and is_date(data[key]):
+                self.__update_key(key, parse_date(data[key]), force_keys)
+
+            else:
+                self.__update_key(key, data[key], force_keys)
 
         self.data = data
 

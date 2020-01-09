@@ -586,7 +586,7 @@ class Team(Document):
             self.read_data(data)
 
     def __str__(self):
-        return self.name
+        return "{0} ({1})".format(self.name, self.description)
 
     def get_submissions(self, status=None):
         """Follows submission url and get submissions from this team
@@ -704,7 +704,11 @@ class Submission(Document):
         if not self.name:
             return "Submission not yet initialized"
 
-        return "%s %s %s" % (self.name, self.team, self.status)
+        return "%s %s %s %s" % (
+            self.name,
+            self.team,
+            self.lastModifiedDate.date(),
+            self.status,)
 
     # for compatibility
     @property
@@ -716,7 +720,7 @@ class Submission(Document):
     @name.setter
     def name(self, submission_id):
         if submission_id != self.id:
-            logger.warning(
+            logger.debug(
                     "Overriding id (%s > %s)" % (self.id, submission_id))
 
         self.id = submission_id
