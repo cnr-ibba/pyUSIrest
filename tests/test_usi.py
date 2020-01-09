@@ -372,7 +372,10 @@ class UserTest(TestCase):
         # get user teams
         teams = self.user.get_teams()
 
-        self.assertIsInstance(teams, list)
+        # teams is now a generator
+        self.assertIsInstance(teams, types.GeneratorType)
+        teams = list(teams)
+
         self.assertEqual(len(teams), 1)
 
         team = teams[0]
@@ -422,7 +425,10 @@ class UserTest(TestCase):
         # get user teams
         domains = self.user.get_domains()
 
-        self.assertIsInstance(domains, list)
+        # domains is now a generator
+        self.assertIsInstance(domains, types.GeneratorType)
+        domains = list(domains)
+
         self.assertEqual(len(domains), 2)
 
         for domain in domains:
@@ -573,8 +579,8 @@ class TeamTest(TestCase):
 
         return MockResponse(None, 404)
 
-    @patch('requests.get', side_effect=mocked_create_submission)
-    @patch('requests.post', side_effect=mocked_create_submission)
+    @patch('requests.Session.get', side_effect=mocked_create_submission)
+    @patch('requests.Session.post', side_effect=mocked_create_submission)
     def test_create_submission(self, mock_get, mock_post):
         submission = self.team.create_submission()
         self.assertIsInstance(submission, Submission)
@@ -747,9 +753,9 @@ class SubmissionTest(TestCase):
 
         return MockResponse(None, 404)
 
-    # We patch 'requests.get' with our own method. The mock object is passed
+    # We patch 'requests.Session.get' with our own method. The mock object is passed
     # in to our test case method.
-    @patch('requests.get', side_effect=mocked_get_samples)
+    @patch('requests.Session.get', side_effect=mocked_get_samples)
     def test_get_samples(self, mock_get):
         samples = self.submission.get_samples(validationResult='Complete')
 
@@ -783,7 +789,7 @@ class SubmissionTest(TestCase):
         return MockResponse(None, 404)
 
     # patch a request.get to return 0 samples for a submission
-    @patch('requests.get', side_effect=mocked_get_empty_samples)
+    @patch('requests.Session.get', side_effect=mocked_get_empty_samples)
     def test_get_empty_samples(self, mock_get):
         samples = self.submission.get_samples(validationResult='Complete')
 
@@ -866,7 +872,7 @@ class SubmissionTest(TestCase):
 
         return MockResponse(None, 404)
 
-    @patch('requests.get', side_effect=mocked_finalize)
+    @patch('requests.Session.get', side_effect=mocked_finalize)
     def test_finalize(self, mock_get):
         self.mock_put.return_value = Mock()
         self.mock_put.return_value.json.return_value = {}

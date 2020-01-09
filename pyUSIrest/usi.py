@@ -218,12 +218,8 @@ class User(Document):
 
         logger.debug("Getting info from %s" % (url))
 
-        # defining my attributes. Headers are inherited
-        self.last_response = self.request(url, headers=self.headers)
-        self.last_status_code = self.last_response.status_code
-
-        # parsing response and setting self.data
-        self.parse_response(self.last_response)
+        # read url and get my attributes
+        self.get(url)
 
         # returning user id
         return self.userReference
@@ -243,12 +239,11 @@ class User(Document):
 
         logger.debug("Getting info from %s" % (url))
 
-        # defining my attributes. Headers are inherited
-        self.last_response = self.request(url, headers=self.headers)
-        self.last_status_code = self.last_response.status_code
-
         # create a new user obj
-        user = User(self.auth, self.last_response.json())
+        user = User(self.auth)
+
+        # read url and get data
+        user.get(url)
 
         # returning user
         return user
@@ -293,8 +288,10 @@ class User(Document):
             "organisation": organisation
         }
 
-        # call a post method a deal with response
-        response = requests.post(url, json=data, headers=headers)
+        # call a post method a deal with response. I don't need a client
+        # object to create a new user
+        session = requests.Session()
+        response = session.post(url, json=data, headers=headers)
 
         if response.status_code != 200:
             raise ConnectionError(response.text)
@@ -329,13 +326,6 @@ class User(Document):
         # call a post method a deal with response
         response = self.post(url, payload=data, headers=headers)
 
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
-        if response.status_code != 201:
-            raise ConnectionError(response.text)
-
         # If I create a new team, the Auth object need to be updated
         logger.warning(
             "You need to generate a new token in order to see the new "
@@ -355,28 +345,18 @@ class User(Document):
 
         url = settings.ROOT_URL + "/api/user/teams"
 
-        response = self.request(url, headers=self.headers)
-
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
         # create a new document
         document = Document(auth=self.auth)
-        document.parse_response(response, force_keys=True)
-
-        # a list ob objects to return
-        teams = []
+        document.get(url)
 
         # now iterate over teams and create new objects
-        for i, team_data in enumerate(document._embedded['teams']):
-            teams.append(Team(self.auth, team_data))
-            logger.debug("Found %s team" % (teams[i].name))
+        for document in document.paginate():
+            for team_data in document._embedded['teams']:
+                team = Team(self.auth, team_data)
+                logger.debug("Found %s team" % (team.name))
 
-        return teams
+                # returning teams as generator
+                yield team
 
     def get_team_by_name(self, team_name):
         """Get a team by name
@@ -390,10 +370,7 @@ class User(Document):
 
         logger.debug("Searching for %s" % (team_name))
 
-        # get all teams
-        teams = self.get_teams()
-
-        for team in teams:
+        for team in self.get_teams():
             if team.name == team_name:
                 return team
 
@@ -409,24 +386,16 @@ class User(Document):
 
         url = settings.AUTH_URL + "/my/domains"
 
-        response = self.request(url, headers=self.headers)
+        # make a request with a client object
+        response = Client.get(self, url)
 
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
+        # iterate over domains (they are a list of objects)
+        for domain_data in response.json():
+            domain = Domain(self.auth, domain_data)
+            logger.debug("Found %s domain" % (domain.name))
 
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
-        # a list of objects to return
-        domains = []
-
-        # iterate over domains
-        for i, domain_data in enumerate(response.json()):
-            domains.append(Domain(self.auth, domain_data))
-            logger.debug("Found %s domain" % (domains[i].name))
-
-        return domains
+            # returning domain as a generator
+            yield domain
 
     def get_domain_by_name(self, domain_name):
         """Get a domain by name
@@ -441,9 +410,7 @@ class User(Document):
         logger.debug("Searching for %s" % (domain_name))
 
         # get all domains
-        domains = self.get_domains()
-
-        for domain in domains:
+        for domain in self.get_domains():
             if domain.domainName == domain_name:
                 return domain
 
@@ -469,16 +436,9 @@ class User(Document):
                 auth_url=settings.AUTH_URL)
         )
 
-        response = self.put(url, headers=self.headers)
-
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
-        if response.status_code != 200:
-            raise ConnectionError(response.text)
-
+        response = self.put(url)
         domain_data = response.json()
+
         return Domain(self.auth, domain_data)
 
 
@@ -803,7 +763,8 @@ class Submission(Document):
         Args:
             data (dict): a data dictionary object read with
                 :py:meth:`response.json() <requests.Response.json>`
-            force_keys (bool): If True, define a new class attribute from data keys
+            force_keys (bool): If True, define a new class attribute from data
+                keys
         """
 
         logger.debug("Reading data for submission")
@@ -1205,7 +1166,8 @@ class Sample(Document):
         Args:
             data (dict): a data dictionary object read with
                 :py:meth:`response.json() <requests.Response.json>`
-            force_keys (bool): If True, define a new class attribute from data keys
+            force_keys (bool): If True, define a new class attribute from data
+                keys
         """
 
         logger.debug("Reading data for Sample")

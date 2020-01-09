@@ -205,21 +205,32 @@ class Client():
 
         return requests.delete(url, headers=headers)
 
-    def put(self, url, payload={}, headers=None):
+    def put(self, url, payload={}, params={}, headers={}):
         """Generic PUT method
 
         Args:
             url (str): url to request
             payload (dict): data to send
+            params (dict): custom params for request
             headers (dict): custom header for request
 
         Returns:
             requests.Response: a response object
         """
 
-        headers = self.__check(headers)
+        logger.debug("Sending data to %s" % (url))
+        headers = self.check_headers(headers)
+        response = self.session.put(
+            url, json=payload, headers=headers, params=params)
 
-        return requests.put(url, json=payload, headers=headers)
+        # track last response
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # check response status code
+        self.check_status(response)
+
+        return response
 
 
 class Document(Client):
