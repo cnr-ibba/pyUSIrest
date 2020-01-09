@@ -254,7 +254,19 @@ class Document(Client):
             self.read_data(data)
 
     def get(self, url, force_keys=True):
-        """Override the Client.get method"""
+        """Override the Client.get method and read data into object::
+
+            document = Document(auth)
+            document.get(settings.ROOT_URL + "/api/")
+
+        Args:
+            url (str): url to request
+            force_keys (bool): If True, define a new class attribute from data
+                keys
+
+        Returns:
+            requests.Response: a response object
+        """
 
         # call the base method
         response = super().get(url)

@@ -8,6 +8,7 @@ Created on Thu Jul 12 14:23:09 2018
 
 import os
 import json
+import types
 
 from unittest.mock import patch, Mock
 from unittest import TestCase
@@ -31,7 +32,7 @@ data_path = os.path.join(dir_path, "data")
 class RootTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
+        cls.mock_get_patcher = patch('requests.Session.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
     @classmethod
@@ -73,7 +74,10 @@ class RootTest(TestCase):
         # get user teams
         teams = self.root.get_user_teams()
 
-        self.assertIsInstance(teams, list)
+        # teams is now a generator
+        self.assertIsInstance(teams, types.GeneratorType)
+        teams = list(teams)
+
         self.assertEqual(len(teams), 1)
 
         team = teams[0]
@@ -85,11 +89,10 @@ class RootTest(TestCase):
         # initialize
         self.read_userTeams(filename="userNoTeams.json")
 
-        # get user teams
+        # get user teams (is an empty iterator)
         teams = self.root.get_user_teams()
 
-        self.assertIsInstance(teams, list)
-        self.assertEqual(len(teams), 0)
+        self.assertRaises(StopIteration, next, teams)
 
     def test_get_team_by_name(self):
         # initialize
@@ -170,12 +173,16 @@ class RootTest(TestCase):
 
         return MockResponse(None, 404)
 
-    @patch('requests.get', side_effect=mocked_get_submission)
+    @patch('requests.Session.get', side_effect=mocked_get_submission)
     def test_get_user_submissions(self, mock_get):
         # get userSubmissions
         submissions = self.root.get_user_submissions()
 
-        self.assertIsInstance(submissions, list)
+        # submissions is now a generator
+        self.assertIsInstance(submissions, types.GeneratorType)
+
+        # convert it into a list
+        submissions = list(submissions)
         self.assertEqual(len(submissions), 2)
 
         for submission in submissions:
@@ -184,16 +191,30 @@ class RootTest(TestCase):
         # testing filtering
         draft = self.root.get_user_submissions(status="Draft")
 
-        self.assertIsInstance(draft, list)
+        # submissions is now a generator
+        self.assertIsInstance(draft, types.GeneratorType)
+
+        # convert it into a list
+        draft = list(draft)
         self.assertEqual(len(draft), 1)
 
         team1 = self.root.get_user_submissions(team="subs.test-team-1")
-        self.assertIsInstance(team1, list)
+
+        # submissions is now a generator
+        self.assertIsInstance(team1, types.GeneratorType)
+
+        # convert it into a list
+        team1 = list(team1)
         self.assertEqual(len(team1), 1)
 
         completed1 = self.root.get_user_submissions(
             team="subs.dev-team-1", status="Completed")
-        self.assertIsInstance(completed1, list)
+
+        # submissions is now a generator
+        self.assertIsInstance(completed1, types.GeneratorType)
+
+        # convert it into a list
+        completed1 = list(completed1)
         self.assertEqual(len(completed1), 0)
 
     def test_get_user_submission_pagination(self):
@@ -215,10 +236,14 @@ class RootTest(TestCase):
 
         submissions = self.root.get_user_submissions()
 
-        self.assertIsInstance(submissions, list)
+        # submissions is now a generator
+        self.assertIsInstance(submissions, types.GeneratorType)
+
+        # convert it into a list
+        submissions = list(submissions)
         self.assertEqual(len(submissions), 2)
 
-    @patch('requests.get', side_effect=mocked_get_submission)
+    @patch('requests.Session.get', side_effect=mocked_get_submission)
     def test_get_submission_by_name(self, mock_get):
         submission = self.root.get_submission_by_name(
             submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
@@ -250,13 +275,13 @@ class RootTest(TestCase):
 class UserTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
+        cls.mock_get_patcher = patch('requests.Session.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
+        cls.mock_post_patcher = patch('requests.Session.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
-        cls.mock_put_patcher = patch('pyUSIrest.client.requests.put')
+        cls.mock_put_patcher = patch('requests.Session.put')
         cls.mock_put = cls.mock_put_patcher.start()
 
     @classmethod
@@ -422,10 +447,10 @@ class UserTest(TestCase):
 class DomainTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
+        cls.mock_post_patcher = patch('requests.Session.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
-        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
+        cls.mock_get_patcher = patch('requests.Session.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
     @classmethod
@@ -488,13 +513,13 @@ class DomainTest(TestCase):
 class TeamTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
+        cls.mock_get_patcher = patch('requests.Session.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
+        cls.mock_post_patcher = patch('requests.Session.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
-        cls.mock_put_patcher = patch('pyUSIrest.client.requests.put')
+        cls.mock_put_patcher = patch('requests.Session.put')
         cls.mock_put = cls.mock_put_patcher.start()
 
     @classmethod
@@ -578,19 +603,19 @@ class TeamTest(TestCase):
 class SubmissionTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
+        cls.mock_get_patcher = patch('requests.Session.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_post_patcher = patch('pyUSIrest.client.requests.post')
+        cls.mock_post_patcher = patch('requests.Session.post')
         cls.mock_post = cls.mock_post_patcher.start()
 
-        cls.mock_put_patcher = patch('pyUSIrest.client.requests.put')
+        cls.mock_put_patcher = patch('requests.Session.put')
         cls.mock_put = cls.mock_put_patcher.start()
 
-        cls.mock_patch_patcher = patch('pyUSIrest.client.requests.patch')
+        cls.mock_patch_patcher = patch('requests.Session.patch')
         cls.mock_patch = cls.mock_patch_patcher.start()
 
-        cls.mock_delete_patcher = patch('pyUSIrest.client.requests.delete')
+        cls.mock_delete_patcher = patch('requests.Session.delete')
         cls.mock_delete = cls.mock_delete_patcher.start()
 
     @classmethod
@@ -861,13 +886,13 @@ class SubmissionTest(TestCase):
 class SampleTest(TestCase):
     @classmethod
     def setup_class(cls):
-        cls.mock_get_patcher = patch('pyUSIrest.client.requests.get')
+        cls.mock_get_patcher = patch('requests.Session.get')
         cls.mock_get = cls.mock_get_patcher.start()
 
-        cls.mock_patch_patcher = patch('pyUSIrest.client.requests.patch')
+        cls.mock_patch_patcher = patch('requests.Session.patch')
         cls.mock_patch = cls.mock_patch_patcher.start()
 
-        cls.mock_delete_patcher = patch('pyUSIrest.client.requests.delete')
+        cls.mock_delete_patcher = patch('requests.Session.delete')
         cls.mock_delete = cls.mock_delete_patcher.start()
 
     @classmethod

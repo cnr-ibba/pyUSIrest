@@ -49,8 +49,8 @@ class Root(Document):
     def get_user_teams(self):
         """Follow userTeams url and returns all teams belonging to user
 
-        Returns:
-            list: A list of :py:class:`Team` objects
+        Yield:
+            Team: a team object
         """
 
         # follow url
