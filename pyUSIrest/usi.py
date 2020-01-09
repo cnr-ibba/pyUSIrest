@@ -600,25 +600,23 @@ class Team(Document):
         # follow url
         document = self.follow_tag('submissions')
 
-        # a list ob objects to return
-        submissions = []
-
-        # now iterate over teams and create new objects
-        for i, submission_data in enumerate(document._embedded['submissions']):
-            submission = Submission(self.auth, submission_data)
-
-            if status and submission.status != status:
-                logger.debug("Filtering %s submission" % (submission.name))
-                continue
-
-            submissions.append(submission)
-            logger.debug("Found %s submission" % (submission.name))
-
         # check if I have submission
-        if len(submissions) == 0:
+        if 'submissions' not in document._embedded:
             logger.warning("You haven't any submission yet!")
+            return
 
-        return submissions
+        # now iterate over submissions and create new objects
+        for document in document.paginate():
+            for submission_data in document._embedded['submissions']:
+                submission = Submission(self.auth, submission_data)
+
+                if status and submission.status != status:
+                    logger.debug("Filtering %s submission" % (submission.name))
+                    continue
+
+                logger.debug("Found %s submission" % (submission.name))
+
+                yield submission
 
     def create_submission(self):
         """Create a new submission
@@ -639,16 +637,8 @@ class Team(Document):
         # call a post method a deal with response
         response = self.post(url, payload={}, headers=headers)
 
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
-        if response.status_code != 201:
-            raise ConnectionError(response.text)
-
-        # create a new document
-        submission = Submission(auth=self.auth)
-        submission.parse_response(response)
+        # create a new Submission object
+        submission = Submission(auth=self.auth, data=response.json())
 
         # there are some difference between a new submission and
         # an already defined submission

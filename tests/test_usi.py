@@ -595,14 +595,23 @@ class TeamTest(TestCase):
 
         submissions = self.team.get_submissions()
 
-        self.assertIsInstance(submissions, list)
+        # submissions is now a generator
+        self.assertIsInstance(submissions, types.GeneratorType)
+
+        # convert it into a list
+        submissions = list(submissions)
         self.assertEqual(len(submissions), 2)
 
         # testing filtering
         draft = self.team.get_submissions(status="Draft")
 
-        self.assertIsInstance(draft, list)
+        # submissions is now a generator
+        self.assertIsInstance(draft, types.GeneratorType)
+
+        # convert it into a list
+        draft = list(draft)
         self.assertEqual(len(draft), 1)
+
         self.assertIsInstance(draft[0], Submission)
 
 
