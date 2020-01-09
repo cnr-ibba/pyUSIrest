@@ -122,13 +122,13 @@ class Client():
             raise ConnectionError(
                 "%s:%s" % (response.status_code, response.text))
 
-    def get(self, url, params={}, headers={}):
+    def get(self, url, headers={}, params={}):
         """Generic GET method
 
         Args:
             url (str): url to request
-            params (dict): custom params for get request
             headers (dict): custom headers for get request
+            params (dict): custom params for get request
 
         Returns:
             requests.Response: a response object
@@ -147,20 +147,20 @@ class Client():
 
         return response
 
-    def post(self, url, payload={}, params={}, headers={}):
+    def post(self, url, payload={}, headers={}, params={}):
         """Generic POST method
 
         Args:
             url (str): url to request
             payload (dict): data to send
-            params (dict): custom params for request
             headers (dict): custom header for request
+            params (dict): custom params for request
 
         Returns:
             requests.Response: a response object
         """
 
-        logger.debug("Sending data to %s" % (url))
+        logger.debug("Posting data to %s" % (url))
         headers = self.check_headers(headers)
         response = self.session.post(
             url, json=payload, headers=headers, params=params)
@@ -174,38 +174,60 @@ class Client():
 
         return response
 
-    def patch(self, url, payload={}, headers=None):
+    def patch(self, url, payload={}, headers={}, params={}):
         """Generic PATCH method
 
         Args:
             url (str): url to request
             payload (dict): data to send
             headers (dict): custom header for request
+            params (dict): custom params for request
 
         Returns:
             requests.Response: a response object
         """
 
-        headers = self.__check(headers)
+        logger.debug("Patching data to %s" % (url))
+        headers = self.check_headers(headers)
+        response = self.session.patch(
+            url, json=payload, headers=headers, params=params)
 
-        return requests.patch(url, json=payload, headers=headers)
+        # track last response
+        self.last_response = response
+        self.last_status_code = response.status_code
 
-    def delete(self, url, headers=None):
+        # check response status code
+        self.check_status(response)
+
+        return response
+
+    def delete(self, url, headers={}, params={}):
         """Generic DELETE method
 
         Args:
             url (str): url to request
             headers (dict): custom header for request
+            params (dict): custom params for request
 
         Returns:
             requests.Response: a response object
         """
 
-        headers = self.__check(headers)
+        logger.debug("Deleting %s" % (url))
 
-        return requests.delete(url, headers=headers)
+        headers = self.check_headers(headers)
+        response = self.session.delete(url, headers=headers, params=params)
 
-    def put(self, url, payload={}, params={}, headers={}):
+        # track last response
+        self.last_response = response
+        self.last_status_code = response.status_code
+
+        # check response status code
+        self.check_status(response, expected_status=204)
+
+        return response
+
+    def put(self, url, payload={}, headers={}, params={}):
         """Generic PUT method
 
         Args:
@@ -218,7 +240,7 @@ class Client():
             requests.Response: a response object
         """
 
-        logger.debug("Sending data to %s" % (url))
+        logger.debug("Putting data to %s" % (url))
         headers = self.check_headers(headers)
         response = self.session.put(
             url, json=payload, headers=headers, params=params)

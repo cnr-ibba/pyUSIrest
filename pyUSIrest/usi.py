@@ -500,7 +500,8 @@ class Domain(Document):
         if not self._users and isinstance(self.links, list):
             for url in self.links:
                 if 'user' in url['href']:
-                    response = self.request(url['href'])
+                    # using the base get method
+                    response = Client.get(self, url['href'])
                     break
 
             tmp_data = response.json()
@@ -545,12 +546,10 @@ class Domain(Document):
         # call a post method a deal with response
         response = self.post(url, payload=data, headers=headers)
 
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
+        # create a new domain object
+        domain = Domain(self.auth, response.json())
 
-        if response.status_code != 201:
-            raise ConnectionError(response.text)
+        return domain
 
 
 class Team(Document):
