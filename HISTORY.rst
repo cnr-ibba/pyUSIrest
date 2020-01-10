@@ -13,7 +13,6 @@ TODO
 * Model custom exceptions
 * get a ``Team`` instance from ``Submission`` instance
 * Set a default date for ``releaseDate`` (``str(datetime.now().date())`` could be ok)
-* Filter a sample by status (ex. pending validation)
 
 Features
 ^^^^^^^^

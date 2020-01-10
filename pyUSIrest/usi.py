@@ -883,17 +883,22 @@ class Submission(Document):
         # returning sample as and object
         return sample
 
-    def get_samples(self, validationResult=None, has_errors=None,
+    def get_samples(self, status=None, has_errors=None,
                     ignorelist=[]):
         """Returning all samples as a list. Can filter by errors and error
         types::
 
+            # returning samples with errors in other checks than Ena
             submission.get_samples(has_errors=True, ignorelist=['Ena'])
+
+            # returning samples which validation is still in progress
+            submission.get_samples(status='Pending')
 
         Get all sample with errors in other fields than *Ena* databank
 
         Args:
-            validationResult (str): filter samples by this key
+            status (str): filter samples by validation status
+                (Pending, Complete)
             has_errors (bool): filter samples with errors or none
             ingnore_list (list): a list of errors to ignore
 
@@ -918,9 +923,9 @@ class Submission(Document):
             for sample_data in document._embedded['samples']:
                 sample = Sample(self.auth, sample_data)
 
-                if (validationResult and
+                if (status and
                         sample.get_validation_result().validationStatus
-                        != validationResult):
+                        != status):
                     logger.debug("Filtering %s sample" % (sample))
                     continue
 

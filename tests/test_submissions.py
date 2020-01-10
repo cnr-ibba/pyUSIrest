@@ -172,7 +172,7 @@ class SubmissionTest(TestCase):
     # passed in to our test case method.
     @patch('requests.Session.get', side_effect=mocked_get_samples)
     def test_get_samples(self, mock_get):
-        samples = self.submission.get_samples(validationResult='Complete')
+        samples = self.submission.get_samples(status='Complete')
 
         # samples is now a generator
         self.assertIsInstance(samples, types.GeneratorType)
@@ -210,7 +210,7 @@ class SubmissionTest(TestCase):
     # patch a request.get to return 0 samples for a submission
     @patch('requests.Session.get', side_effect=mocked_get_empty_samples)
     def test_get_empty_samples(self, mock_get):
-        samples = self.submission.get_samples(validationResult='Complete')
+        samples = self.submission.get_samples(status='Complete')
 
         self.assertRaises(StopIteration, next, samples)
 
