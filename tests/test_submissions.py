@@ -10,11 +10,13 @@ import os
 import json
 import types
 
+from collections import defaultdict
 from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from pyUSIrest.auth import Auth
 from pyUSIrest.client import Document
+from pyUSIrest.exceptions import NotReadyError, USIDataError
 from pyUSIrest.usi import Submission, Sample
 
 from .common import DATA_PATH
@@ -299,6 +301,65 @@ class SubmissionTest(TestCase):
 
         document = self.submission.finalize()
         self.assertIsInstance(document, Document)
+
+    def test_finalize_not_ready(self):
+        with open(os.path.join(
+                DATA_PATH, "availableSubmissionStatuses.json")) as handle:
+            data = json.load(handle)
+
+        # remove a key from data
+        del data['_embedded']
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.status_code = 200
+
+        self.assertRaises(
+            NotReadyError,
+            self.submission.finalize)
+
+    def mocked_finalize_errors(*args, **kwargs):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+                self.text = "MockResponse not implemented: %s" % (args[0])
+
+            def json(self):
+                return self.json_data
+
+        # this variable will collect all replies
+        replies = defaultdict(lambda: MockResponse(None, 404))
+
+        # a custom function to set up replies for link
+        def set_reply(url, filename, status=200):
+            # referring to the upper replies variable
+            nonlocal replies
+
+            # open data file
+            with open(os.path.join(DATA_PATH, filename)) as handle:
+                data = json.load(handle)
+
+            # track reply to URL
+            replies[url] = MockResponse(data, status)
+
+        set_reply("https://submission-test.ebi.ac.uk/api/submissions/"
+                  "c8c86558-8d3a-4ac5-8638-7aa354291d61/"
+                  "availableSubmissionStatuses",
+                  "availableSubmissionStatuses.json")
+
+        set_reply("https://submission-test.ebi.ac.uk/api/"
+                  "validationResults/search/by-submission?"
+                  "submissionId=c8c86558-8d3a-4ac5-8638-7aa354291d61",
+                  "validationResultsError.json")
+
+        return replies[args[0]]
+
+    @patch('requests.Session.get', side_effect=mocked_finalize_errors)
+    def test_finalize_has_errors(self, my_get):
+        self.assertRaises(
+            USIDataError,
+            self.submission.finalize)
 
     def test_delete(self):
         self.mock_delete.return_value = Mock()

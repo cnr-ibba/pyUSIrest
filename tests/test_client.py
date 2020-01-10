@@ -16,6 +16,7 @@ from unittest import TestCase
 from pyUSIrest.auth import Auth
 from pyUSIrest.client import Client
 from pyUSIrest.settings import ROOT_URL
+from pyUSIrest.exceptions import USIConnectionError, TokenExpiredError
 
 from .common import DATA_PATH
 from .test_auth import generate_token
@@ -50,7 +51,7 @@ class ClientTest(TestCase):
 
         # do a generic request and get error
         self.assertRaisesRegex(
-            RuntimeError,
+            TokenExpiredError,
             "Your token is expired",
             client.get,
             "https://submission-test.ebi.ac.uk/api/"
@@ -73,7 +74,7 @@ class ClientTest(TestCase):
         self.mock_get.return_value = response
 
         self.assertRaisesRegex(
-            ConnectionError,
+            USIConnectionError,
             "Problems with API endpoints",
             client.get,
             ROOT_URL
@@ -113,7 +114,7 @@ class ClientTest(TestCase):
         self.mock_get.return_value = response
 
         self.assertRaisesRegex(
-            ConnectionError,
+            USIConnectionError,
             "Not Found",
             client.get,
             ROOT_URL + "/meow"

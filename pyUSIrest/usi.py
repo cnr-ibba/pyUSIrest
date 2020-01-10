@@ -16,6 +16,7 @@ from url_normalize import url_normalize
 
 from . import settings
 from .client import Client, Document
+from .exceptions import USIConnectionError, NotReadyError, USIDataError
 
 
 logger = logging.getLogger(__name__)
@@ -151,7 +152,7 @@ class Root(Document):
         try:
             submission.get(url)
 
-        except ConnectionError as exc:
+        except USIConnectionError as exc:
             if submission.last_status_code == 404:
                 # if I arrive here, no submission is found
                 raise NameError(
@@ -268,7 +269,7 @@ class User(Document):
 
         # check that passwords are the same
         if password != confirmPwd:
-            raise RuntimeError("passwords don't match!!!")
+            raise ValueError("passwords don't match!!!")
 
         # the AAP url
         url = settings.AUTH_URL + "/auth"
@@ -295,7 +296,7 @@ class User(Document):
         response = session.post(url, json=data, headers=headers)
 
         if response.status_code != 200:
-            raise ConnectionError(response.text)
+            raise USIConnectionError(response.text)
 
         # returning user id
         return response.text
@@ -1008,7 +1009,7 @@ class Submission(Document):
 
         # check errors only if validation is completed
         if 'Pending' in self.get_status():
-            raise RuntimeError(
+            raise NotReadyError(
                 "You can check errors after validation is completed")
 
         # get validation results
@@ -1051,11 +1052,11 @@ class Submission(Document):
         """
 
         if not self.check_ready():
-            raise Exception("Submission not ready for finalization")
+            raise NotReadyError("Submission not ready for finalization")
 
         # raise exception if submission has errors
         if True in self.has_errors(ignorelist):
-            raise Exception("Submission has errors, fix them")
+            raise USIDataError("Submission has errors, fix them")
 
         # refresh my data
         self.reload()
@@ -1180,7 +1181,7 @@ class Sample(Document):
         response = Client.delete(self, url)
 
         if response.status_code != 204:
-            raise ConnectionError(response.text)
+            raise USIConnectionError(response.text)
 
         # assign attributes
         self.last_response = response

@@ -8,7 +8,6 @@ History
 TODO
 ^^^^
 
-* Model custom exceptions
 * get a ``Team`` instance from ``Submission`` instance
 * ``Submission.has_errors`` make two identical queries, on to determine the
   status and one to search errors, simplify it by doing only a query
@@ -18,6 +17,7 @@ TODO
 Features
 ^^^^^^^^
 
+* modelled custom exceptions
 * Set a default date if ``releaseDate`` attribute is missing
 * improved documentation by describing how to sort and filter objects
 * fix bug when adding samples to a submission retrieved with ``team.get_submission()``

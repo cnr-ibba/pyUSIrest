@@ -13,6 +13,7 @@ from dateutil.parser import parse as parse_date
 
 from . import __version__
 from .auth import Auth
+from .exceptions import USIConnectionError, TokenExpiredError
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +110,7 @@ class Client():
             headers (dict): an update headers tocken"""
 
         if self.auth.is_expired():
-            raise RuntimeError("Your token is expired")
+            raise TokenExpiredError("Your token is expired")
 
         if not headers:
             logger.debug("Using default headers")
@@ -132,12 +133,12 @@ class Client():
 
         # check with status code. deal with 50X statuses (internal error)
         if int(response.status_code / 100) == 5:
-            raise ConnectionError(
+            raise USIConnectionError(
                 "Problems with API endpoints: %s" % response.text)
 
         # TODO: evaluate a list of expected status?
         if response.status_code != expected_status:
-            raise ConnectionError(
+            raise USIConnectionError(
                 "%s:%s" % (response.status_code, response.text))
 
     def get(self, url, headers={}, params={}):
