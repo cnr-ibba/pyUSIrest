@@ -940,8 +940,8 @@ class Submission(Document):
     def get_validation_results(self):
         """Return validation results for submission
 
-        Returns:
-            list: a list of :py:class:`ValidationResult` objects"""
+        Yield:
+            ValidationResult: a :py:class:`ValidationResult` object"""
 
         # deal with different subission instances
         if 'validationResults' not in self._links:

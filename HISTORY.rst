@@ -8,8 +8,6 @@ History
 TODO
 ^^^^
 
-* document how to sort objects like submissions (consider iterators)
-* filter by date?
 * Model custom exceptions
 * get a ``Team`` instance from ``Submission`` instance
 * Set a default date for ``releaseDate`` (``str(datetime.now().date())`` could be ok)
@@ -17,6 +15,7 @@ TODO
 Features
 ^^^^^^^^
 
+* improved documentation by describing how to sort and filter objects
 * fix bug when adding samples to a submission retrieved with ``team.get_submission()``
 * Update documentation. Set ``taxon`` in sample data (mandatory attribute)
 * displaying dates when ``print(Submission)`` instances
@@ -26,6 +25,8 @@ Features
 * compiling PDF using PNG images (change badges)
 * raise no exceptions where no team is found (using ``Root.get_user_teams``)
 * Using namespaces to configure API endpoints (``pyUSIrest.settings``)
+* move ``Root``, ``User``, ``Domain``, ``Team``, ``Submission``, ``Sample``
+  ``ValidationResult`` classes inside ``pyUSIrest.usi`` module
 
 0.2.2 (2019-03-28)
 ------------------

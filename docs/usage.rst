@@ -37,7 +37,7 @@ starting from a valid token::
 
   auth = Auth(token=<token_string>)
 
-Creating an USI user
+Creating an USI User
 --------------------
 
 In order to create a new USI user, with ``pyUSIrest`` you can use the method
@@ -55,7 +55,7 @@ In order to create a new USI user, with ``pyUSIrest`` you can use the method
       organization=<your_organization
   )
 
-Creating a team
+Creating a Team
 ---------------
 
 To create a team, you will need to create a new :py:class:`User <pyUSIrest.usi.User>`
@@ -73,7 +73,7 @@ a team using the :py:meth:`create_team <pyUSIrest.usi.User.create_team>` method:
 
 .. _add_profile_to_domain:
 
-Add profile to domain
+Add Profile to Domain
 +++++++++++++++++++++
 
 .. warning::
@@ -90,7 +90,7 @@ For more informations, take a look to `creating a domain profile`_
 
 .. _`creating a domain profile`: https://explore.api.aai.ebi.ac.uk/docs/profile/index.html#resource-create_domain_profile
 
-Adding user to team
+Adding User to Team
 -------------------
 
 To add a user to a team, you need to provide a ``user_id``, like the one
@@ -112,7 +112,7 @@ To add user to a team call :py:meth:`add_user_to_team <pyUSIrest.usi.User.add_us
 
 .. _create_a_submission:
 
-Create a submission
+Create a Submission
 -------------------
 
 From a valid :py:class:`Root <pyUSIrest.usi.Root>` object, get the
@@ -126,7 +126,7 @@ using the :py:meth:`create_submission <pyUSIrest.usi.Team.create_submission>` me
 If you got a :py:exc:`ConnectionError` exception during last command, you need to add
 a profile to your domain as described in :ref:`add profile to domain <add_profile_to_domain>`.
 
-Add samples to a submission
+Add Samples to a Submission
 +++++++++++++++++++++++++++
 
 In order to add sample to a submission, define a :py:class:`dict` for sample data,
@@ -199,7 +199,7 @@ for sample with errors in order to remove or update it. Only when this function
 return ``False`` with a number equal to the number of attached samples, a
 submission can be finalized.
 
-Finalize a submission
+Finalize a Submission
 +++++++++++++++++++++
 
 After managing sample and validation statuses, if everything is ok you can finalize
@@ -223,8 +223,8 @@ from a valid :py:class:`Root <pyUSIrest.usi.Root>` object::
 
 .. _get_samples_from_a_submission:
 
-Get samples from a submission
------------------------------
+Get Sample from a submission
+----------------------------
 
 In order to get all samples for a submission, you can call the method
 :py:meth:`get_samples <pyUSIrest.usi.Submission.get_samples>`

@@ -8,6 +8,7 @@ Welcome to Python USI submission REST API's documentation!
    readme
    installation
    usage
+   advanced_usage
    modules
    contributing
    authors
