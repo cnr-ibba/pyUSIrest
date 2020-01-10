@@ -21,20 +21,11 @@ TODO
 * Set a default date for ``releaseDate`` (``str(datetime.now().date())`` could be
   ok)
 * Filter a sample by status (ex. pending validation)
-* fix this stuff::
-
-    submission = team.get_submissions()[0]
-    sample = submission.create_sample(animal_data)
-    # KeyError: 'contents'
-    submission.reload()
-    sample = submission.create_sample(animal_data)
-    # ok
-
-* Update documentation. Set ``taxon`` in sample data (mandatory attribute)
 
 Features
 ^^^^^^^^
 
+* fix bug when adding samples to a submission retrieved with ``team.get_submission``
 * Update documentation. Set ``taxon`` in sample data (mandatory attribute)
 * displaying dates when ``print(Submission)`` instances
 * ``Root.get_user_submissions()`` and other methods which returned list of objects

@@ -10,6 +10,7 @@ import os
 import json
 import types
 
+from collections import defaultdict
 from unittest.mock import patch, Mock
 from unittest import TestCase
 
@@ -119,8 +120,20 @@ class RootTest(TestCase):
             def json(self):
                 return self.json_data
 
-        with open(os.path.join(data_path, "userSubmissions.json")) as handle:
-            submissions = json.load(handle)
+        # this variable will collect all replies
+        replies = defaultdict(lambda: MockResponse(None, 404))
+
+        # a custom function to set up replies for link
+        def set_reply(url, filename, status=200):
+            # referring to the upper replies variable
+            nonlocal replies
+
+            # open data file
+            with open(os.path.join(data_path, filename)) as handle:
+                data = json.load(handle)
+
+            # track reply to URL
+            replies[url] = MockResponse(data, status)
 
         submission_prefix = "https://submission-test.ebi.ac.uk/api/submissions"
         status_suffix = "submissionStatus"
@@ -135,18 +148,9 @@ class RootTest(TestCase):
             "8b05e7f2-92c1-4651-94cb-9101f351f000",
             status_suffix])
 
-        with open(os.path.join(data_path, "submissionStatus1.json")) as handle:
-            status_data1 = json.load(handle)
-
-        with open(os.path.join(data_path, "submissionStatus2.json")) as handle:
-            status_data2 = json.load(handle)
-
         # --- to test get_submission_by_name
         byname_link = "/".join([
             submission_prefix, "c8c86558-8d3a-4ac5-8638-7aa354291d61"])
-
-        with open(os.path.join(data_path, "newSubmission.json")) as handle:
-            new_submission = json.load(handle)
 
         status_link3 = "/".join([
             submission_prefix,
@@ -154,24 +158,39 @@ class RootTest(TestCase):
             status_suffix])
 
         # --- for each url, return a different response
-        if args[0] == (
-                'https://submission-test.ebi.ac.uk/api/user/submissions'):
-            return MockResponse(submissions, 200)
+        set_reply(
+            'https://submission-test.ebi.ac.uk/api/user/submissions',
+            "userSubmissionsPage1.json")
 
-        elif args[0] == status_link1:
-            return MockResponse(status_data1, 200)
+        set_reply(
+            'https://submission-test.ebi.ac.uk/api/user/submissions'
+            '?page=1&size=1',
+            "userSubmissionsPage2.json")
 
-        elif args[0] == status_link2:
-            return MockResponse(status_data2, 200)
+        set_reply(status_link1, "submissionStatus1.json")
 
-        # --- links for get_submission_by_name
-        elif args[0] == byname_link:
-            return MockResponse(new_submission, 200)
+        set_reply(status_link2, "submissionStatus2.json")
 
-        elif args[0] == status_link3:
-            return MockResponse(status_data2, 200)
+        set_reply(byname_link, "newSubmission.json")
 
-        return MockResponse(None, 404)
+        set_reply(byname_link, "newSubmission.json")
+
+        set_reply(status_link3, "submissionStatus2.json")
+
+        # to reload submissions
+        set_reply(
+            submission_prefix + "/" +
+            "87e7abda-81a8-4b5e-a1c0-323f7f0a4e43",
+            "Submission1.json"
+            )
+
+        set_reply(
+            submission_prefix + "/" +
+            "8b05e7f2-92c1-4651-94cb-9101f351f000",
+            "Submission2.json"
+            )
+
+        return replies[args[0]]
 
     @patch('requests.Session.get', side_effect=mocked_get_submission)
     def test_get_user_submissions(self, mock_get):
@@ -216,32 +235,6 @@ class RootTest(TestCase):
         # convert it into a list
         completed1 = list(completed1)
         self.assertEqual(len(completed1), 0)
-
-    def test_get_user_submission_pagination(self):
-        """Testing get user submission with pagination"""
-
-        with open(os.path.join(
-                data_path, "userSubmissionsPage1.json")) as handle:
-            page1 = json.load(handle)
-
-        with open(os.path.join(
-                data_path, "userSubmissionsPage2.json")) as handle:
-            page2 = json.load(handle)
-
-        self.mock_get.return_value = Mock()
-
-        # simulating two distinct replies with side_effect
-        self.mock_get.return_value.json.side_effect = [page1, page2]
-        self.mock_get.return_value.status_code = 200
-
-        submissions = self.root.get_user_submissions()
-
-        # submissions is now a generator
-        self.assertIsInstance(submissions, types.GeneratorType)
-
-        # convert it into a list
-        submissions = list(submissions)
-        self.assertEqual(len(submissions), 2)
 
     @patch('requests.Session.get', side_effect=mocked_get_submission)
     def test_get_submission_by_name(self, mock_get):
@@ -585,14 +578,72 @@ class TeamTest(TestCase):
         submission = self.team.create_submission()
         self.assertIsInstance(submission, Submission)
 
-    def test_get_submission(self):
-        with open(os.path.join(data_path, "teamSubmissions.json")) as handle:
-            data = json.load(handle)
+    def mocked_get_submission(*args, **kwargs):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+                self.text = "MockResponse not implemented: %s" % (args[0])
 
-        self.mock_get.return_value = Mock()
-        self.mock_get.return_value.json.return_value = data
-        self.mock_get.return_value.status_code = 200
+            def json(self):
+                return self.json_data
 
+        # this variable will collect all replies
+        replies = defaultdict(lambda: MockResponse(None, 404))
+
+        # a custom function to set up replies for link
+        def set_reply(url, filename, status=200):
+            # referring to the upper replies variable
+            nonlocal replies
+
+            # open data file
+            with open(os.path.join(data_path, filename)) as handle:
+                data = json.load(handle)
+
+            # track reply to URL
+            replies[url] = MockResponse(data, status)
+
+        set_reply(
+            "https://submission-test.ebi.ac.uk/api/submissions/search/"
+            "by-team?teamName=subs.test-team-1",
+            "teamSubmissions.json")
+
+        # to reload submissions
+        submission_prefix = "https://submission-test.ebi.ac.uk/api/submissions"
+
+        set_reply(
+            submission_prefix + "/" +
+            "87e7abda-81a8-4b5e-a1c0-323f7f0a4e43",
+            "Submission1.json"
+            )
+
+        set_reply(
+            submission_prefix + "/" +
+            "8b05e7f2-92c1-4651-94cb-9101f351f000",
+            "Submission2.json"
+            )
+
+        # to reload status
+        status_suffix = "submissionStatus"
+
+        status_link1 = "/".join([
+            submission_prefix,
+            "87e7abda-81a8-4b5e-a1c0-323f7f0a4e43",
+            status_suffix])
+
+        status_link2 = "/".join([
+            submission_prefix,
+            "8b05e7f2-92c1-4651-94cb-9101f351f000",
+            status_suffix])
+
+        set_reply(status_link1, "submissionStatus1.json")
+
+        set_reply(status_link2, "submissionStatus2.json")
+
+        return replies[args[0]]
+
+    @patch('requests.Session.get', side_effect=mocked_get_submission)
+    def test_get_submission(self, mock_get):
         submissions = self.team.get_submissions()
 
         # submissions is now a generator

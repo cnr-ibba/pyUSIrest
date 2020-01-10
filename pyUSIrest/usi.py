@@ -125,6 +125,9 @@ class Root(Document):
 
                 logger.debug("Found %s submission" % (submission.name))
 
+                # reload submission object in order to add items to it
+                submission.reload()
+
                 yield submission
 
     def get_submission_by_name(self, submission_name):
@@ -615,6 +618,9 @@ class Team(Document):
                     continue
 
                 logger.debug("Found %s submission" % (submission.name))
+
+                # reload submission object in order to add items to it
+                submission.reload()
 
                 yield submission
 
@@ -1222,6 +1228,8 @@ class ValidationResult(Document):
         Document.__init__(self)
 
         # my class attributes
+        self.version = None
+        self.expectedResults = None
         self.errorMessages = None
         self.overallValidationOutcomeByAuthor = None
         self.validationStatus = None

@@ -1,7 +1,7 @@
 {
   "_embedded" : {
     "submissions" : [ {
-      "team" : "subs.test-team-16",
+      "team" : "subs.test-team-19",
       "createdDate" : "2018-06-20T13:14:03.450+0000",
       "lastModifiedDate" : "2018-06-20T15:24:49.057+0000",
       "lastModifiedBy" : "usr-39acecd3-f438-44c5-b181-c70c2c71eefa",
@@ -10,40 +10,40 @@
       "submitter" : "email@test.com",
       "_links" : {
         "self" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/b57a66d8-d334-4b6c-a608-fb22fe6e1529{?projection}",
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000{?projection}",
           "templated" : true
         },
         "submissionStatus" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/b57a66d8-d334-4b6c-a608-fb22fe6e1529/submissionStatus"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000/submissionStatus"
         }
       },
       "_links" : {
         "self" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/b57a66d8-d334-4b6c-a608-fb22fe6e1529"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000"
         },
         "team" : {
           "href" : "https://submission-test.ebi.ac.uk/api/teams/subs.test-team-16"
         },
         "contents" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/b57a66d8-d334-4b6c-a608-fb22fe6e1529/contents"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000/contents"
         },
         "validationResults" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/validationResults/search/by-submission?submissionId=b57a66d8-d334-4b6c-a608-fb22fe6e1529"
+          "href" : "https://submission-test.ebi.ac.uk/api/validationResults/search/by-submission?submissionId=8b05e7f2-92c1-4651-94cb-9101f351f000"
         },
         "submissionStatus:update" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/b57a66d8-d334-4b6c-a608-fb22fe6e1529/submissionStatus"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000/submissionStatus"
         },
         "availableStatuses" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/b57a66d8-d334-4b6c-a608-fb22fe6e1529/availableSubmissionStatuses"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000/availableSubmissionStatuses"
         },
         "processingStatusSummary" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/b57a66d8-d334-4b6c-a608-fb22fe6e1529/processingStatusSummaryCounts"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000/processingStatusSummaryCounts"
         },
         "typeProcessingStatusSummary" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/b57a66d8-d334-4b6c-a608-fb22fe6e1529/processingStatusSummaryTypeCounts"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000/processingStatusSummaryTypeCounts"
         },
         "processingStatuses" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/processingStatuses/search/findBySubmissionId?submissionId=b57a66d8-d334-4b6c-a608-fb22fe6e1529"
+          "href" : "https://submission-test.ebi.ac.uk/api/processingStatuses/search/findBySubmissionId?submissionId=8b05e7f2-92c1-4651-94cb-9101f351f000"
         }
       }
     }]
