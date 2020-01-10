@@ -169,19 +169,6 @@ class RootTest(TestCase):
 
         set_reply(status_link3, "submissionStatus2.json")
 
-        # to reload submissions
-        set_reply(
-            submission_prefix + "/" +
-            "87e7abda-81a8-4b5e-a1c0-323f7f0a4e43",
-            "Submission1.json"
-            )
-
-        set_reply(
-            submission_prefix + "/" +
-            "8b05e7f2-92c1-4651-94cb-9101f351f000",
-            "Submission2.json"
-            )
-
         return replies[args[0]]
 
     @patch('requests.Session.get', side_effect=mocked_get_submission)

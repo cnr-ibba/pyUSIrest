@@ -186,22 +186,8 @@ class TeamTest(TestCase):
             "by-team?teamName=subs.test-team-1",
             "teamSubmissions.json")
 
-        # to reload submissions
-        submission_prefix = "https://submission-test.ebi.ac.uk/api/submissions"
-
-        set_reply(
-            submission_prefix + "/" +
-            "87e7abda-81a8-4b5e-a1c0-323f7f0a4e43",
-            "Submission1.json"
-            )
-
-        set_reply(
-            submission_prefix + "/" +
-            "8b05e7f2-92c1-4651-94cb-9101f351f000",
-            "Submission2.json"
-            )
-
         # to reload status
+        submission_prefix = "https://submission-test.ebi.ac.uk/api/submissions"
         status_suffix = "submissionStatus"
 
         status_link1 = "/".join([

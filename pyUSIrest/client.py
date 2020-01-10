@@ -365,7 +365,7 @@ class Document(Client):
 
         else:
             if force_keys is True:
-                logger.info("Forcing %s -> %s" % (key, value))
+                logger.debug("Forcing %s -> %s" % (key, value))
                 setattr(self, key, value)
 
             else:

@@ -125,9 +125,6 @@ class Root(Document):
 
                 logger.debug("Found %s submission" % (submission.name))
 
-                # reload submission object in order to add items to it
-                submission.reload()
-
                 yield submission
 
     def get_submission_by_name(self, submission_name):
@@ -619,9 +616,6 @@ class Team(Document):
 
                 logger.debug("Found %s submission" % (submission.name))
 
-                # reload submission object in order to add items to it
-                submission.reload()
-
                 yield submission
 
     def create_submission(self):
@@ -861,6 +855,11 @@ class Submission(Document):
 
         # debug
         logger.debug(sample_data)
+
+        # check if submission has the contents key
+        if 'contents' not in self._links:
+            # reload submission object in order to add items to it
+            self.reload()
 
         # get the url for sample create
         document = self.follow_tag("contents")

@@ -11,21 +11,14 @@ TODO
 * document how to sort objects like submissions (consider iterators)
 * filter by date?
 * Model custom exceptions
-* after completed, check available submission statuses
-
-  * To check if a submission is submittable you can check the available statuses
-    with this link: https://submission-test.ebi.ac.uk/api/submissions/<SUBMISSION_ID>/availableSubmissionStatuses
-  * If the "Submitted" is available, then you can submit it.
-
 * get a ``Team`` instance from ``Submission`` instance
-* Set a default date for ``releaseDate`` (``str(datetime.now().date())`` could be
-  ok)
+* Set a default date for ``releaseDate`` (``str(datetime.now().date())`` could be ok)
 * Filter a sample by status (ex. pending validation)
 
 Features
 ^^^^^^^^
 
-* fix bug when adding samples to a submission retrieved with ``team.get_submission``
+* fix bug when adding samples to a submission retrieved with ``team.get_submission()``
 * Update documentation. Set ``taxon`` in sample data (mandatory attribute)
 * displaying dates when ``print(Submission)`` instances
 * ``Root.get_user_submissions()`` and other methods which returned list of objects
