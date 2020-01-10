@@ -9,6 +9,7 @@ Created on Thu May 24 16:41:31 2018
 import copy
 import requests
 import logging
+import datetime
 import collections
 
 from url_normalize import url_normalize
@@ -650,6 +651,43 @@ class Team(Document):
         return submission
 
 
+# helper functions
+def check_relationship(sample_data, team):
+    """Check relationship and add additional fields if missing"""
+
+    # create a copy of sample_data
+    sample_data = copy.copy(sample_data)
+
+    # check relationship if exists
+    if 'sampleRelationships' not in sample_data:
+        return sample_data
+
+    for relationship in sample_data['sampleRelationships']:
+        if 'team' not in relationship:
+            logger.debug("Adding %s to relationship" % (team))
+            # setting the referenced object
+            relationship['team'] = team
+
+    # this is the copied sample_data, not the original one!!!
+    return sample_data
+
+
+def check_releasedate(sample_data):
+    """Add release date to sample data if missing"""
+
+    # create a copy of sample_data
+    sample_data = copy.copy(sample_data)
+
+    # add a default release date if missing
+    if 'releaseDate' not in sample_data:
+        today = datetime.date.today()
+        logger.warning("Adding %s as releasedate")
+        sample_data['releaseDate'] = str(today)
+
+    # this is the copied sample_data, not the original one!!!
+    return sample_data
+
+
 class Submission(Document):
     """A class to deal with USI Submissions_
 
@@ -775,25 +813,6 @@ class Submission(Document):
             logger.debug("Using %s as submission name" % (name))
             self.name = name
 
-    def __check_relationship(self, sample_data):
-        """Check relationship and add additional fields"""
-
-        # create a copy of sample_data
-        sample_data = copy.copy(sample_data)
-
-        # check relationship if exists
-        if 'sampleRelationships' not in sample_data:
-            return sample_data
-
-        for relationship in sample_data['sampleRelationships']:
-            if 'team' not in relationship:
-                logger.debug("Adding %s to relationship" % (self.team))
-                # setting the referenced object
-                relationship['team'] = self.team
-
-        # this is the copied sample_data, not the original one!!!
-        return sample_data
-
     def check_ready(self):
         """Test if a submission can be submitted or not (Must have completed
         validation processes)
@@ -851,7 +870,8 @@ class Submission(Document):
             Sample: a :py:class:`Sample` object"""
 
         # check sample_data for required attributes
-        sample_data = self.__check_relationship(sample_data)
+        sample_data = check_relationship(sample_data, self.team)
+        sample_data = check_releasedate(sample_data)
 
         # debug
         logger.debug(sample_data)
@@ -1180,6 +1200,10 @@ class Sample(Document):
 
         Args:
             sample_data (dict): sample data to update"""
+
+        # check sample_data for required attributes
+        sample_data = check_relationship(sample_data, self.team)
+        sample_data = check_releasedate(sample_data)
 
         url = self._links['self']['href']
         logger.info("patching sample %s with %s" % (self.name, sample_data))

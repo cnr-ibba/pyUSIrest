@@ -64,6 +64,7 @@ class SubmissionTest(TestCase):
             'title': 'animal_title',
             'releaseDate': '2018-07-13',
             'taxonId': 9940,
+            'taxon': 'Ovis aries',
             'attributes': {
                 'material': [
                     {'value': 'organism',
@@ -78,8 +79,8 @@ class SubmissionTest(TestCase):
         self.sample2 = {
             'alias': 'sample_1',
             'title': 'sample_title',
-            'releaseDate': '2018-07-13',
             'taxonId': 9940,
+            'taxon': 'Ovis aries',
             'description': 'a description',
             'attributes': {
                 'material': [
