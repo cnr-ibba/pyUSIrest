@@ -11,15 +11,16 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['python_jwt', 'requests', 'url-normalize']
+requirements = ['python_jwt', 'requests', 'url-normalize', 'dateutils']
 
 setup_requirements = ['pytest-runner', ]
 
-test_requirements = ['pytest', ]
+test_requirements = ['pytest>=3', ]
 
 setup(
     author="Paolo Cozzi",
-    author_email='cozzi@ibba.cnr.it',
+    author_email='paolo.cozzi@ibba.cnr.it',
+    python_requires='>=3.5',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -27,11 +28,10 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Topic :: Scientific/Engineering :: Bio-Informatics',
-        'Topic :: Software Development :: Libraries',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     description=("Python USI submission REST API contain all methods to "
                  "interact with EMBL-EBI Unified Submissions Interface"),
@@ -41,7 +41,7 @@ setup(
     include_package_data=True,
     keywords='pyUSIrest',
     name='pyUSIrest',
-    packages=find_packages(include=['pyUSIrest']),
+    packages=find_packages(include=['pyUSIrest', 'pyUSIrest.*']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,

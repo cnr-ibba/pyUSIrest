@@ -15,6 +15,8 @@ import logging
 
 import python_jwt
 
+from . import settings
+from .exceptions import USIConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,7 @@ class Auth():
         claims (dict): token claims read by `python_jwt.process_jwt`_
     """
 
-    auth_url = "https://explore.api.aai.ebi.ac.uk/auth"
+    auth_url = None
 
     def __init__(self, user=None, password=None, token=None):
         """
@@ -53,6 +55,9 @@ class Auth():
         self.claims = None
         self._token = None
 
+        # load auth url form init
+        self.auth_url = settings.AUTH_URL + "/auth"
+
         # get a response
         if password and user:
             logger.debug("Authenticating user {user}".format(user=user))
@@ -65,7 +70,7 @@ class Auth():
 
             if self.status_code != 200:
                 logger.error("Got status %s" % (self.status_code))
-                raise ConnectionError(
+                raise USIConnectionError(
                     "Got status %s: '%s'" % (
                         self.status_code, self.response.text))
 
@@ -150,12 +155,18 @@ class Auth():
         return self.get_duration().days < 0
 
     def __str__(self):
-        total_time = self.get_duration().total_seconds()
+        duration = self.get_duration()
+        total_time = duration.total_seconds()
+
+        formatted = "%.2d:%.2d:%.2d" % (
+            duration.seconds // 3600,
+            (duration.seconds // 60) % 60,
+            duration.seconds % 60)
 
         if total_time < 0:
             return "Token for {user} is expired".format(
                 user=self.claims['name'])
         else:
-            return "Token for {user} will last {seconds} seconds".format(
+            return "Token for {user} will last {duration}".format(
                 user=self.claims['name'],
-                seconds=total_time)
+                duration=formatted)

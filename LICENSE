@@ -1,9 +1,9 @@
 GNU GENERAL PUBLIC LICENSE
                       Version 3, 29 June 2007
 
-    Python EBI submission REST API contain all methods to interact with EBI
-    Submission REST API
-    Copyright (C) 2018  Paolo Cozzi
+    Python USI submission REST API contain all methods to interact with EMBL-EBI
+    Unified Submissions Interface
+    Copyright (C) 2018-2020  Paolo Cozzi
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

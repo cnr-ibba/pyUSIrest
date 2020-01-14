@@ -10,14 +10,14 @@
       "submitter" : "email@test.com",
       "_links" : {
         "self" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/792cb0d6-52f5-410e-b083-792dabad30d4"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/87e7abda-81a8-4b5e-a1c0-323f7f0a4e43"
         },
         "submission" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/792cb0d6-52f5-410e-b083-792dabad30d4{?projection}",
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/87e7abda-81a8-4b5e-a1c0-323f7f0a4e43{?projection}",
           "templated" : true
         },
         "submissionStatus" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/792cb0d6-52f5-410e-b083-792dabad30d4/submissionStatus"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/87e7abda-81a8-4b5e-a1c0-323f7f0a4e43/submissionStatus"
         }
       }
     }, {
@@ -30,14 +30,14 @@
       "submitter" : "email@test.com",
       "_links" : {
         "self" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000"
         },
         "submission" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e{?projection}",
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000{?projection}",
           "templated" : true
         },
         "submissionStatus" : {
-          "href" : "https://submission-test.ebi.ac.uk/api/submissions/74f32583-93bf-47e2-bace-59f9f5b2346e/submissionStatus"
+          "href" : "https://submission-test.ebi.ac.uk/api/submissions/8b05e7f2-92c1-4651-94cb-9101f351f000/submissionStatus"
         }
       }
     } ]

@@ -13,11 +13,12 @@ Python USI submission REST API
         :target: https://pyusirest.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://coveralls.io/repos/github/cnr-ibba/pyUSIrest/badge.svg?branch=master
+.. image:: https://coveralls.io/repos/github/cnr-ibba/pyUSIrest/badge.png?branch=master
         :target: https://coveralls.io/github/cnr-ibba/pyUSIrest?branch=master
 
-.. image:: https://scrutinizer-ci.com/g/cnr-ibba/pyUSIrest/badges/quality-score.png?b=master
+.. image:: https://img.shields.io/scrutinizer/quality/g/cnr-ibba/pyUSIrest/master
         :target: https://scrutinizer-ci.com/g/cnr-ibba/pyUSIrest/?branch=master
+        :alt: Scrutinizer code quality (GitHub/Bitbucket)
 
 
 Python USI submission REST API contain all methods to interact with EMBL-EBI
@@ -50,6 +51,15 @@ Features
 .. _`items to Submission`: https://submission-test.ebi.ac.uk/api/docs/guide_getting_started.html#_adding_documents_to_a_submission
 .. _Validation: https://submission-test.ebi.ac.uk/api/docs/guide_getting_started.html#_validation
 .. _Finalising: https://submission-test.ebi.ac.uk/api/docs/guide_getting_started.html#_finalising_your_submission
+
+API Endpoints
+-------------
+
+``pyUSIrest`` is written to exploit the BioSamples test environment endpoints.
+You are incuraged to understand how BioSamples submission works before do a
+real submission in BioSamples production servers. You can find more information
+on how to do a real submission in BioSamples production servers in readthedocs
+documentation: https://pyusirest.readthedocs.io
 
 Credits
 -------

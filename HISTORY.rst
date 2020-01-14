@@ -8,25 +8,29 @@ History
 TODO
 ^^^^
 
-* Root.get_user_submissions() should return an iterator object
-* document how to sort objects like submissions (consider iterators)
-* filter by date?
-* Submission.get_samples() should return an iterator object
-* Model custom exceptions
-* after completed, check available submission statuses
-
-  * To check if a submission is submittable you can check the available statuses
-    with this link: https://submission-test.ebi.ac.uk/api/submissions/<SUBMISSION_ID>/availableSubmissionStatuses
-  * If the "Submitted" is available, then you can submit it.
-
-* displaying dates when ``print(Submission)`` instances
-* get a Team instance from Submission instance
-
+* get a ``Team`` instance from ``Submission`` instance
+* ``Submission.has_errors`` make two identical queries, on to determine the
+  status and one to search errors, simplify it by doing only a query
+* filtering sample by status or error make a lot of queries. Consider writing
+  coroutines or reading ValidationResult as pages
 
 Features
 ^^^^^^^^
 
-* raise no exceptions where no team is found (returning an empty list)
+* modelled custom exceptions
+* Set a default date if ``releaseDate`` attribute is missing
+* improved documentation by describing how to sort and filter objects
+* fix bug when adding samples to a submission retrieved with ``team.get_submission()``
+* Update documentation. Set ``taxon`` in sample data (mandatory attribute)
+* displaying dates when ``print(Submission)`` instances
+* ``Root.get_user_submissions()`` and other methods which returned list of objects
+  now return iterator objects
+* str(auth) will report duration in ``hh:mm:ss``
+* compiling PDF using PNG images (change badges)
+* raise no exceptions where no team is found (using ``Root.get_user_teams``)
+* Using namespaces to configure API endpoints (``pyUSIrest.settings``)
+* move ``Root``, ``User``, ``Domain``, ``Team``, ``Submission``, ``Sample``
+  ``ValidationResult`` classes inside ``pyUSIrest.usi`` module
 
 0.2.2 (2019-03-28)
 ------------------
