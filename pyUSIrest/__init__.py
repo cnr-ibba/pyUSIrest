@@ -4,4 +4,4 @@
 
 __author__ = """Paolo Cozzi"""
 __email__ = 'cozzi@ibba.cnr.it'
-__version__ = '0.3.0.dev0'
+__version__ = '0.3.0'

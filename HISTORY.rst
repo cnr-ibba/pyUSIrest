@@ -2,9 +2,6 @@
 History
 =======
 
-0.3.0.dev0
-----------
-
 TODO
 ^^^^
 
@@ -13,6 +10,9 @@ TODO
   status and one to search errors, simplify it by doing only a query
 * filtering sample by status or error make a lot of queries. Consider writing
   coroutines or reading ValidationResult as pages
+
+0.3.0 (2020-01-14)
+------------------
 
 Features
 ^^^^^^^^
@@ -25,7 +25,7 @@ Features
 * displaying dates when ``print(Submission)`` instances
 * ``Root.get_user_submissions()`` and other methods which returned list of objects
   now return iterator objects
-* str(auth) will report duration in ``hh:mm:ss``
+* ``str(auth)`` will report duration in ``hh:mm:ss``
 * compiling PDF using PNG images (change badges)
 * raise no exceptions where no team is found (using ``Root.get_user_teams``)
 * Using namespaces to configure API endpoints (``pyUSIrest.settings``)
