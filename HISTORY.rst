@@ -3,7 +3,7 @@ History
 =======
 
 TODO
-^^^^
+----
 
 * get a ``Team`` instance from ``Submission`` instance
 * ``Submission.has_errors`` make two identical queries, on to determine the

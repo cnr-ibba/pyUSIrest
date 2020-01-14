@@ -35,6 +35,7 @@ setup(
     ],
     description=("Python USI submission REST API contain all methods to "
                  "interact with EMBL-EBI Unified Submissions Interface"),
+    long_description_content_type='text/x-rst',
     install_requires=requirements,
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
