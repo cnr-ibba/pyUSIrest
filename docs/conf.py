@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Python USI submission REST API'
-copyright = "2018-2019, Paolo Cozzi"
+copyright = "2018-2020, Paolo Cozzi"
 author = "Paolo Cozzi"
 
 # The version info for the project you're documenting, acts as replacement

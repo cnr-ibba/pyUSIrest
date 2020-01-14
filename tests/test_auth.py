@@ -14,6 +14,7 @@ from unittest import TestCase
 
 
 from pyUSIrest.auth import Auth
+from pyUSIrest.exceptions import USIConnectionError
 
 
 def generate_token(now=None):
@@ -85,7 +86,7 @@ class TestAuth(TestCase):
         self.mock_get.return_value.status_code = 400
 
         self.assertRaisesRegex(
-            ConnectionError, "Got status", Auth, user='foo', password='bar')
+            USIConnectionError, "Got status", Auth, user='foo', password='bar')
 
     def test_expired(self):
         self.mock_get.return_value = Mock()

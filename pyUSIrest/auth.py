@@ -16,6 +16,7 @@ import logging
 import python_jwt
 
 from . import settings
+from .exceptions import USIConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ class Auth():
 
             if self.status_code != 200:
                 logger.error("Got status %s" % (self.status_code))
-                raise ConnectionError(
+                raise USIConnectionError(
                     "Got status %s: '%s'" % (
                         self.status_code, self.response.text))
 

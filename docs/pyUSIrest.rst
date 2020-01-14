@@ -20,10 +20,26 @@ pyUSIrest.client module
     :undoc-members:
     :show-inheritance:
 
+pyUSIrest.exceptions module
+---------------------------
+
+.. automodule:: pyUSIrest.exceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pyUSIrest.settings module
 -------------------------
 
 .. automodule:: pyUSIrest.settings
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyUSIrest.usi module
+--------------------
+
+.. automodule:: pyUSIrest.usi
     :members:
     :undoc-members:
     :show-inheritance:
