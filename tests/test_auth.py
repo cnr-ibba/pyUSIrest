@@ -17,7 +17,7 @@ from pyUSIrest.auth import Auth
 from pyUSIrest.exceptions import USIConnectionError
 
 
-def generate_token(now=None):
+def generate_token(now=None, domains=['subs.test-team-1']):
     """A function to generate a 'fake' token"""
 
     if not now:
@@ -31,7 +31,7 @@ def generate_token(now=None):
         'email': 'foo.bar@email.com',
         'nickname': 'foo',
         'name': 'Foo Bar',
-        'domains': ['subs.test-team-1']
+        'domains': domains
     }
 
     return python_jwt.generate_jwt(
@@ -122,3 +122,16 @@ class TestAuth(TestCase):
         seconds = int(duration.total_seconds())
 
         self.assertAlmostEqual(seconds, 300, delta=10)
+
+    def test_get_domains(self):
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.text = generate_token(
+            domains=['subs.test-team-1', 'subs.test-team-2'])
+        self.mock_get.return_value.status_code = 200
+
+        auth = Auth(user='foo', password='bar')
+
+        test_domains = auth.get_domains()
+
+        self.assertEqual(
+            test_domains, ['subs.test-team-1', 'subs.test-team-2'])

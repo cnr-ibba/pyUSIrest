@@ -167,6 +167,15 @@ class Auth():
             return "Token for {user} is expired".format(
                 user=self.claims['name'])
         else:
-            return "Token for {user} will last {duration}".format(
+            return "Token for {user} will expire in {duration}".format(
                 user=self.claims['name'],
                 duration=formatted)
+
+    def get_domains(self):
+        """Returns a list of domain managed by this object
+
+        Returns:
+            list: a list of managed domains
+        """
+
+        return self.claims['domains']
