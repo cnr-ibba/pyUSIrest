@@ -689,7 +689,41 @@ def check_releasedate(sample_data):
     return sample_data
 
 
-class Submission(Document):
+class TeamMixin(object):
+
+    def __init__(self):
+        """Instantiate the class"""
+
+        # my class attributes
+        self._team = None
+
+    @property
+    def team(self):
+        """Get/Set team name"""
+
+        # get team name
+        if isinstance(self._team, str):
+            team_name = self._team
+
+        elif isinstance(self._team, dict):
+            team_name = self._team['name']
+
+        elif self._team is None:
+            team_name = ""
+
+        else:
+            raise NotImplementedError(
+                "Unknown type: %s" % type(self._team)
+            )
+
+        return team_name
+
+    @team.setter
+    def team(self, value):
+        self._team = value
+
+
+class Submission(TeamMixin, Document):
     """A class to deal with USI Submissions_
 
     Attributes:
@@ -718,11 +752,13 @@ class Submission(Document):
         self.id = None
 
         # calling the base class method client
+        super().__init__()
+
+        # now setting up Client and document class attributes
         Client.__init__(self, auth)
         Document.__init__(self)
 
         # my class attributes
-        self._team = None
         self.createdDate = None
         self.lastModifiedDate = None
         self.lastModifiedBy = None
@@ -763,31 +799,6 @@ class Submission(Document):
                     "Overriding id (%s > %s)" % (self.id, submission_id))
 
         self.id = submission_id
-
-    @property
-    def team(self):
-        """Get/Set team name"""
-
-        # get team name
-        if isinstance(self._team, str):
-            team_name = self._team
-
-        elif isinstance(self._team, dict):
-            team_name = self._team['name']
-
-        elif self._team is None:
-            team_name = ""
-
-        else:
-            raise NotImplementedError(
-                "Unknown type: %s" % type(self._team)
-            )
-
-        return team_name
-
-    @team.setter
-    def team(self, value):
-        self._team = value
 
     def read_data(self, data, force_keys=False):
         """Read data from a dictionary object and set class attributes
@@ -871,11 +882,11 @@ class Submission(Document):
             Sample: a :py:class:`Sample` object"""
 
         # check sample_data for required attributes
-        sample_data = check_relationship(sample_data, self.team)
-        sample_data = check_releasedate(sample_data)
+        fixed_data = check_relationship(sample_data, self.team)
+        fixed_data = check_releasedate(fixed_data)
 
         # debug
-        logger.debug(sample_data)
+        logger.debug(fixed_data)
 
         # check if submission has the contents key
         if 'contents' not in self._links:
@@ -896,7 +907,7 @@ class Submission(Document):
         headers['Content-Type'] = 'application/json;charset=UTF-8'
 
         # call a post method a deal with response
-        response = self.post(url, payload=sample_data, headers=headers)
+        response = self.post(url, payload=fixed_data, headers=headers)
 
         # create a new sample
         sample = Sample(auth=self.auth, data=response.json())
@@ -1092,7 +1103,7 @@ class Submission(Document):
         return document
 
 
-class Sample(Document):
+class Sample(TeamMixin, Document):
     """A class to deal with USI Samples_
 
     Attributes:
@@ -1123,6 +1134,9 @@ class Sample(Document):
         """
 
         # calling the base class method client
+        super().__init__()
+
+        # now setting up Client and document class attributes
         Client.__init__(self, auth)
         Document.__init__(self)
 
@@ -1203,13 +1217,13 @@ class Sample(Document):
             sample_data (dict): sample data to update"""
 
         # check sample_data for required attributes
-        sample_data = check_relationship(sample_data, self.team)
-        sample_data = check_releasedate(sample_data)
+        fixed_data = check_relationship(sample_data, self.team)
+        fixed_data = check_releasedate(fixed_data)
 
         url = self._links['self']['href']
-        logger.info("patching sample %s with %s" % (self.name, sample_data))
+        logger.info("patching sample %s with %s" % (self.name, fixed_data))
 
-        Client.patch(self, url, payload=sample_data)
+        super().patch(url, payload=fixed_data)
 
         # reloading data
         self.reload()

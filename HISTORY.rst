@@ -14,6 +14,7 @@ TODO
 0.3.1.dev0
 ----------
 
+* fix a bug when patching a sample: deal with team in relationship
 * Change ``Auth.__str__()``: now it returns ``Token for Foo Bar will expire in HH:MM:SS``
 * add ``Auth.get_domains`` which returns ``self.claims['domains']``
 
