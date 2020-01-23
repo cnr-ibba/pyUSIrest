@@ -152,7 +152,7 @@ class Root(Document):
         try:
             submission.get(url)
 
-        except USIConnectionError as exc:
+        except USIDataError as exc:
             if submission.last_status_code == 404:
                 # if I arrive here, no submission is found
                 raise NameError(

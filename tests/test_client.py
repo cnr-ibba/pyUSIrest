@@ -16,7 +16,8 @@ from unittest import TestCase
 from pyUSIrest.auth import Auth
 from pyUSIrest.client import Client
 from pyUSIrest.settings import ROOT_URL
-from pyUSIrest.exceptions import USIConnectionError, TokenExpiredError
+from pyUSIrest.exceptions import (
+    USIConnectionError, TokenExpiredError, USIDataError)
 
 from .common import DATA_PATH
 from .test_auth import generate_token
@@ -114,7 +115,7 @@ class ClientTest(TestCase):
         self.mock_get.return_value = response
 
         self.assertRaisesRegex(
-            USIConnectionError,
+            USIDataError,
             "Not Found",
             client.get,
             ROOT_URL + "/meow"

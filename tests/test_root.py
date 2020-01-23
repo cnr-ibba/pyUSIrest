@@ -17,6 +17,7 @@ from unittest import TestCase
 from pyUSIrest.auth import Auth
 from pyUSIrest.usi import Root, Team, Submission
 from pyUSIrest.settings import ROOT_URL
+from pyUSIrest.exceptions import USIConnectionError, USIDataError
 
 from .common import DATA_PATH
 from .test_auth import generate_token
@@ -239,6 +240,6 @@ class RootTest(TestCase):
         self.mock_get.return_value.status_code = 500
 
         self.assertRaises(
-            ConnectionError,
+            USIConnectionError,
             self.root.get_submission_by_name,
             submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
