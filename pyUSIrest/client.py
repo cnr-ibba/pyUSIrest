@@ -143,7 +143,8 @@ class Client():
         # TODO: evaluate a list of expected status?
         if response.status_code != expected_status:
             raise USIConnectionError(
-                "%s:%s" % (response.status_code, response.text))
+                "Got a status code different than expected: %s (%s)" % (
+                    response.status_code, response.text))
 
     def get(self, url, headers={}, params={}):
         """Generic GET method

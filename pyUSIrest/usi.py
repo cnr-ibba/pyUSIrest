@@ -1192,16 +1192,8 @@ class Sample(TeamMixin, Document):
         url = self._links['self:delete']['href']
         logger.info("Removing sample %s from submission" % self.name)
 
-        response = Client.delete(self, url)
-
-        if response.status_code != 204:
-            raise USIConnectionError(response.text)
-
-        # assign attributes
-        self.last_response = response
-        self.last_status_code = response.status_code
-
         # don't return anything
+        Client.delete(self, url)
 
     def reload(self):
         """call :py:meth:`Document.follow_self_url` and reload class
