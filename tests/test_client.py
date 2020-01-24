@@ -14,12 +14,23 @@ from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from pyUSIrest.auth import Auth
-from pyUSIrest.client import Client
+from pyUSIrest.client import Client, is_date
 from pyUSIrest.settings import ROOT_URL
-from pyUSIrest.exceptions import USIConnectionError, TokenExpiredError
+from pyUSIrest.exceptions import (
+    USIConnectionError, TokenExpiredError, USIDataError)
 
 from .common import DATA_PATH
 from .test_auth import generate_token
+
+
+class ISDateTest(TestCase):
+    def test_is_date(self):
+        self.assertTrue(is_date("2018-07-16"))
+        self.assertTrue(is_date("2018-07-16T14:25:22.546"))
+        self.assertTrue(is_date("2018-07-16T14:25:22.546+0000"))
+
+    def test_is_not_date(self):
+        self.assertFalse(is_date("not a date"))
 
 
 class ClientTest(TestCase):
@@ -98,6 +109,28 @@ class ClientTest(TestCase):
 
         self.assertIsInstance(response.json(), dict)
 
+    def test_get_wrong_status_code(self):
+        """Testing a get method with a different status code than expected"""
+
+        # create a mock response
+        with open(os.path.join(DATA_PATH, "root.json")) as handle:
+            data = json.load(handle)
+
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.json.return_value = data
+        self.mock_get.return_value.text = "test message"
+        self.mock_get.return_value.status_code = 201
+
+        token = generate_token()
+        client = Client(token)
+
+        self.assertRaisesRegex(
+            USIConnectionError,
+            "Got a status code different than expected",
+            client.get,
+            ROOT_URL
+        )
+
     def test_get_with_errors(self):
         """Deal with problems with getting URL (no 200 status code)"""
 
@@ -114,7 +147,7 @@ class ClientTest(TestCase):
         self.mock_get.return_value = response
 
         self.assertRaisesRegex(
-            USIConnectionError,
+            USIDataError,
             "Not Found",
             client.get,
             ROOT_URL + "/meow"

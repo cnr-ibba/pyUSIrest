@@ -17,6 +17,7 @@ from unittest import TestCase
 from pyUSIrest.auth import Auth
 from pyUSIrest.usi import Root, Team, Submission
 from pyUSIrest.settings import ROOT_URL
+from pyUSIrest.exceptions import USIConnectionError, USIDataError
 
 from .common import DATA_PATH
 from .test_auth import generate_token
@@ -235,10 +236,22 @@ class RootTest(TestCase):
             self.root.get_submission_by_name,
             submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
 
+        # a different 40x error type
+        self.mock_get.return_value = Mock()
+        self.mock_get.return_value.text = (
+            "The request did not include an Authorization header")
+        self.mock_get.return_value.status_code = 401
+
+        self.assertRaisesRegex(
+            USIDataError,
+            "Error with request",
+            self.root.get_submission_by_name,
+            submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
+
         self.mock_get.return_value = Mock()
         self.mock_get.return_value.status_code = 500
 
         self.assertRaises(
-            ConnectionError,
+            USIConnectionError,
             self.root.get_submission_by_name,
             submission_name='c8c86558-8d3a-4ac5-8638-7aa354291d61')
