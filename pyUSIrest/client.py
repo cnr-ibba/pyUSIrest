@@ -13,7 +13,7 @@ from dateutil.parser import parse as parse_date
 
 from . import __version__
 from .auth import Auth
-from .exceptions import USIConnectionError, TokenExpiredError
+from .exceptions import USIConnectionError, USIDataError, TokenExpiredError
 
 logger = logging.getLogger(__name__)
 
@@ -136,10 +136,15 @@ class Client():
             raise USIConnectionError(
                 "Problems with API endpoints: %s" % response.text)
 
+        if int(response.status_code / 100) == 4:
+            raise USIDataError(
+                "Error with request: %s" % response.text)
+
         # TODO: evaluate a list of expected status?
         if response.status_code != expected_status:
             raise USIConnectionError(
-                "%s:%s" % (response.status_code, response.text))
+                "Got a status code different than expected: %s (%s)" % (
+                    response.status_code, response.text))
 
     def get(self, url, headers={}, params={}):
         """Generic GET method

@@ -11,6 +11,14 @@ TODO
 * filtering sample by status or error make a lot of queries. Consider writing
   coroutines or reading ValidationResult as pages
 
+0.3.1 (2020-01-27)
+------------------
+
+* fix a bug when patching a sample: deal with team in relationship
+* raise ``USIDataError`` on ``40x`` status code
+* Change ``Auth.__str__()``: now it returns ``Token for Foo Bar will expire in HH:MM:SS``
+* add ``Auth.get_domains`` which returns ``self.claims['domains']``
+
 0.3.0 (2020-01-14)
 ------------------
 
